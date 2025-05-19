@@ -8,6 +8,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Product extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'sku',
+        'name',
+        'description',
+        'image_path',
+        'price',
+        'subcategory_id',
+    ];
+
+
     //Relacion uno a muchoS inversa
     public function subcategory()
     {
