@@ -1,3 +1,5 @@
+@props(['breadcrumbs' => []])
+
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
@@ -14,7 +16,7 @@
 
     <!--iconos importados awesome google-->
     <script src="https://kit.fontawesome.com/624f2e432c.js" crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -26,19 +28,21 @@
 <body class="font-sans antialiased" x-data="{ sidebarOpen: false }" :class="{
     'overflow-y-hidden': sidebarOpen,
 }">
-    //parte negra en modo responsive
+    {{-- //parte negra en modo responsive --}}
     <div class="fixed inset-0 bg-gray-900 bg-opacity-50 z-20 sm:hidden" style="display: none" x-show="sidebarOpen"
         x-on:click="sidebarOpen = false">
 
     </div>
 
-    //llamamos al componente de navegacion
+    {{-- //llamamos al componente de navegacion --}}
     @include('layouts.partials.admin.navegation')
-    //llamamos al componente de slidebar
+    {{-- //llamamos al componente de slidebar --}}
     @include('layouts.partials.admin.sidebar')
     <div class="p-4 sm:ml-64">
         <div class="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700 mt-14">
-            //defino el slot para que se muestre el contenido de las vistas
+            {{-- //llamamos al componente de breadcrumb --}}
+            @include('layouts.partials.admin.breadcrumb')
+            {{-- //defino el slot para que se muestre el contenido de las vistas --}}
             {{ $slot }}
         </div>
     </div>
@@ -47,8 +51,8 @@
 
 
     <script>
-    lucide.createIcons();
-</script>
+        lucide.createIcons();
+    </script>
 
 </body>
 
