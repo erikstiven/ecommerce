@@ -13,7 +13,13 @@
             'route' => route('admin.families.index'),
             'active' => request()->routeIs('admin.families.*'),
         ],
-       
+        [
+            //Categorias de productos
+            'icon' => 'chart-bar-stacked',
+            'name' => 'Categorias',
+            'route' => route('admin.categories.index'),
+            'active' => request()->routeIs('admin.categories.*'),
+        ],
     ];
 @endphp
 <aside id="logo-sidebar"
@@ -29,7 +35,7 @@
             @foreach ($links as $link)
                 <li>
                     <a href="{{ $link['route'] }}"
-                        class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group {{$link['active'] ? 'bg-gray-100 dark:bg-gray-700' : ''}}">
+                        class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group {{ $link['active'] ? 'bg-gray-100 dark:bg-gray-700' : '' }}">
                         {{-- <span class="inline-flex w-6 h-6 justify-center items-center">
                             <i class="fa-solid {{ $link['icon'] }}"></i>
                         {{-- <span class="inline-flex w-6 h-6 justify-center items-center">
