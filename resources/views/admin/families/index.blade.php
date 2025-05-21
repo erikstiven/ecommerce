@@ -10,45 +10,47 @@
 ]">
 
     <x-slot name="action">
-        <a type="button" class="btn-gradient-blue" href="{{ route('admin.families.create') }}">
-            Nuevo
+        <a href="{{ route('admin.families.create') }}" class="btn-gradient-blue">
+            Nuevo 
         </a>
-
-
     </x-slot>
 
 
 
     @if ($families->count())
 
-        <div class="relative overflow-x-auto">
-            <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+        <div class="overflow-x-auto rounded-xl shadow-md border border-gray-200 dark:border-gray-700">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
+                <thead class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
                     <tr>
-                        <th scope="col" class="px-6 py-3">
+                        <th
+                            class="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-gray-300 tracking-widest uppercase">
                             ID
                         </th>
-                        <th scope="col" class="px-6 py-3">
-                            Name
+                        <th
+                            class="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-gray-300 tracking-widest uppercase">
+                            Nombre
                         </th>
-                        <th scope="col" class="px-6 py-3">
-
+                        <th
+                            class="px-6 py-4 text-right text-xs font-bold text-gray-600 dark:text-gray-300 tracking-widest uppercase">
+                            Acciones
                         </th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
                     @foreach ($families as $family)
-                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
-                            <th scope="row"
-                                class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                        <tr class="group hover:bg-blue-50 dark:hover:bg-gray-800 transition duration-200">
+                            <td
+                                class="px-6 py-4 text-sm font-semibold text-gray-700 dark:text-gray-200 group-hover:text-blue-600">
                                 {{ $family->id }}
-                            </th>
-                            <td class="px-6 py-4">
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 group-hover:text-blue-600">
                                 {{ $family->name }}
                             </td>
-                            <td class="px-6 py-4">
-                                <a href="{{ route('admin.families.edit', $family) }}">
-                                    Editar
+                            <td class="px-6 py-4 text-sm text-right">
+                                <a href="{{ route('admin.families.edit', $family) }}"
+                                    class="inline-flex items-center gap-2 px-4 py-1.5 rounded-md bg-blue-500 text-white text-xs font-medium shadow hover:bg-blue-600 hover:scale-105 transition-all duration-200">
+                                    <i data-lucide="pencil" class="w-4 h-4"></i> Editar
                                 </a>
                             </td>
                         </tr>
@@ -56,6 +58,8 @@
                 </tbody>
             </table>
         </div>
+
+
 
         <div class="mt-4">
             {{ $families->links() }}

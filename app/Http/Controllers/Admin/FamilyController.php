@@ -33,10 +33,18 @@ class FamilyController extends Controller
     public function store(Request $request)
     {
         //
-        $request ->validate([
+        $request->validate([
             'name' => 'required',
         ]);
         Family::create($request->all());
+
+        // Flash message
+        session()->flash('swal', [
+            'icon' => 'success',
+            'title' => '¡Bien hecho!',
+            'text' => 'Familia creada correctamente.',
+        ]);
+
         return redirect()->route('admin.families.index');
     }
 
@@ -54,7 +62,7 @@ class FamilyController extends Controller
     public function edit(Family $family)
     {
         //
-        return view ('admin.families.edit', compact('family'));
+        return view('admin.families.edit', compact('family'));
     }
 
     /**
@@ -63,12 +71,18 @@ class FamilyController extends Controller
     public function update(Request $request, Family $family)
     {
         //
-        $request ->validate([
+        $request->validate([
             'name' => 'required',
         ]);
         $family->update($request->all());
+        // Flash message
+        session()->flash('swal', [
+            'icon' => 'success',
+            'title' => '¡Bien hecho!',
+            'text' => 'Familia Actualizada Correctamente',
+        ]);
 
-        return redirect()->route('admin.families.edit',$family);
+        return redirect()->route('admin.families.edit', $family);
     }
 
     /**
@@ -77,5 +91,21 @@ class FamilyController extends Controller
     public function destroy(Family $family)
     {
         //
+        if ($family->categories()->count() > 0) {
+            session()->flash('swal', [
+                'icon' => 'error',
+                'title' => '¡Upss!',
+                'text' => 'No se puede eliminar la familia porque tiene categorías asociadas.',
+            ]);
+            return redirect()->route('admin.families.edit', $family);
+        }
+        $family->delete();
+        // Flash message
+        session()->flash('swal', [
+            'icon' => 'success',
+            'title' => '¡Bien hecho!',
+            'text' => 'Familia eliminada correctamente.',
+        ]);
+        return redirect()->route('admin.families.index');
     }
 }
