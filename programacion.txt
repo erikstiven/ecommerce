@@ -1,0 +1,5 @@
+//ejecutar seeders
+php artisan db:seed
+
+//crear controladores en tal carpeta y listo para usar el modelo respectivo
+php artisan make:controller Admin\FamilyController --model=Family

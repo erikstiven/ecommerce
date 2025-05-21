@@ -1,4 +1,5 @@
-@if (!empty($breadcrumbs) && is_iterable($breadcrumbs))
+@if (count ($breadcrumbs))
+    {{-- Breadcrumbs --}}
     <nav class="mb-4" aria-label="Breadcrumb">
         <ol class="flex flex-wrap text-sm text-slate-700">
             @foreach ($breadcrumbs as $item)

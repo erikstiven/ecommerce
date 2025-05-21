@@ -39,12 +39,18 @@
     {{-- //llamamos al componente de slidebar --}}
     @include('layouts.partials.admin.sidebar')
     <div class="p-4 sm:ml-64">
-        <div class="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700 mt-14">
+
+        <div class="mt-14">
             {{-- //llamamos al componente de breadcrumb --}}
             @include('layouts.partials.admin.breadcrumb')
-            {{-- //defino el slot para que se muestre el contenido de las vistas --}}
-            {{ $slot }}
+
+            <div class="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700 ">
+
+                {{-- //defino el slot para que se muestre el contenido de las vistas --}}
+                {{ $slot }}
+            </div>
         </div>
+
     </div>
 
     @livewireScripts

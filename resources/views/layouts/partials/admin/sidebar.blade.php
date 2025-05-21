@@ -6,6 +6,14 @@
             'route' => route('admin.dashboard'),
             'active' => request()->routeIs('admin.dashboard'),
         ],
+        [
+            //Familias de productos
+            'icon' => 'package-search',
+            'name' => 'Familias',
+            'route' => route('admin.families.index'),
+            'active' => request()->routeIs('admin.families.*'),
+        ],
+       
     ];
 @endphp
 <aside id="logo-sidebar"
