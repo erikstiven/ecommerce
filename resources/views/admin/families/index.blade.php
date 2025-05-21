@@ -9,7 +9,13 @@
     ],
 ]">
 
+    <x-slot name="action">
+        <a type="button" class="btn-gradient-blue" href="{{ route('admin.families.create') }}">
+            Nuevo
+        </a>
 
+
+    </x-slot>
 
 
 
