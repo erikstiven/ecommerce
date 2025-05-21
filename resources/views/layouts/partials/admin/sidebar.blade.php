@@ -20,6 +20,15 @@
             'route' => route('admin.categories.index'),
             'active' => request()->routeIs('admin.categories.*'),
         ],
+        [
+            //Subcategorias de productos
+            'icon' => 'layers-2',
+            'name' => 'Subcategorias',
+            'route' => route('admin.subcategories.index'),  
+            'active' => request()->routeIs('admin.subcategories.*'),
+
+
+        ]
     ];
 @endphp
 <aside id="logo-sidebar"
