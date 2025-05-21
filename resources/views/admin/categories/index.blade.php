@@ -53,7 +53,7 @@
                                 {{ $category->family->name }}
                             </td>
                             <td class="px-6 py-4 text-sm text-right">
-                                <a href="{{ route('admin.families.edit', $category) }}"
+                                <a href="{{ route('admin.categories.edit', $category) }}"
                                     class="inline-flex items-center gap-2 px-4 py-1.5 rounded-md bg-blue-500 text-white text-xs font-medium shadow hover:bg-blue-600 hover:scale-105 transition-all duration-200">
                                     <i data-lucide="pencil" class="w-4 h-4"></i> Editar
                                 </a>

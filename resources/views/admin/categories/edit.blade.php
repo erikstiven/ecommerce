@@ -4,46 +4,62 @@
         'route' => route('admin.dashboard'),
     ],
     [
-        'name' => 'Familias',
-        'route' => route('admin.families.index'),
+        'name' => 'Categorías',
+        'route' => route('admin.categories.index'),
     ],
     [
-        'name' => $family->name,
+        'name' => $category->name,
     ],
 ]">
 
     {{-- Formulario --}}
-    <div class="card-form">
-        <form action="{{ route('admin.families.update', $family) }}" method="POST">
-            @csrf
-            @method('PUT')
+    <form action="{{ route('admin.categories.update', $category) }}" method="POST">
+        @csrf
+        @method('PUT')
+
+        <div class="card-form">
+
+            <x-validation-errors class="mb-4" />
+            <div class="mb-4">
+                <x-label>
+                    Familia
+                </x-label>
+                <x-select name="family_id" class="w-full">
+                    {{-- <option value="">Seleccione una familia</option> --}}
+                    @foreach ($families as $family)
+                        <option value="{{ $family->id }}">{{ $family->name }}
+                            @selected(old('family_id', $category->family_id == $family->id) == $family->id)</option>
+                    @endforeach
+                </x-select>
+            </div>
+
             <div class="mb-4">
                 <x-label class="mt-2">
                     Nombre
                 </x-label>
-                <x-input class="w-full" placeholder="Ingrese el nombre de la familia" name="name"
-                    value="{{ old('name', $family->name) }}" />
+                <x-input class="w-full" placeholder="Ingrese el nombre de la categoría" name="name"
+                    value="{{ old('name', $category->name) }}" />
             </div>
             <div class="flex justify-end">
                 <x-danger-button type="button" onclick="confirmDelete()">
                     Eliminar
                 </x-danger-button>
-
-
                 <x-button class="ml-2">
                     Actualizar
                 </x-button>
             </div>
-        </form>
 
-    </div>
-    {{-- Eliminar familia --}}
-    <form action="{{ route('admin.families.destroy', $family) }}" method="POST" id="delete-form" class="mt-4">
+        </div>
+    </form>
+    {{-- Fin Formulario --}}
+
+     {{-- Eliminar categoria --}}
+    <form action="{{ route('admin.categories.destroy', $category) }}" method="POST" id="delete-form" class="mt-4">
         @csrf
         @method('DELETE')
     </form>
 
-    @push('js')
+     @push('js')
         <script>
             function confirmDelete() {
                 Swal.fire({
@@ -63,5 +79,6 @@
             }
         </script>
     @endpush
+
 
 </x-admin-layout>
