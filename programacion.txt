@@ -6,3 +6,8 @@ php artisan make:controller Admin\FamilyController --model=Family
 
 //Bar de laravel para inspeccionar peticiones
 composer require barryvdh/laravel-debugbar
+
+//Crear un componente en livewire
+php artisan make:livewire admin.subcategories.subcategory-create
+
+
