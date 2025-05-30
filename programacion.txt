@@ -1,6 +1,9 @@
 //ejecutar seeders
 php artisan db:seed
 
+//Actualizar seeders
+php artisan migrate:fresh --seed
+
 //crear controladores en tal carpeta y listo para usar el modelo respectivo
 php artisan make:controller Admin\FamilyController --model=Family
 
@@ -13,3 +16,6 @@ php artisan make:livewire admin.subcategories.subcategory-create
 
 //Crear una fabrica
 php artisan make:factory ProductFactory
+
+//Crear acceso directo donde se guardan las imagenes
+php artisan storage:link

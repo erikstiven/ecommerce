@@ -8,27 +8,32 @@
         ],
         [
             //Familias de productos
-            'icon' => 'package-search',
+            'icon' => 'file-box',
             'name' => 'Familias',
             'route' => route('admin.families.index'),
             'active' => request()->routeIs('admin.families.*'),
         ],
         [
             //Categorias de productos
-            'icon' => 'chart-bar-stacked',
+            'icon' => 'group',
             'name' => 'Categorias',
             'route' => route('admin.categories.index'),
             'active' => request()->routeIs('admin.categories.*'),
         ],
         [
             //Subcategorias de productos
-            'icon' => 'layers-2',
+            'icon' => 'combine',
             'name' => 'Subcategorias',
-            'route' => route('admin.subcategories.index'),  
+            'route' => route('admin.subcategories.index'),
             'active' => request()->routeIs('admin.subcategories.*'),
-
-
-        ]
+        ],
+        [
+            //productos
+            'icon' => 'package',
+            'name' => 'Productos',
+            'route' => route('admin.products.index'),
+            'active' => request()->routeIs('admin.products.*'),
+        ],
     ];
 @endphp
 <aside id="logo-sidebar"
