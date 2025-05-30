@@ -11,3 +11,5 @@ composer require barryvdh/laravel-debugbar
 php artisan make:livewire admin.subcategories.subcategory-create
 
 
+//Crear una fabrica
+php artisan make:factory ProductFactory

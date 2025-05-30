@@ -75,6 +75,13 @@
         </script>
     @endif
 
+    {{-- script para las swal con livewire --}}
+    <script>
+        Livewire.on('swal', data => {
+            Swal.fire(data[0]);
+        });
+    </script>
+
     <script>
         lucide.createIcons();
     </script>
