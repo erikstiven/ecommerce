@@ -17,5 +17,21 @@ php artisan make:livewire admin.subcategories.subcategory-create
 //Crear una fabrica
 php artisan make:factory ProductFactory
 
-//Crear acceso directo donde se guardan las imagenes
-php artisan storage:link
+Pasos para ejecutar
+------------------
+composer install
+Configurar el .env
+1. php artisan key:generate
+2. copy .env.example .env
+3. php artisan key:generate
+4.  DB_DATABASE=ecommerce
+    DB_USERNAME=root
+    DB_PASSWORD=
+    FILESYSTEM_DISK=public
+
+5. php artisan migrate --seed
+6. //Crear acceso directo donde se guardan las imagenes
+   php artisan storage:link
+7. php artisan migrate:fresh --seed
+8. composer require livewire/livewire
+
