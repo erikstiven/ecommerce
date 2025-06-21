@@ -11,7 +11,7 @@
                 </label>
             </div>
             <img class="aspect-[16/9] object-cover object-center w-full"
-                src="{{ $image ? $image->temporaryUrl() : asset('img/sin-imagen.jpg') }}" alt="">
+                src="{{ $image ? $image->temporaryUrl() : Storage::url($productEdit['image_path']) }}" alt="">
         </figure>
 
         <x-validation-errors class="mb-4" />
@@ -21,20 +21,20 @@
                 <x-label class="mb-1">
                     Codigo
                 </x-label>
-                <x-input wire:model="product.sku" class="w-full" placeholder="Ingrese el código del producto">
+                <x-input wire:model="productEdit.sku" class="w-full" placeholder="Ingrese el código del producto">
 
                 </x-input>
                 <x-label class="mb-1">
                     Nombre
                 </x-label>
-                <x-input wire:model="product.name" class="w-full" placeholder="Ingrese el nombre del producto">
+                <x-input wire:model="productEdit.name" class="w-full" placeholder="Ingrese el nombre del producto">
                 </x-input>
             </div>
             <div class="mb-4">
                 <x-label class="mb-1">
                     Descripción
                 </x-label>
-                <x-textarea wire:model="product.description" class="w-full"
+                <x-textarea wire:model="productEdit.description" class="w-full"
                     placeholder="Ingrese la descripción del producto">
                 </x-textarea>
             </div>
@@ -68,7 +68,7 @@
                     Subcategorias
                 </x-label>
 
-                <x-select class="w-full" wire:model.live="product.subcategory_id">
+                <x-select class="w-full" wire:model.live="productEdit.subcategory_id">
                     <option value="" disabled selected>Seleccione una subcategoria</option>
                     @foreach ($this->subcategories as $subcategory)
                         <option value="{{ $subcategory->id }}">{{ $subcategory->name }}</option>
@@ -80,16 +80,19 @@
                 <x-label class="mb-1">
                     Precio
                 </x-label>
-                <x-input type="number" wire:model="product.price" class="w-full" step="0.01"
+                <x-input type="number" wire:model="productEdit.price" class="w-full" step="0.01"
                     placeholder="Ingrese el precio del producto">
                 </x-input>
 
                 <div class="flex justify-end mt-4">
-                    <x-button wire:click="store" class="bg-blue-500 hover:bg-blue-600 text-white">
-                        <i class="fas fa-save mr-2"></i>
-                        Crear Producto
-                    </x-button>
+                    <x-danger-button type="button" onclick="confirmDelete()">
+                        Eliminar
+                    </x-danger-button>
 
+
+                    <x-button class="ml-2">
+                        Actualizar
+                    </x-button>
                 </div>
 
             </div>
