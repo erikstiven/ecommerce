@@ -7,6 +7,13 @@
             'active' => request()->routeIs('admin.dashboard'),
         ],
         [
+            'name' => 'Opciones',
+            'icon' => 'bolt',
+            'route' => route('admin.options.index'),
+            'active' => request()->routeIs('admin.options.*'),
+
+        ],
+        [
             //Familias de productos
             'icon' => 'file-box',
             'name' => 'Familias',

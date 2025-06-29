@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Family;
+use App\Models\Option;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -35,6 +36,7 @@ class DatabaseSeeder extends Seeder
         $this->call(
             [
                 FamilySeeder::class,                    // Add other seeders here if needed
+                OptionSeeder::class,
             ]
         );
 
