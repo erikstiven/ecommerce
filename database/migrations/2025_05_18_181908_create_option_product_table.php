@@ -13,9 +13,15 @@ return new class extends Migration
     {
         Schema::create('option_product', function (Blueprint $table) {
             $table->id();
-            $table ->foreignId('option_id')->constrained();
-            $table ->foreignId('product_id')->constrained();
-            $table->string('value');
+            $table->foreignId('option_id')
+                ->constrained()
+                ->onDelete('cascade'); // ✅ limpieza automática
+
+            $table->foreignId('product_id')
+                ->constrained()
+                ->onDelete('cascade'); // ✅ limpieza automática
+
+            $table->json('features');
             $table->timestamps();
         });
     }

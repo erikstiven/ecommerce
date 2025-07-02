@@ -83,19 +83,31 @@
                 <x-input type="number" wire:model="productEdit.price" class="w-full" step="0.01"
                     placeholder="Ingrese el precio del producto">
                 </x-input>
-
-                <div class="flex justify-end mt-4">
-                    <x-danger-button type="button" onclick="confirmDelete()">
-                        Eliminar
-                    </x-danger-button>
-
-
-                    <x-button class="ml-2">
-                        Actualizar
-                    </x-button>
-                </div>
-
             </div>
+
+            @empty($product->variants->count() > 0)
+                <div class="mb-4">
+                    <x-label class="mb-1">
+                        Stock
+                    </x-label>
+                    <x-input type="number" wire:model="productEdit.stock" class="w-full" step="0.01"
+                        placeholder="Ingrese el stock del producto">
+                    </x-input>
+                </div>
+            @endempty
+
+
+            <div class="flex justify-end mt-4">
+                <x-danger-button type="button" onclick="confirmDelete()">
+                    Eliminar
+                </x-danger-button>
+
+
+                <x-button class="ml-2">
+                    Actualizar
+                </x-button>
+            </div>
+
     </form>
 
     {{-- Eliminar productos --}}

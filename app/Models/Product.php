@@ -14,8 +14,10 @@ class Product extends Model
         'description',
         'image_path',
         'price',
+        'stock',
         'subcategory_id',
     ];
+
 
 
     //Relacion uno a muchoS inversa
@@ -31,6 +33,9 @@ class Product extends Model
     //Relacion muchos a muchos
     public function options()
     {
-        return $this->belongsToMany(Option::class)->withPivot('value')->withTimestamps();
+        return $this->belongsToMany(Option::class)
+            ->using(OptionProduct::class)
+            ->withPivot('features')
+            ->withTimestamps();
     }
 }

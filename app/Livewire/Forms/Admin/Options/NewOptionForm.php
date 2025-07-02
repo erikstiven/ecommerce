@@ -42,15 +42,22 @@ class NewOptionForm extends Form
     //validacion de atributos
     public function validationAttributes()
     {
-        return [
+        $attributes = [
             'name' => 'nombre',
             'type' => 'tipo',
-            'features' => 'características',
-            'features.*.value' => 'valor',
-            'features.*.description' => 'descripción',
+            'features' => 'valores',
         ];
-        
+
+        if (is_array($this->features)) {
+            foreach ($this->features as $index => $feature) {
+                $attributes['features.' . $index . '.value'] = 'valor ' . ($index + 1);
+                $attributes['features.' . $index . '.description'] = 'descripción ' . ($index + 1);
+            }
+        }
+
+        return $attributes;
     }
+
 
 
     public function addFeature()

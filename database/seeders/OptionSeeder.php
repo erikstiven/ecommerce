@@ -100,7 +100,7 @@ class OptionSeeder extends Seeder
             ],
             [
                 'name' => 'Sexo',
-                'type' => '3',
+                'type' => '1',
                 'features' => [
                     [
                         'value' => 'H',
@@ -110,22 +110,7 @@ class OptionSeeder extends Seeder
                         'value' => 'M',
                         'description' => 'Mujer',
                     ],
-                    [
-                        'value' => 'U',
-                        'description' => 'Unisex',
-                    ],
-                    [
-                        'value' => 'N',
-                        'description' => 'Niño',
-                    ],
-                    [
-                        'value' => 'A',
-                        'description' => 'Adolescente',
-                    ],
-                    [
-                        'value' => 'B',
-                        'description' => 'Bebé',
-                    ],
+
                 ],
             ],
         ];
