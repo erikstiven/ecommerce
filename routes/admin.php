@@ -21,4 +21,5 @@ Route::resource('subcategories', SubcategoryController::class);
 Route::resource('products', ProductController::class);
 Route::get('products/{product}/variants/{variant}', [ProductController::class, 'variants'])->name('products.variants')->scopeBindings();
 
+Route::put('products/{product}/variants/{variant}', [ProductController::class, 'variantsUpdate'])->name('products.variantsUpdate')->scopeBindings();
 
