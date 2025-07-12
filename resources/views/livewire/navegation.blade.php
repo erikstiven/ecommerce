@@ -1,18 +1,20 @@
-<div>
+<div x-data="{ open: false }">
+
     {{-- HEADER DE LA PÁGINA --}}
     <header class="rounded-none md:rounded-lg bg-gradient-to-r from-[#3b0764] via-[#1e3a8a] to-[#7e22ce]">
         <x-container class="px-4 py-4">
             <div class="flex justify-between items-center space-x-8">
+
                 <!-- Menú hamburguesa -->
-                <button class="text-2xl md:text-3xl">
+                <button class="text-2xl md:text-3xl" x-on:click="open = true">
                     <i class="fas fa-bars text-white"></i>
                 </button>
 
                 <!-- Branding -->
                 <h1>
                     <a href="/" class="inline-flex flex-col items-end text-right">
-                        <span class="text-xl md:text-2xl font-semibold">Ecommerce</span>
-                        <span class="text-xs opacity-80">Tienda online</span>
+                        <span class="text-xl md:text-2xl font-semibold text-white">Ecommerce</span>
+                        <span class="text-xs opacity-80 text-white">Tienda online</span>
                     </a>
                 </h1>
 
@@ -23,16 +25,88 @@
                         placeholder="Buscar por producto, tienda o marca" />
                 </div>
 
-                <!-- Iconos de usuario y carrito -->
+                <!-- Iconos -->
                 <div class="flex items-center space-x-4 md:space-x-6">
-                    <button class="text-xl">
-                        <i class="fas fa-user text-white"></i>
-                    </button>
+
+                    <x-dropdown>
+
+                        <x-slot name="trigger">
+
+                            @auth
+                                <button
+                                    class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-gray-300 transition">
+                                    <img class="size-8 rounded-full object-cover"
+                                        src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" />
+                                </button>
+                            @else
+                                <button class="text-xl">
+
+                                    <i class="fas fa-user text-white"></i>
+
+                                </button>
+
+                            @endauth
+
+
+
+                        </x-slot>
+
+                        <x-slot name="content">
+
+                            @guest
+
+                                <div class="px-4 py-2">
+
+                                    <div class="flex justify-center">
+
+                                        <a href="{{ route('login') }}" class="btn btn-gradient-purple">
+                                            Iniciar Sesión
+                                        </a>
+
+                                    </div>
+
+                                    <p class="text-sm text-center mt-2">
+
+                                        ¿No tienes una cuenta? <a href="{{ route('register') }}"
+                                            class="text-purple-600 hover:underline mt-2">Registrate</a>
+
+
+                                    </p>
+
+                                </div>
+                            @else
+                                <x-dropdown-link href="{{ route('profile.show') }}">
+
+                                    Mi Perfil
+
+                                </x-dropdown-link>
+
+                                <div class="border-t border-gray-200">
+
+                                    <!-- Authentication -->
+                                    <form method="POST" action="{{ route('logout') }}" x-data>
+                                        @csrf
+
+                                        <x-dropdown-link href="{{ route('logout') }}" @click.prevent="$root.submit();">
+                                            {{ __('Log Out') }}
+                                        </x-dropdown-link>
+                                    </form>
+
+                                </div>
+
+                            @endguest
+
+                        </x-slot>
+
+                    </x-dropdown>
+
+
+
                     <button class="text-xl">
                         <i class="fas fa-shopping-cart text-white"></i>
                     </button>
 
-                    <!-- Botón WhatsApp -->
+                    <!-- WhatsApp -->
                     <a href="https://wa.me/593999999999" target="_blank"
                         class="flex items-center space-x-2 px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 transition">
                         <i class="fab fa-whatsapp text-green-400 text-lg"></i>
@@ -50,32 +124,34 @@
         </x-container>
     </header>
 
-    <!-- Fondo oscuro (solo visible si el menú está abierto) -->
-    <div class="fixed top-0 left-0 inset-0 bg-black opacity-25 z-10"></div>
+    <!-- Menú lateral con sombra -->
+    <div x-show="open" x-transition.opacity x-cloak class="fixed inset-0 z-50">
 
-    <!-- Menú lateral principal -->
-    <div class="fixed top-0 left-0 z-20">
-        <!-- Contenedor flex de los paneles -->
-        <div class="flex">
+        <!-- Fondo oscuro (sombra) que cierra el panel -->
+        <div class="absolute inset-0 bg-black/50 z-40" x-on:click="open = false"></div>
 
-            <!-- Panel izquierdo (categorías) -->
-            <div class="w-screen md:w-80 h-screen bg-white">
+        <!-- Paneles contenido -->
+        <div class="relative z-50 flex h-full w-full pointer-events-none">
 
-                {{-- cabecera menú lateral --}}
+            <!-- Panel izquierdo -->
+            <div class="w-full md:w-80 h-screen bg-white flex-shrink-0 pointer-events-auto" x-on:click.stop>
                 <div
                     class="h-[52px] flex items-center justify-between px-4 text-white font-semibold bg-gradient-to-r from-[#3b0764] via-[#1e3a8a] to-[#7e22ce]">
-                    <span class="text-lg">Hola, {{ Auth::user()->name }}</span>
-                    <button class="text-2xl">
+                    <span class="text-lg">
+                        @auth
+                            Hola, {{ Auth::user()->name }}
+                        @else
+                            Hola, Invitado
+                        @endauth
+                    </span>
+                    <button class="text-2xl" x-on:click="open = false">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
-
-                {{-- cuerpo menú lateral --}}
                 <div class="h-[calc(100vh-52px)] overflow-auto">
                     <ul>
                         @foreach ($families as $family)
-                            <li wire:mouseover="set('family_id', {{ $family->id }})"
-                            class="border-b border-gray-100">
+                            <li wire:mouseover="set('family_id', {{ $family->id }})" class="border-b border-gray-100">
                                 <a href="#"
                                     class="flex items-center justify-between px-4 py-4 text-gray-700 hover:bg-gray-100">
                                     <span>{{ $family->name }}</span>
@@ -84,15 +160,38 @@
                             </li>
                         @endforeach
                     </ul>
-
                 </div>
             </div>
 
-            <!-- Panel derecho perfectamente alineado -->
-            <div class="w-80 xl:w-[57rem] pt-[52px] md:block">
-                <div class="bg-white h-[calc(100vh-52px)] overflow-auto">
-                    <!-- Contenido dinámico -->
-                    {{-- {{ $slot }} --}}
+            <!-- Panel derecho (solo escritorio) -->
+            <div class="hidden md:block pointer-events-auto">
+                <div class="w-[600px] lg:w-[800px] xl:w-[900px] bg-white h-[calc(100vh-52px)] overflow-auto px-6 py-8 mt-[52px]"
+                    x-on:click.stop>
+                    <div class="mb-8 flex justify-between items-center">
+                        <p class="border-b-[3px] border-lime-400 uppercase text-xl font-semibold pb-1">
+                            {{ $this->familyName }}
+                        </p>
+                        <a href="" class="btn btn-gradient-purple">Ver todo</a>
+                    </div>
+
+                    <ul class="grid w-full grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+                        @foreach ($this->categories as $category)
+                            <li>
+                                <a href="" class="text-purple-600 font-semibold text-base md:text-lg">
+                                    {{ $category->name }}
+                                </a>
+                                <ul class="mt-3 space-y-2">
+                                    @foreach ($category->subcategories as $subcategory)
+                                        <li>
+                                            <a href="" class="text-sm text-gray-700 hover:text-purple-600">
+                                                {{ $subcategory->name }}
+                                            </a>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </li>
+                        @endforeach
+                    </ul>
                 </div>
             </div>
 

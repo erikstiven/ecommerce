@@ -21,9 +21,17 @@ class Navegation extends Component
     public function categories()
     {
         return \App\Models\Category::where('family_id', $this->family_id)
-        ->with('subcategories')
-        ->get();   
+            ->with('subcategories')
+            ->get();
     }
+
+    #[Computed()]
+
+    public function familyName()
+    {
+        return \App\Models\Family::find($this->family_id)->name;
+    }
+
 
     public function render()
     {
