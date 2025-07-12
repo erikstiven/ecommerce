@@ -1,7 +1,7 @@
 <div x-data="{ open: false }">
 
     {{-- HEADER DE LA PÁGINA --}}
-    <header class="rounded-none md:rounded-lg bg-gradient-to-r from-[#3b0764] via-[#1e3a8a] to-[#7e22ce]">
+    <header class="rounded-none  bg-gradient-to-r from-[#3b0764] via-[#1e3a8a] to-[#7e22ce]">
         <x-container class="px-4 py-4">
             <div class="flex justify-between items-center space-x-8">
 

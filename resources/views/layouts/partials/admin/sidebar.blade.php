@@ -11,7 +11,6 @@
             'icon' => 'bolt',
             'route' => route('admin.options.index'),
             'active' => request()->routeIs('admin.options.*'),
-
         ],
         [
             //Familias de productos
@@ -40,6 +39,13 @@
             'name' => 'Productos',
             'route' => route('admin.products.index'),
             'active' => request()->routeIs('admin.products.*'),
+        ],
+        [
+            //portadas
+            'icon' => 'image',
+            'name' => 'Portadas',
+            'route' => route('admin.covers.index'),
+            'active' => request()->routeIs('admin.covers.*'),
         ],
     ];
 @endphp

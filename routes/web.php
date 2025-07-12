@@ -1,12 +1,12 @@
 <?php
 
+use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
 use App\Models\Product;
 use App\Models\Variant;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [WelcomeController::class, 'index'])->name('welcome.index');
+
 
 Route::middleware([
     'auth:sanctum',
