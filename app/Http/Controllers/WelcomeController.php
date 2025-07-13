@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Cover;
+use App\Models\Product;
 
 class WelcomeController extends Controller
 {
@@ -16,6 +17,10 @@ class WelcomeController extends Controller
                     ->orWhereNull('end_at');
             })
             ->get();
-        return view('welcome', compact('covers'));
+
+        $lastProducts = Product::orderBy('created_at', 'desc')
+            ->take(8)
+            ->get();
+        return view('welcome', compact('covers', 'lastProducts'));
     }
 }

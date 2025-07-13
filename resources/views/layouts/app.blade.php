@@ -31,15 +31,17 @@
 
     <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
         {{-- @livewire('navigation-menu') --}}
-
         @livewire('navegation')
-
-
 
         <!-- Page Content -->
         <main>
             {{ $slot }}
         </main>
+
+        {{-- Llamamos al footer --}}
+        <div class="mt-16">
+            @include('layouts.partials.app.footer')
+        </div>
     </div>
 
     @stack('modals')

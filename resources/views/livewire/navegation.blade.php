@@ -12,10 +12,12 @@
 
                 <!-- Branding -->
                 <h1>
-                    <a href="/" class="inline-flex flex-col items-end text-right">
-                        <span class="text-xl md:text-2xl font-semibold text-white">Ecommerce</span>
-                        <span class="text-xs opacity-80 text-white">Tienda online</span>
-                    </a>
+                    <!-- Logo -->
+                    <div class="flex justify-center md:justify-start">
+                        <a href="/">
+                            <img src="/img/logo_hmbsport.png" alt="HMB Sport Logo" class="h-5 md:h-8 object-contain" />
+                        </a>
+                    </div>
                 </h1>
 
                 <!-- Buscador (escritorio) -->
