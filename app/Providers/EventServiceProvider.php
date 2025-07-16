@@ -3,6 +3,9 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
+use Symfony\Component\Mailer\Messenger\SendEmailMessage;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -13,6 +16,17 @@ class EventServiceProvider extends ServiceProvider
     {
         //
     }
+
+    protected $listen = [
+        Registered::class => [
+            SendEmailVerificationNotification::class,
+        ],
+        \Illuminate\Auth\Events\Login::class => [
+            \App\Listeners\Login\RestoreCartItems::class,
+        ],
+        
+    ];
+    
 
     /**
      * Bootstrap services.

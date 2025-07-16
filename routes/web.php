@@ -1,11 +1,28 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\Admin\FamilyController;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\FamilyController as ControllersFamilyController;
+use App\Http\Controllers\ProductController as ControllersProductController;
+use App\Http\Controllers\SubcategoryController;
 use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
 use App\Models\Product;
 use App\Models\Variant;
 
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome.index');
+
+Route::get('families/{family}' , [ControllersFamilyController::class, 'show'])->name('families.show');
+
+Route::get('categories/{category}' , [CategoryController::class, 'show'])->name('categories.show');
+
+Route::get('subcategories/{subcategory}' , [SubcategoryController::class, 'show'])->name('subcategories.show');
+
+Route::get('products/{product}',[ControllersProductController ::class, 'show'])->name('products.show');
+
+Route::get('cart',[CartController::class, 'index'])->name('cart.index');
 
 
 Route::middleware([
@@ -19,37 +36,4 @@ Route::middleware([
 });
 
 
-Route::get('prueba', function () {
 
-    $product = Product::find(150);
-    $features = $product->options->pluck('pivot.features');
-    $combinaciones = generarCombinaciones($features);
-
-    $product->variants()->delete();
-
-
-    foreach ($combinaciones as $combinacion) {
-        $variant = Variant::create([
-            'product_id' => $product->id,
-        ]);
-        $variant->features()->attach($combinacion);
-    }
-    return 'variantes creadas';
-});
-
-function generarCombinaciones($arrays, $indice = 0, $combinacion = [])
-{
-    if ($indice == count($arrays)) {
-        return [$combinacion];
-    }
-
-    $resultado = [];
-
-    foreach ($arrays[$indice] as $item) {
-        $combinacionTemporal = $combinacion;
-        $combinacionTemporal[] = $item['id'];
-
-        $resultado = array_merge($resultado, generarCombinaciones($arrays, $indice + 1, $combinacionTemporal));
-    }
-    return $resultado;
-}

@@ -49,7 +49,7 @@
                           $ {{ $product->price }}
                         </p>
 
-                        <a href="" class="btn btn-gradient-purple block w-full text-center">
+                        <a href="{{ route('products.show', $product) }}" class="btn btn-gradient-purple block w-full text-center">
                             Ver mas
                         </a>
 

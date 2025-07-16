@@ -26,7 +26,7 @@
 
         <div class="relative mb-6">
             <figure>
-                <img class="aspect-[16/9] w-full object-cover object-center" src="{{ asset($variant->image) }}"
+                <img class="aspect-[1/1] w-full object-cover object-center" src="{{ asset($variant->image) }}"
                     alt="{{ $variant->features->pluck('description')->implode(', ') }}" id="imgPreview">
             </figure>
             <div class="absolute top-8 right-8">
@@ -41,33 +41,23 @@
         </div>
 
         <div class="card">
-            <div class="mb-4 ">
-                <x-label class="mb-1">
-                    Código (SKU)
-                </x-label>
-
+            <div class="mb-4">
+                <x-label class="mb-1">Código (SKU)</x-label>
                 <x-input name="sku" value="{{ old('sku', $variant->sku) }}"
-                    placeholder = "Ingrese el código del producto" class="w-full" />
+                    placeholder="Ingrese el código del producto" class="w-full" />
+            </div>
 
-                <div class="mb-4 ">
-                    <x-label class="mb-1">
-                        Stock
-                    </x-label>
+            <div class="mb-4">
+                <x-label class="mb-1">Stock</x-label>
+                <x-input name="stock" value="{{ old('stock', $variant->stock) }}"
+                    placeholder="Ingrese el stock del producto" class="w-full" />
+            </div>
 
-                    <x-input name="stock" value="{{ old('stock', $variant->stock) }}"
-                        placeholder = "Ingrese el stock del producto" class="w-full" />
-
-                    <div class="flex justify-end">
-                        <x-button>
-                            Actualizar
-                        </x-button>
-
-                    </div>
-
-
-                </div>
+            <div class="flex justify-end">
+                <x-button>Actualizar</x-button>
             </div>
         </div>
+
     </form>
     @push('js')
         <script>

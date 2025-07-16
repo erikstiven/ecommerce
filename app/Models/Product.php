@@ -20,7 +20,62 @@ class Product extends Model
         'subcategory_id',
     ];
 
-    public function image(): Attribute{
+    //
+
+    // Product.php
+
+    public function scopeFilterByFamily($query, $familyId)
+    {
+        return $query->when($familyId, function ($query) use ($familyId) {
+            $query->whereHas('subcategory.category', function ($q) use ($familyId) {
+                $q->where('family_id', $familyId);
+            });
+        });
+    }
+
+    public function scopeFilterByCategory($query, $categoryId)
+    {
+        return $query->when($categoryId, function ($query) use ($categoryId) {
+            $query->whereHas('subcategory', function ($q) use ($categoryId) {
+                $q->where('category_id', $categoryId);
+            });
+        });
+    }
+
+    public function scopeFilterBySubcategory($query, $subcategoryId)
+    {
+        return $query->when($subcategoryId, fn($q) => $q->where('subcategory_id', $subcategoryId));
+    }
+
+    public function scopeFilterByFeatures($query, $features)
+    {
+        return $query->when(!empty($features), function ($query) use ($features) {
+            $query->whereHas('variants.features', function ($q) use ($features) {
+                $q->whereIn('features.id', $features);
+            });
+        });
+    }
+
+    public function scopeApplyOrdering($query, $orderBy)
+    {
+        return match ((int) $orderBy) {
+            1 => $query->orderBy('created_at', 'desc'),
+            2 => $query->orderBy('price', 'desc'),
+            3 => $query->orderBy('price', 'asc'),
+            default => $query,
+        };
+    }
+
+    public function scopeSearchByName($query, $search)
+    {
+        return $query->when($search, fn($q) => $q->where('name', 'like', "%{$search}%"));
+    }
+
+
+
+
+    public function image(): Attribute
+    {
         return Attribute::make(
             get: fn() => Storage::url($this->image_path),
         );

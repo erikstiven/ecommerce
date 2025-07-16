@@ -22,7 +22,7 @@
 
                 <!-- Buscador (escritorio) -->
                 <div class="flex-1 hidden md:block px-4">
-                    <x-input
+                    <x-input oninput="search(this.value)"
                         class="w-full rounded-lg bg-white/10 hover:bg-white/20 transition-colors duration-300 border-none text-white placeholder-white/60 px-4 py-2 text-sm backdrop-blur-sm"
                         placeholder="Buscar por producto, tienda o marca" />
                 </div>
@@ -104,9 +104,12 @@
 
 
 
-                    <button class="text-xl">
-                        <i class="fas fa-shopping-cart text-white"></i>
-                    </button>
+                    <a href="{{ route('cart.index') }}" class="relative">
+                        <i class="fas fa-shopping-cart text-white text-xl"></i>
+                        <span id="cart-count" class="absolute -top-2 -end-4 inline-flex items-center justify-center w-6 h-6 bg-red-500 rounded-full text-xs font-bold text-white">
+                        {{ Cart::instance('shopping')->count() }}
+                        </span>
+                    </a>
 
                     <!-- WhatsApp -->
                     <a href="https://wa.me/593999999999" target="_blank"
@@ -119,7 +122,7 @@
 
             <!-- Buscador (móvil) -->
             <div class="mt-4 md:hidden">
-                <x-input
+                <x-input oninput="search(this.value)"
                     class="w-full rounded-lg bg-white/10 hover:bg-white/20 transition-colors duration-300 border-none text-white placeholder-white/60 px-4 py-2 text-sm backdrop-blur-sm"
                     placeholder="Buscar por producto, tienda o marca" />
             </div>
@@ -154,7 +157,7 @@
                     <ul>
                         @foreach ($families as $family)
                             <li wire:mouseover="set('family_id', {{ $family->id }})" class="border-b border-gray-100">
-                                <a href="#"
+                                <a href="{{ route('families.show', $family) }}"
                                     class="flex items-center justify-between px-4 py-4 text-gray-700 hover:bg-gray-100">
                                     <span>{{ $family->name }}</span>
                                     <i class="fa-solid fa-angle-right text-sm text-gray-400"></i>
@@ -173,19 +176,19 @@
                         <p class="border-b-[3px] border-lime-400 uppercase text-xl font-semibold pb-1">
                             {{ $this->familyName }}
                         </p>
-                        <a href="" class="btn btn-gradient-purple">Ver todo</a>
+                        <a href="{{ route('families.show', $family_id) }}" class="btn btn-gradient-purple">Ver todo</a>
                     </div>
 
                     <ul class="grid w-full grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
                         @foreach ($this->categories as $category)
                             <li>
-                                <a href="" class="text-purple-600 font-semibold text-base md:text-lg">
+                                <a href="{{ route('categories.show', $category) }}" class="text-purple-600 font-semibold text-base md:text-lg">
                                     {{ $category->name }}
                                 </a>
                                 <ul class="mt-3 space-y-2">
                                     @foreach ($category->subcategories as $subcategory)
                                         <li>
-                                            <a href="" class="text-sm text-gray-700 hover:text-purple-600">
+                                            <a href="{{ route('subcategories.show', $subcategory) }}" class="text-sm text-gray-700 hover:text-purple-600">
                                                 {{ $subcategory->name }}
                                             </a>
                                         </li>
@@ -199,4 +202,18 @@
 
         </div>
     </div>
+
+    @push('js')
+        <script>
+            Livewire.on('cartUpdated', (count) => {
+                document.getElementById('cart-count').innerHTML = count;
+            })
+
+            function search(value) {
+                Livewire.dispatch('search', {
+                    search: value
+                })
+            }
+        </script>
+    @endpush
 </div>
