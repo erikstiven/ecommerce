@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\FamilyController as ControllersFamilyController;
 use App\Http\Controllers\ProductController as ControllersProductController;
+use App\Http\Controllers\ShippingController;
 use App\Http\Controllers\SubcategoryController;
 use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
@@ -23,6 +24,9 @@ Route::get('subcategories/{subcategory}' , [SubcategoryController::class, 'show'
 Route::get('products/{product}',[ControllersProductController ::class, 'show'])->name('products.show');
 
 Route::get('cart',[CartController::class, 'index'])->name('cart.index');
+
+// Shipping routes
+Route::get('shipping', [ShippingController::class, 'index'])->name('shipping.index');
 
 
 Route::middleware([

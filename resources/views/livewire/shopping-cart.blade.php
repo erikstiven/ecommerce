@@ -84,7 +84,7 @@
                 </div>
 
 
-                <a href="" class="btn btn-gradient-purple block w-full text-center">
+                <a href="{{ route('shipping.index') }}" class="btn btn-gradient-purple block w-full text-center">
                     Confirmar compra
                 </a>
 

@@ -28,8 +28,12 @@ class DatabaseSeeder extends Seeder
 
         //crear un usuario administrador
         \App\Models\User::factory()->create([
-            'name' => 'Erik Quisnia',
+            'name' => 'Erik Stiven',
+            'last_name' => 'Quisnia Tierra',
+            'document_type' => 1, // Assuming 1 is a valid document type
+            'document_number' => '123456789',
             'email' => 'erikquisnia@gmail.com',
+            'phone' => '3001234567',
             'password' => bcrypt('Nasa4036'), // Password is hashed
         ]);
 
