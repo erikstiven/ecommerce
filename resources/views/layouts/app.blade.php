@@ -24,7 +24,12 @@
 
     <!-- Styles -->
     @livewireStyles
+
+    {{-- Payphone --}}
+    <link rel="stylesheet" href="https://cdn.payphonetodoesposible.com/box/v1.1/payphone-payment-box.css">
+    <script type="module" src="https://cdn.payphonetodoesposible.com/box/v1.1/payphone-payment-box.js"></script>
 </head>
+
 
 <body class="font-sans antialiased">
     <x-banner />
@@ -65,6 +70,9 @@
             Swal.fire(data[0]);
         });
     </script>
+
+
+
 </body>
 
 </html>

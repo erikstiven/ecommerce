@@ -280,7 +280,7 @@
                         <ul class="grid grid-cols-3 gap-4">
                             @foreach ($addresses as $address)
                                 <li
-                                    class="{{ $address->default ? 'bg-purple-200' : 'bg-white' }} bg-white rounded-lg shadow-lg p-4"
+                                    class="{{ $address->default ? 'bg-gray-300' : 'bg-white' }} bg-white rounded-lg shadow-lg p-4"
                                     wire:key="address-{{ $address->id }}"
                                     >
                                     <div class="p-4 flex items-center">

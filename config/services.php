@@ -35,4 +35,11 @@ return [
         ],
     ],
 
+    // PAYPHONE API
+    'payphone' => [
+        'token' => env('PAYPHONE_TOKEN'),
+        'store_id' => env('PAYPHONE_STORE_ID'),
+    ],
+
+
 ];

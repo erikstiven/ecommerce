@@ -66,8 +66,8 @@
 
                 </div>
 
-                <a  class="btn btn-gradient-purple hover:bg-purple-800 block w-full text-center">
-                    Proceder al Pago
+                <a href="{{ route('checkout.index') }}"  class="btn btn-gradient-purple hover:bg-purple-800 block w-full text-center">
+                    Siguiente
                 </a>
 
             </div>

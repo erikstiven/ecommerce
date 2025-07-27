@@ -4,6 +4,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\Admin\FamilyController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\FamilyController as ControllersFamilyController;
 use App\Http\Controllers\ProductController as ControllersProductController;
 use App\Http\Controllers\ShippingController;
@@ -27,6 +28,13 @@ Route::get('cart',[CartController::class, 'index'])->name('cart.index');
 
 // Shipping routes
 Route::get('shipping', [ShippingController::class, 'index'])->name('shipping.index');
+
+//checkout
+Route::get('checkout', [CheckoutController::class, 'checkout'])->name('checkout.index');
+
+// Payphone respuesta ruta
+Route::get('/payphone/respuesta', [CheckoutController::class, 'respuesta'])->name('payphone.respuesta');
+
 
 
 Route::middleware([
