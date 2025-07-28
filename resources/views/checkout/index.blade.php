@@ -1,7 +1,21 @@
 <x-app-layout>
 
+    @if (session('error'))
+        <div class="bg-red-100 text-red-800 px-4 py-2 rounded mb-4">
+            {{ session('error') }}
+        </div>
+    @endif
+
+    @if (session('success'))
+        <div class="bg-green-100 text-green-800 px-4 py-2 rounded mb-4">
+            {{ session('success') }}
+        </div>
+    @endif
+
+
     <div class="-mb-16 text-gray-700" x-data="{
-        pago: 1
+        pago: 1,
+        mostrarModal: false
     }">
         <div class="grid grid-cols-1 lg:grid-cols-2">
             <div class="cols-span-1 bg-white">
@@ -127,17 +141,11 @@
                     </div>
 
 
-                    <!-- Botón de Payphone (solo si se selecciona tarjeta) -->
                     <div class="mt-4" x-show="pago == 1">
-                        <div id="pp-button"></div>
+                        <button @click="mostrarModal = true" class=" btn btn-gradient-purple text-white rounded w-full">
+                            Confirmar y Pagar
+                        </button>
                     </div>
-
-
-
-
-
-
-
 
 
                 </div>
@@ -145,6 +153,27 @@
 
 
         </div>
+
+
+
+
+        <!-- Modal de pago con fondo clickeable y scroll interno -->
+        <div x-show="mostrarModal" x-cloak @click.self="mostrarModal = false"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm overflow-auto p-4">
+
+            <div class="bg-white p-6 rounded shadow-lg w-full max-w-md text-center">
+                <h2 class="text-xl font-semibold mb-4">¿Confirmar pago?</h2>
+                <p class="mb-4">Se abrirá la pasarela PayPhone con el monto final.</p>
+
+                <div id="pp-button"></div>
+
+                <button @click="mostrarModal = false" class="mt-4 text-sm text-gray-600 hover:text-red-500">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+
+
 
     </div>
 

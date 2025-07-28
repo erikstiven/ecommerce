@@ -35,6 +35,13 @@ Route::get('checkout', [CheckoutController::class, 'checkout'])->name('checkout.
 // Payphone respuesta ruta
 Route::get('/payphone/respuesta', [CheckoutController::class, 'respuesta'])->name('payphone.respuesta');
 
+// Payphone success route
+Route::get('checkout/paid', [CheckoutController::class, 'paid'])->name('checkout.paid');
+
+//Payphone gracias
+Route::get('checkout/thanks', [CheckoutController::class, 'thanks'])->name('checkout.thanks');
+
+
 
 
 Route::middleware([

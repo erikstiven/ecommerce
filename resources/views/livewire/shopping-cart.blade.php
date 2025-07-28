@@ -1,3 +1,6 @@
+
+
+
 <div>
 
     <div class="grid grid-cols-1 lg:grid-cols-7 gap-6">
@@ -94,3 +97,4 @@
     </div>
 
 </div>
+
