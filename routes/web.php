@@ -13,6 +13,8 @@ use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
 use App\Models\Product;
 use App\Models\Variant;
+use App\Http\Controllers\DashboardController;
+
 
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome.index');
 
@@ -43,16 +45,14 @@ Route::get('checkout/thanks', [CheckoutController::class, 'thanks'])->name('chec
 
 
 
-
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });
 
 
+Route::get('/dashboard', [DashboardController::class, 'index']);
 
