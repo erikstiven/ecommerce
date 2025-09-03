@@ -5,7 +5,7 @@
             <!-- Logo -->
             <div class="flex justify-center md:justify-start">
                 <a href="/">
-                    <img src="/img/logo_hmbsport.png" alt="HMB Sport Logo" class="h-14 md:h-20 object-contain" />
+                    <img src="/img/logo.png" alt="HMB Sport Logo" class="h-14 md:h-20 object-contain" />
                 </a>
             </div>
 

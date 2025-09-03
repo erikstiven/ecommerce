@@ -1,4 +1,4 @@
-<div >
+<div>
     <section class="bg-white rounded-lg shadow overflow-hidden">
         <header class="bg-gray-900 px-4 py-2">
             <h2 class="text-white text-lg">Direcciones de envío guardadas</h2>
@@ -173,8 +173,7 @@
 
                         {{-- Referencia --}}
                         <div class="col-span-4">
-                            <x-input class="w-full" wire:model.live="editAddress.reference"
-                                placeholder="Referencia" />
+                            <x-input class="w-full" wire:model.live="editAddress.reference" placeholder="Referencia" />
                         </div>
                     </div>
 
@@ -184,8 +183,8 @@
                     <div x-data="{
                         receiver: @entangle('editAddress.receiver'),
                         receiver_info: @entangle('editAddress.receiver_info')
-
-
+                    
+                    
                     }"
                         x-init ="
                 $watch('receiver', value => {
@@ -279,10 +278,12 @@
                         {{-- Mostrar direcciones existentes si hay --}}
                         <ul class="grid grid-cols-3 gap-4">
                             @foreach ($addresses as $address)
-                                <li
-                                    class="{{ $address->default ? 'bg-gray-300' : 'bg-white' }} bg-white rounded-lg shadow-lg p-4"
-                                    wire:key="address-{{ $address->id }}"
-                                    >
+                                <li @class([
+                                    'rounded-lg shadow-lg p-4',
+                                    'bg-gray-300' => (bool) $address->default,
+                                    'bg-white' => !(bool) $address->default,
+                                ]) wire:key="address-{{ $address->id }}">
+
                                     <div class="p-4 flex items-center">
 
                                         <div>
