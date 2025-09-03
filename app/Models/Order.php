@@ -10,20 +10,43 @@ class Order extends Model
 {
     use HasFactory;
 
-    protected $guarded = [
-        'status'
+    // Si prefieres, puedes dejar $guarded = [] o eliminarlo.
+    // protected $guarded = [];
+
+    protected $fillable = [
+        'user_id',
+        'status',
+        'payment_method',
+        'payment_status',
+        'pp_transaction_id',
+        'pp_client_tx_id',
+        'pp_raw',
+        'deposit_proof_path',
+        'deposited_at',
+        'verified_at',
+        'contact',
+        'address',
+        'subtotal',
+        'shipping_cost',
+        'total',
     ];
 
     protected $casts = [
-        'contect' => 'array',
-        'address' => 'array',
-        'status' => OrderStatus::class
+        'status'        => OrderStatus::class,
+        'contact'       => 'array',   // <-- corregido (antes estaba 'contect')
+        'address'       => 'array',
+        'pp_raw'        => 'array',
+        'deposited_at'  => 'datetime',
+        'verified_at'   => 'datetime',
     ];
 
-    public function user(){
-        return $this->belongsTo(User::class);
+    public function items()
+    {
+        return $this->hasMany(OrderItem::class); // <-- relación necesaria
     }
 
-
-
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

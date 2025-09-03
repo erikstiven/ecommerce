@@ -8,35 +8,35 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('orders', function (Blueprint $table) {
+        Schema::create('orders', function (Blueprint $table): void {
             $table->id();
 
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
 
             $table->string('pdf_path')->nullable();
 
-            // Si tu MySQL soporta JSON (>=5.7) usa json(); si no, cambia a longText() antes de ejecutar.
-            $table->json('content');
+            // $table->longText('content');
 
             $table->string('address', 255);
 
-            $table->enum('payment_method', ['card', 'deposit', 'payphone'])->default('card');
+            // Solo métodos que usarás: PayPhone (online) y Depósito (manual)
+            $table->enum('payment_method', ['payphone', 'deposit'])->default('payphone');
 
             $table->string('payment_id')->nullable();
 
             $table->string('client_transaction_id')->nullable()->unique();
 
-            $table->json('payphone_payload')->nullable();
+            $table->longText('payphone_payload')->nullable();
 
             $table->string('payphone_transaction_id')->nullable()->unique();
 
             $table->string('deposit_proof_path')->nullable();
 
-            $table->decimal('total', 10, 2)->default(0);
+            $table->decimal('total', 12, 2)->default(0.00);
 
-            $table->integer('amount_cents')->default(0);
+            $table->unsignedBigInteger('amount_cents')->default(0);
 
-            $table->tinyInteger('status')->default(0)->index(); // 0 = pending
+            $table->tinyInteger('status')->default(0)->index();
 
             $table->timestamps();
 

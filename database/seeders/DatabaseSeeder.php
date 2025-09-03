@@ -31,9 +31,9 @@ class DatabaseSeeder extends Seeder
             'name' => 'Erik Stiven',
             'last_name' => 'Quisnia Tierra',
             'document_type' => 1, // Assuming 1 is a valid document type
-            'document_number' => '123456789',
+            'document_number' => '0705871689',
             'email' => 'erikquisnia@gmail.com',
-            'phone' => '3001234567',
+            'phone' => '0979018689',
             'password' => bcrypt('Nasa4036'), // Password is hashed
         ]);
 
