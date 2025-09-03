@@ -10,9 +10,6 @@ class Order extends Model
 {
     use HasFactory;
 
-    // Si prefieres, puedes dejar $guarded = [] o eliminarlo.
-    // protected $guarded = [];
-
     protected $fillable = [
         'user_id',
         'status',
@@ -32,17 +29,17 @@ class Order extends Model
     ];
 
     protected $casts = [
-        'status'        => OrderStatus::class,
-        'contact'       => 'array',   // <-- corregido (antes estaba 'contect')
-        'address'       => 'array',
-        'pp_raw'        => 'array',
-        'deposited_at'  => 'datetime',
-        'verified_at'   => 'datetime',
+        'status'       => OrderStatus::class,
+        'contact'      => 'array',
+        'address'      => 'array',
+        'pp_raw'       => 'array',
+        'deposited_at' => 'datetime',
+        'verified_at'  => 'datetime',
     ];
 
     public function items()
     {
-        return $this->hasMany(OrderItem::class); // <-- relación necesaria
+        return $this->hasMany(OrderItem::class);
     }
 
     public function user()
