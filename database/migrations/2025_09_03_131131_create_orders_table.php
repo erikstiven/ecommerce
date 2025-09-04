@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -8,39 +9,34 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('orders', function (Blueprint $table): void {
+        Schema::create('orders', function (Blueprint $table) {
             $table->id();
 
+            // Relación con usuario
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
 
+            // Ruta del PDF generado
             $table->string('pdf_path')->nullable();
 
-            // $table->longText('content');
+            // Contenido del carrito o productos en formato JSON
+            $table->json('content');
 
-            $table->string('address', 255);
+            // Dirección del envío
+            $table->string('address');
 
-            // Solo métodos que usarás: PayPhone (online) y Depósito (manual)
-            $table->enum('payment_method', ['payphone', 'deposit'])->default('payphone');
+            // Método de pago (enum: efectivo o transferencia)
+            $table->enum('payment_method', ['card', 'deposit']);
 
-            $table->string('payment_id')->nullable();
+            // ID de transacción externa (opcional)
+            $table->string('payment_id');//numero de la transaccion
 
-            $table->string('client_transaction_id')->nullable()->unique();
+            // Total de la compra
+            $table->decimal('total', 10, 2);
 
-            $table->longText('payphone_payload')->nullable();
-
-            $table->string('payphone_transaction_id')->nullable()->unique();
-
-            $table->string('deposit_proof_path')->nullable();
-
-            $table->decimal('total', 12, 2)->default(0.00);
-
-            $table->unsignedBigInteger('amount_cents')->default(0);
-
-            $table->tinyInteger('status')->default(0)->index();
+            // Estado de la orden
+            $table->tinyInteger('status')->default(1); // 0: pendiente, 1: pagado, 2: cancelado
 
             $table->timestamps();
-
-            $table->index('created_at');
         });
     }
 
