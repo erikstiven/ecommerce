@@ -1,5 +1,4 @@
 <x-app-layout>
-
     @if (session('error'))
         <div class="bg-red-100 text-red-800 px-4 py-2 rounded mb-4">
             {{ session('error') }}
@@ -64,7 +63,7 @@
             </div>
 
             <div class="cols-span-1">
-                <div class="lg:max-w-[40rem] py-12 px-4 lg:pl-8 sm:pr-6 lg:pr-8 mr-auto">
+                <div class="lg-max-w-[40rem] py-12 px-4 lg:pl-8 sm:pr-6 lg:pr-8 mr-auto">
 
                     {{-- Cálculo de montos seguros --}}
                     @php
@@ -73,10 +72,18 @@
                         $shipping = 5.00;
                         $total = $subtotal + $shipping;
 
-                        // Valores para PayPhone si no usas controlador
-                        $ppAmount = (int) round($total * 100);
-                        $ppAmountW = (int) round($subtotal * 100);
-                        $ppTax = (int) round($shipping * 100);
+                        // Valores de respaldo para PayPhone cuando no se utiliza un controlador.
+                        //   amount: total en centavos. Debe ser la suma de amountWithoutTax + tax + service + tip.
+                        //   amountWithoutTax: subtotal de productos sin impuestos en centavos.
+                        //   tax: impuesto en centavos (0 cuando no se calcula IVA).
+                        //   service: costo de envío en centavos.
+                        //   tip: propina en centavos (0 por defecto).
+                        $ppAmount           = (int) round($total * 100);
+                        $ppAmountWithoutTax = (int) round($subtotal * 100);
+                        $ppAmountWithTax    = 0; // cuando no hay impuestos, este valor es cero
+                        $ppTax              = 0;
+                        $ppService          = (int) round($shipping * 100);
+                        $ppTip              = 0;
                     @endphp
 
                     {{-- Productos --}}
@@ -120,7 +127,13 @@
 
                     {{-- Pago con PayPhone --}}
                     <div class="mt-4" x-show="pago == 1">
-                        <form method="POST" action="{{ route('checkout.payphone.start') }}">
+                        {{--
+                            Importante: generamos una URL relativa (sin forzar http/https) para evitar
+                            problemas de "Mixed Content" cuando la APP_URL de Laravel está configurada con
+                            http:// y el sitio se sirve por https://.  route(..., [], false) devuelve
+                            una ruta relativa en lugar de absoluta.
+                        --}}
+                        <form method="POST" action="{{ route('checkout.payphone.start', [], false) }}">
                             @csrf
                             <button type="submit" class="btn btn-gradient-purple text-white rounded w-full">
                                 Confirmar y Pagar con PayPhone
@@ -130,7 +143,8 @@
 
                     {{-- Pago por Depósito --}}
                     <div class="mt-4" x-show="pago == 2" x-cloak>
-                        <form method="POST" action="{{ route('checkout.deposit') }}" enctype="multipart/form-data">
+                        {{-- Usamos una ruta relativa para evitar mixed content --}}
+                        <form method="POST" action="{{ route('checkout.deposit', [], false) }}" enctype="multipart/form-data">
                             @csrf
                             <label class="block text-sm font-medium text-gray-700 mb-1">Adjuntar comprobante</label>
                             <input name="deposit_proof" type="file" accept="image/*,.pdf" class="block w-full text-sm" required>
@@ -162,30 +176,36 @@
             $ppToken   = $pp['token']   ?? null;
             $ppStoreId = $pp['storeId'] ?? null;
             $ppClient  = $pp['clientTransactionId'] ?? null;
-            $ppAmount  = $pp['amount']  ?? $ppAmount;
-            $ppAmountW = $pp['amountWithTax'] ?? $ppAmountW;
-            $ppTax     = $pp['tax'] ?? $ppTax;
 
-            $telefono = Auth::user()?->phone ?? '000000000';
-            $telefono = '+593' . ltrim(preg_replace('/[^0-9]/', '', $telefono), '0');
+            // Si el controlador envía montos, úsalos; de lo contrario, utiliza los calculados en la vista.
+            $ppAmount           = $pp['amount']           ?? ($ppAmount           ?? null);
+            $ppAmountWithTax    = $pp['amountWithTax']    ?? ($ppAmountWithTax    ?? null);
+            $ppAmountWithoutTax = $pp['amountWithoutTax'] ?? ($ppAmountWithoutTax ?? null);
+            $ppTax              = $pp['tax']              ?? $ppTax;
+            $ppService          = $pp['service']          ?? $ppService;
+            $ppTip              = $pp['tip']              ?? $ppTip;
         @endphp
 
-        @if ($ppToken && $ppStoreId && $ppClient && $ppAmount)
+        {{-- Ejecuta el script de PayPhone solo si las credenciales y el clientTransactionId existen.
+             $ppAmount puede ser 0 (centavos), por lo que comparamos con null en lugar de una simple verificación booleana. --}}
+        @if ($ppToken && $ppStoreId && $ppClient && ($ppAmount !== null))
             <link rel="stylesheet" href="https://cdn.payphonetodoesposible.com/box/v1.1/payphone-payment-box.css">
             <script type="module" src="https://cdn.payphonetodoesposible.com/box/v1.1/payphone-payment-box.js"></script>
 
             <script>
                 document.addEventListener('DOMContentLoaded', () => {
                     try {
-                        new PPaymentButtonBox({
+                        // Configuración dinámica de la cajita PayPhone.  Se incluyen
+                        // únicamente los campos que no son nulos.  Esto previene
+                        // errores de validación al enviar parámetros innecesarios.
+                        const config = {
                             token: @json($ppToken),
                             storeId: @json($ppStoreId),
                             clientTransactionId: @json($ppClient),
                             amount: @json($ppAmount),
-                            amountWithTax: @json($ppAmountW),
                             tax: @json($ppTax),
-                            service: 0,
-                            tip: 0,
+                            service: @json($ppService),
+                            tip: @json($ppTip),
                             currency: "USD",
                             reference: "Pago pedido #{{ $order->id ?? '' }}",
                             lang: "es",
@@ -193,10 +213,14 @@
                             lat: "-1.831239",
                             lng: "-78.183406",
                             optionalParameter: "Checkout Laravel",
-                            phoneNumber: @json($telefono),
-                            documentId: "1234567890",
-                            identificationType: 1
-                        }).render("pp-button");
+                        };
+                        @if($ppAmountWithTax !== null)
+                            config.amountWithTax = @json($ppAmountWithTax);
+                        @endif
+                        @if($ppAmountWithoutTax !== null)
+                            config.amountWithoutTax = @json($ppAmountWithoutTax);
+                        @endif
+                        new PPaymentButtonBox(config).render("pp-button");
                     } catch (err) {
                         console.warn('PayPhone UI no disponible', err);
                     }

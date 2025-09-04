@@ -106,22 +106,31 @@ class CheckoutController extends Controller
             'pp_client_tx_id' => $clientTxId,
         ]);
 
-        // Montos a centavos
-        $amount = (int) round(($order->total ?? 0) * 100);
-        $amountWithTax = (int) round(($order->subtotal ?? 0) * 100);
+        // Convertimos los montos a centavos
+        $subtotalCents  = (int) round(($order->subtotal ?? 0) * 100);
+        $shippingCents  = (int) round(($order->shipping_cost ?? 0) * 100);
+
+        // El valor total debe ser la suma de los campos de monto
+        $amount = $subtotalCents + $shippingCents;
+
+        // Preparamos los parámetros para PayPhone
+        $ppParams = [
+            'token'               => config('services.payphone.token'),
+            'storeId'             => config('services.payphone.store_id'),
+            'clientTransactionId' => $clientTxId,
+            'amount'              => $amount,
+            'amountWithTax'       => $subtotalCents, // valor sujeto a impuestos (sin incluir impuestos)
+            'tax'                 => 0,              // impuesto (0 en este ejemplo)
+            'service'             => $shippingCents, // costo de envío
+            'tip'                 => 0,              // propina (0 por defecto)
+        ];
 
         return view('checkout.index', [
             'order' => $order,
-            'pp' => [
-                'token'               => config('services.payphone.token'),
-                'storeId'             => config('services.payphone.store_id'),
-                'clientTransactionId' => $clientTxId,
-                'amount'              => $amount,
-                'amountWithTax'       => $amountWithTax,
-                'tax'                 => 500, // fijo o dinámico
-            ],
+            'pp'    => $ppParams,
         ]);
     }
+
 
     /**
      * Procesa la respuesta desde PayPhone (Confirm).
