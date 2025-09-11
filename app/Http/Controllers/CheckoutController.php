@@ -3,28 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Enums\OrderStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\Storage;
 use Gloudemans\Shoppingcart\Facades\Cart;
 use Illuminate\Support\Str;
-use App\Enums\OrderStatus;   // <= enum de estado de orden
+use Illuminate\Support\Facades\Schema;
 
 class CheckoutController extends Controller
 {
-    /**
-     * Muestra la vista de checkout.
-     */
     public function checkout()
     {
         return view('checkout.index');
     }
 
-    /**
-     * Crear orden desde el carrito (transaccional).
-     */
     private function createOrderFromCart(array $extra = []): Order
     {
         if (!Auth::check()) {
@@ -39,37 +32,26 @@ class CheckoutController extends Controller
                 abort(400, 'El carrito está vacío.');
             }
 
-            // Calcula montos como float
-            $subtotalStr = (string) ($cart->subtotal(2, '.', '') ?? '0');
-            $subtotal    = (float) preg_replace('/[^\d\.]/', '', $subtotalStr);
-            $shipping    = 5.00;
-            $total       = round($subtotal + $shipping, 2);
+            $subtotal = (float) preg_replace('/[^\d\.]/', '', (string) $cart->subtotal(2, '.', ''));
+            $shipping = 5.00;
+            $total    = round($subtotal + $shipping, 2);
 
             $order = new Order();
             $order->user_id        = Auth::id();
             $order->payment_method = $extra['payment_method'] ?? null;
             $order->payment_status = $extra['payment_status'] ?? 'pending';
+            $order->status         = OrderStatus::Pending;
 
-            if (Schema::hasColumn('orders', 'status'))         $order->status = OrderStatus::Pending;
+            $order->subtotal       = $subtotal;
+            $order->shipping_cost  = $shipping;
+            $order->total          = $total;
+            $order->subtotal_cents = (int) round($subtotal * 100);
+            $order->shipping_cost_cents = (int) round($shipping * 100);
+            $order->total_cents    = (int) round($total * 100);
 
-            if (Schema::hasColumn('orders', 'subtotal'))       $order->subtotal = $subtotal;
-            if (Schema::hasColumn('orders', 'shipping_cost'))  $order->shipping_cost = $shipping;
-            if (Schema::hasColumn('orders', 'total'))          $order->total = $total;
-
-            if (Schema::hasColumn('orders', 'contact') && !isset($extra['contact'])) {
-                $order->contact = [];
-            }
-            if (Schema::hasColumn('orders', 'address') && !isset($extra['address'])) {
-                $order->address = [];
-            }
-
-            if (isset($extra['pp_client_tx_id']) && Schema::hasColumn('orders', 'pp_client_tx_id')) {
-                $order->pp_client_tx_id = $extra['pp_client_tx_id'];
-            }
-
-            if (isset($extra['deposited_at']) && Schema::hasColumn('orders', 'deposited_at')) {
-                $order->deposited_at = $extra['deposited_at'];
-            }
+            $order->address        = $extra['address'] ?? [];
+            $order->pp_client_tx_id= $extra['pp_client_tx_id'] ?? null;
+            $order->deposited_at   = $extra['deposited_at'] ?? null;
 
             $order->save();
 
@@ -90,46 +72,29 @@ class CheckoutController extends Controller
         });
     }
 
-    /**
-     * Inicia el proceso de pago con PayPhone (ORD-000000-UUID).
-     */
     public function startPayphone(Request $request)
     {
-        // Genera clientTxId antes de crear la orden
         $clientTxId = 'ORD-' . Str::padLeft((string)(now()->timestamp % 1000000), 6, '0') . '-' . Str::uuid();
 
-        // Crea la orden (no dependemos de que tenga columnas subtotal/shipping_cost)
         $order = $this->createOrderFromCart([
-            'payment_method'  => 'payphone',
+            'payment_method'  => 2,
             'payment_status'  => 'pending',
             'pp_client_tx_id' => $clientTxId,
         ]);
 
-        // ⚠️ Calcula SIEMPRE los montos desde el carrito (formato US) para evitar nulls
-        $subtotalStr   = (string) (Cart::instance('shopping')->subtotal(2, '.', '') ?? '0');
-        $cartSubtotal  = (float) preg_replace('/[^\d\.]/', '', $subtotalStr);
-        $shipping      = 5.00; // tu envío fijo; si cambia, léelo de config o lógica propia
+        $subtotal = $order->subtotal_cents;
+        $shipping = $order->shipping_cost_cents;
+        $amount   = $order->total_cents;
 
-        // Montos en centavos (enteros)
-        $subtotalCents = (int) round($cartSubtotal * 100);
-        $shippingCents = (int) round($shipping * 100);
-
-        // `amount` DEBE ser la suma exacta de los componentes
-        $amount = $subtotalCents + $shippingCents;
-
-        // Parametriza PayPhone correctamente:
-        // - No hay IVA => amountWithTax = 0, tax = 0
-        // - Subtotal sin impuestos => amountWithoutTax = subtotalCents
-        // - Envío => service
         $ppParams = [
             'token'               => config('services.payphone.token'),
             'storeId'             => config('services.payphone.store_id'),
             'clientTransactionId' => $clientTxId,
             'amount'              => $amount,
             'amountWithTax'       => 0,
-            'amountWithoutTax'    => $subtotalCents,
+            'amountWithoutTax'    => $subtotal,
             'tax'                 => 0,
-            'service'             => $shippingCents,
+            'service'             => $shipping,
             'tip'                 => 0,
         ];
 
@@ -139,10 +104,6 @@ class CheckoutController extends Controller
         ]);
     }
 
-
-    /**
-     * Procesa la respuesta desde PayPhone (Confirm).
-     */
     public function respuesta(Request $request)
     {
         $id         = $request->query('id');
@@ -150,7 +111,7 @@ class CheckoutController extends Controller
 
         if (!$id || !$clientTxId) {
             return redirect()->route('checkout.index')
-                ->with('error', 'La transacción expiró o ya fue validada.');
+                ->with('error', 'Transacción inválida.');
         }
 
         $token    = config('services.payphone.token');
@@ -159,72 +120,50 @@ class CheckoutController extends Controller
 
         if (!is_array($result) || !isset($result['transactionStatus'])) {
             return redirect()->route('checkout.index')
-                ->with('error', 'No se pudo obtener respuesta válida de PayPhone.');
+                ->with('error', 'Respuesta inválida de PayPhone.');
         }
 
         $order = Order::where('pp_client_tx_id', $clientTxId)->first();
 
         if ($order) {
-            $order->pp_transaction_id = $result['id'] ?? null;
-            $order->pp_raw            = $result; // guardar array completo
+            $order->pp_transaction_id     = $result['id'] ?? null;
+            $order->pp_raw                = $result;
+            $order->pp_authorization_code = $result['authorizationCode'] ?? null;
+            $order->pp_card_brand         = $result['cardBrand'] ?? null;
+            $order->pp_last_digits        = $result['cardLastDigits'] ?? null;
 
-            if (($result['transactionStatus'] ?? null) === 'Approved') {
+            if ($result['transactionStatus'] === 'Approved') {
                 $order->payment_status = 'paid';
-                if (Schema::hasColumn('orders', 'status')) {
-                    $order->status = OrderStatus::Completed;
-                }
+                $order->status = OrderStatus::Completed;
                 $order->save();
 
                 Cart::instance('shopping')->destroy();
-                session()->flash('pago_estado', $result['transactionStatus']);
-                session()->flash('pago_detalle', $result);
-
                 return redirect()->route('checkout.paid');
             }
 
-            // Rechazada o cancelada
             $order->payment_status = 'rejected';
-            if (Schema::hasColumn('orders', 'status')) {
-                $order->status = OrderStatus::Failed; // o Cancelled si lo prefieres
-            }
+            $order->status = OrderStatus::Failed;
             $order->save();
         }
 
-        session()->flash('pago_estado', $result['transactionStatus']);
-        session()->flash('pago_detalle', $result);
-
-        if ($result['transactionStatus'] === 'Approved') {
-            return redirect()->route('checkout.paid');
-        }
-
         return redirect()->route('checkout.index')
-            ->with('error', 'La transacción fue rechazada o cancelada.');
+            ->with('error', 'Transacción rechazada o cancelada.');
     }
 
-    /**
-     * Pago por depósito (con comprobante).
-     */
     public function deposit(Request $request)
     {
         $validated = $request->validate([
             'deposit_proof' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
-        ], [
-            'deposit_proof.required' => 'Adjunta el comprobante.',
-            'deposit_proof.mimes'    => 'Formato inválido (JPG, PNG o PDF).',
-            'deposit_proof.max'      => 'Máximo 5MB.',
         ]);
 
         $order = $this->createOrderFromCart([
-            'payment_method' => 'deposit',
+            'payment_method' => 1,
             'payment_status' => 'processing',
             'deposited_at'   => now(),
         ]);
 
         $path = $request->file('deposit_proof')->store("deposits/{$order->id}", 'public');
-
-        $order->update([
-            'deposit_proof_path' => $path,
-        ]);
+        $order->update(['deposit_proof_path' => $path]);
 
         Cart::instance('shopping')->destroy();
 
@@ -232,26 +171,17 @@ class CheckoutController extends Controller
             ->with('success', 'Comprobante recibido. Tu pago será verificado.');
     }
 
-    /**
-     * Vista para pagos exitosos.
-     */
     public function paid()
     {
         return view('checkout.thanks')
             ->with('success', '¡Pago realizado con éxito!');
     }
 
-    /**
-     * Vista final luego de pago o depósito.
-     */
     public function thanks()
     {
         return view('checkout.thanks');
     }
 
-    /**
-     * Confirmar transacción con API de PayPhone.
-     */
     private function confirmarTransaccion($id, $clientTxId, $token)
     {
         $headers = [
@@ -260,7 +190,7 @@ class CheckoutController extends Controller
         ];
 
         $body = json_encode([
-            'id'        => (int) $id,
+            'id'         => (int) $id,
             'clientTxId' => $clientTxId,
         ]);
 
