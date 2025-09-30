@@ -23,29 +23,35 @@ Route::get('products/{product}', [ControllersProductController::class, 'show'])-
 
 Route::get('cart', [CartController::class, 'index'])->name('cart.index');
 
-// Shipping routes
+// Envíos
 Route::get('shipping', [ShippingController::class, 'index'])->name('shipping.index');
+Route::post('shipping', [ShippingController::class, 'store'])->name('shipping.store'); // <-- NUEVA
 
-// Checkout completo protegido por login
+
+// Checkout (requiere login)
 Route::middleware('auth')->group(function () {
-    // Página de checkout
+
+    // Página principal de checkout
     Route::get('checkout', [CheckoutController::class, 'checkout'])->name('checkout.index');
 
-    // PayPhone: inicio del pago
-    Route::post('checkout/payphone/start', [CheckoutController::class, 'startPayphone'])->name('checkout.payphone.start');
+    // Iniciar pago con PayPhone (crea orden y devuelve $pp y $order)
+    Route::post('checkout/payphone/start', [CheckoutController::class, 'startPayphone'])
+        ->name('checkout.payphone.start');
 
-    // Confirmación posterior al pago (desde tu app)
-    Route::get('/payphone/respuesta', [CheckoutController::class, 'respuesta'])->name('payphone.respuesta');
+    // Retorno/confirmación desde PayPhone (redirige al usuario con query params)
+    Route::get('payphone/respuesta', [CheckoutController::class, 'respuesta'])
+        ->name('payphone.respuesta');
 
-    // Depósito bancario
-    Route::post('checkout/deposit', [CheckoutController::class, 'deposit'])->name('checkout.deposit');
+    // Depósito bancario (subida de comprobante)
+    Route::post('checkout/deposit', [CheckoutController::class, 'deposit'])
+        ->name('checkout.deposit');
 
     // Pantallas finales
     Route::get('checkout/paid', [CheckoutController::class, 'paid'])->name('checkout.paid');
     Route::get('checkout/thanks', [CheckoutController::class, 'thanks'])->name('checkout.thanks');
 });
 
-// Jetstream Dashboard protegido
+// Jetstream Dashboard (requiere login + verificación)
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),

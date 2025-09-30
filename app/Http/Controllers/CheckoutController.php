@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Gloudemans\Shoppingcart\Facades\Cart;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Schema;
 
 class CheckoutController extends Controller
 {
@@ -37,21 +36,22 @@ class CheckoutController extends Controller
             $total    = round($subtotal + $shipping, 2);
 
             $order = new Order();
-            $order->user_id        = Auth::id();
-            $order->payment_method = $extra['payment_method'] ?? null;
-            $order->payment_status = $extra['payment_status'] ?? 'pending';
-            $order->status         = OrderStatus::Pending;
+            $order->user_id              = Auth::id();
+            $order->payment_method       = $extra['payment_method'] ?? null;
+            $order->payment_status       = $extra['payment_status'] ?? 'pending';
+            $order->status               = OrderStatus::Pending;
 
-            $order->subtotal       = $subtotal;
-            $order->shipping_cost  = $shipping;
-            $order->total          = $total;
-            $order->subtotal_cents = (int) round($subtotal * 100);
-            $order->shipping_cost_cents = (int) round($shipping * 100);
-            $order->total_cents    = (int) round($total * 100);
+            $order->subtotal             = $subtotal;
+            $order->shipping_cost        = $shipping;
+            $order->total                = $total;
+            $order->subtotal_cents       = (int) round($subtotal * 100);
+            $order->shipping_cost_cents  = (int) round($shipping * 100);
+            $order->total_cents          = (int) round($total * 100);
 
-            $order->address        = $extra['address'] ?? [];
-            $order->pp_client_tx_id= $extra['pp_client_tx_id'] ?? null;
-            $order->deposited_at   = $extra['deposited_at'] ?? null;
+            $order->address              = $extra['address'] ?? [];
+            $order->content              = $items->toArray(); // snapshot del carrito
+            $order->pp_client_tx_id      = $extra['pp_client_tx_id'] ?? null;
+            $order->deposited_at         = $extra['deposited_at'] ?? null;
 
             $order->save();
 
@@ -126,11 +126,25 @@ class CheckoutController extends Controller
         $order = Order::where('pp_client_tx_id', $clientTxId)->first();
 
         if ($order) {
-            $order->pp_transaction_id     = $result['id'] ?? null;
-            $order->pp_raw                = $result;
+            // IDs / códigos
+            $order->pp_transaction_id     = $result['transactionId']
+                                          ?? $result['payphoneTransactionId']
+                                          ?? $result['id']
+                                          ?? null;
+
             $order->pp_authorization_code = $result['authorizationCode'] ?? null;
-            $order->pp_card_brand         = $result['cardBrand'] ?? null;
-            $order->pp_last_digits        = $result['cardLastDigits'] ?? null;
+
+            // Marca y últimos 4
+            $order->pp_card_brand         = $result['cardBrand']
+                                          ?? ($result['card']['brand'] ?? null);
+
+            $order->pp_last_digits        = $result['cardLastDigits']
+                                          ?? ($result['card']['lastDigits'] ?? null)
+                                          ?? (isset($result['cardNumber']) ? substr(preg_replace('/\D/', '', $result['cardNumber']), -4) : null)
+                                          ?? (isset($result['maskedCard']) ? substr(preg_replace('/\D/', '', $result['maskedCard']), -4) : null);
+
+            // Raw completo
+            $order->pp_raw                = $result;
 
             if ($result['transactionStatus'] === 'Approved') {
                 $order->payment_status = 'paid';

@@ -10,20 +10,22 @@ class Order extends Model
 {
     use HasFactory;
 
-    protected $guarded = [
-        'status'
-    ];
+    protected $guarded = ['status'];
 
     protected $casts = [
-        'contect' => 'array',
+        'content' => 'array',
         'address' => 'array',
-        'status' => OrderStatus::class
+        'pp_raw'  => 'array',
+        'status'  => OrderStatus::class,
     ];
 
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-
-
+    public function items()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
 }
