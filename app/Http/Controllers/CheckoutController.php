@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Gloudemans\Shoppingcart\Facades\Cart;
 use Illuminate\Support\Str;
+use App\Models\Address;
 
 class CheckoutController extends Controller
 {
@@ -39,7 +40,7 @@ class CheckoutController extends Controller
             $order->user_id              = Auth::id();
             $order->payment_method       = $extra['payment_method'] ?? null;
             $order->payment_status       = $extra['payment_status'] ?? 'pending';
-            $order->status               = OrderStatus::Pending;
+            $order->status               = OrderStatus::Pendiente; // Estado pendiente para pagos no completados
 
             $order->subtotal             = $subtotal;
             $order->shipping_cost        = $shipping;
@@ -76,10 +77,17 @@ class CheckoutController extends Controller
     {
         $clientTxId = 'ORD-' . Str::padLeft((string)(now()->timestamp % 1000000), 6, '0') . '-' . Str::uuid();
 
+        // Obtener la dirección por defecto del usuario
+        $defaultAddress = Address::where('user_id', Auth::id())
+            ->where('default', true)
+            ->first();
+        $addressData = $defaultAddress ? $defaultAddress->toArray() : null;
+
         $order = $this->createOrderFromCart([
             'payment_method'  => 2,
             'payment_status'  => 'pending',
             'pp_client_tx_id' => $clientTxId,
+            'address'         => $addressData,
         ]);
 
         $subtotal = $order->subtotal_cents;
@@ -148,20 +156,30 @@ class CheckoutController extends Controller
 
             if ($result['transactionStatus'] === 'Approved') {
                 $order->payment_status = 'paid';
-                $order->status = OrderStatus::Completed;
+                $order->status = OrderStatus::Completado;
                 $order->save();
+
+                // Almacenar en sesión el ID de la orden y el estado
+                session()->flash('order_id', $order->id);
+                session()->flash('pago_estado', 'Approved');
 
                 Cart::instance('shopping')->destroy();
                 return redirect()->route('checkout.paid');
             }
 
             $order->payment_status = 'rejected';
-            $order->status = OrderStatus::Failed;
+            $order->status = OrderStatus::Fallido;
             $order->save();
+
+            // Almacenar estado de rechazo para la vista
+            session()->flash('pago_estado', 'Rejected');
+
+            return redirect()->route('checkout.paid');
         }
 
-        return redirect()->route('checkout.index')
-            ->with('error', 'Transacción rechazada o cancelada.');
+        // Si no se encuentra la orden, redirige con error
+        session()->flash('pago_estado', 'Invalid');
+        return redirect()->route('checkout.paid');
     }
 
     public function deposit(Request $request)
@@ -170,11 +188,22 @@ class CheckoutController extends Controller
             'deposit_proof' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
         ]);
 
+        // Obtener la dirección por defecto del usuario
+        $defaultAddress = Address::where('user_id', Auth::id())
+            ->where('default', true)
+            ->first();
+        $addressData = $defaultAddress ? $defaultAddress->toArray() : null;
+
         $order = $this->createOrderFromCart([
             'payment_method' => 1,
             'payment_status' => 'processing',
             'deposited_at'   => now(),
+            'address'        => $addressData,
         ]);
+
+        // Guardar en sesión el id de la orden y estado (por si quieres mostrar resumen)
+        session()->flash('order_id', $order->id);
+        session()->flash('pago_estado', 'Processing');
 
         $path = $request->file('deposit_proof')->store("deposits/{$order->id}", 'public');
         $order->update(['deposit_proof_path' => $path]);
@@ -187,8 +216,11 @@ class CheckoutController extends Controller
 
     public function paid()
     {
-        return view('checkout.thanks')
-            ->with('success', '¡Pago realizado con éxito!');
+        $order = null;
+        if (session('order_id')) {
+            $order = Order::find(session('order_id'));
+        }
+        return view('checkout.thanks', compact('order'));
     }
 
     public function thanks()

@@ -28,4 +28,17 @@ class Order extends Model
     {
         return $this->hasMany(OrderItem::class);
     }
+
+    // CORREGIDO: hasMany
+    public function shipments()
+    {
+        return $this->hasMany(Shipment::class);
+    }
+
+    // Helper para obtener el último envío (por created_at)
+    public function latestShipment()
+    {
+        return $this->hasOne(Shipment::class)->latestOfMany(); // usa created_at por defecto
+        // Si prefieres por id: ->latestOfMany('id')
+    }
 }

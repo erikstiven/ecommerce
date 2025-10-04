@@ -2,14 +2,15 @@
 
 namespace App\Enums;
 
-enum OrderStatus: int
+enum    OrderStatus: int
 {
-    case Pending = 1;
-    case Processing = 2;
-    case Shipped = 3;
-    case Completed = 4;
-    case Cancelled = 5;
-    case Failed = 6;
-    case Refunded = 7;
-    
+    case Pendiente = 1;            // Pending
+    case EsperandoAprobacion = 2;  // PendingApproval (para pagos por transferencia)
+    case Procesando = 3;           // Processing
+    case Enviado = 4;              // Shipped
+    case Completado = 5;           // Completed
+    case Cancelado = 6;            // Cancelled
+    case Fallido = 7;              // Failed
+    case Reembolsado = 8;          // Refunded
+
 }
