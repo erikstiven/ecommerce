@@ -6,7 +6,6 @@
                     Opciones
                 </h1>
 
-                <!-- Abre modal CREAR OPCIÓN -->
                 <button class="btn btn-gradient-blue" wire:click="$set('openModal', true)">
                     Nuevo
                 </button>
@@ -24,14 +23,17 @@
                             class="p-6 rounded-lg border border-gray-200 relative">
                             <div class="absolute -top-3 px-4 bg-white">
                                 <button onclick="confirmDeleteOption({{ $option->id }})">
-                                    <i class="fa-solid fa-trash-can text-red-500 hover:text-red-600"></i>
+                                    <i class="fa-solid fa-trash-can text-red-500 hover:text-red-600">
+
+                                    </i>
                                 </button>
                                 <span class="ml-2">
                                     {{ $option->name }}
                                 </span>
-                            </div>
 
+                            </div>
                             {{-- valores --}}
+
                             <div class="flex flex-wrap">
                                 @foreach ($option->pivot->features as $feature)
                                     <div wire:key="option-{{ $option->id }}-feature-{{ $feature['id'] }}">
@@ -44,6 +46,7 @@
                                                     <button class="ml-0.5"
                                                         onclick="confirmDeleteFeature({{ $option->id }} ,{{ $feature['id'] }})">
                                                         <i class="fa-solid fa-xmark hover:text-red-500"></i>
+
                                                     </button>
                                                 </span>
                                             @break
@@ -59,9 +62,12 @@
                                                         class="absolute z-10 left-3 -top-2 rounded-full bg-red-500 hover:bg-red-600 h-4 w-4 flex justify-center items-center"
                                                         onclick="confirmDeleteFeature({{ $option->id }} ,{{ $feature['id'] }})">
                                                         <i class="fa-solid fa-xmark text-white  text-xs"></i>
+
                                                     </button>
                                                 </div>
                                             @break
+
+                                            @default
                                         @endswitch
                                     </div>
                                 @endforeach
@@ -85,6 +91,7 @@
                 </div>
             @endif
 
+
         </div>
     </section>
 
@@ -102,14 +109,17 @@
             <ul class="divide-y -my-4">
                 @foreach ($product->variants as $item)
                     <li class="py-4 flex items-center">
-                        <img src="{{ $item->image }}" class="w-12 h-12 object-cover object-center" alt="Imagen variante">
+                        <img src="{{ $item->image }}" class="w-12 h-12 object-cover object-center">
+
 
                         <p class="divide-x">
                             @forelse ($item->features as $feature)
                                 <span class="px-3">
                                     {{ $feature->description }}
                                 </span>
+
                             @empty
+
                                 <span class="px-3 font-bold">
                                     Variante principal
                                 </span>
@@ -126,7 +136,8 @@
 
     </section>
 
-    {{-- MODAL: Agregar nueva opción --}}
+
+
     <x-dialog-modal wire:model="openModal">
         <x-slot name="title">
             Agregar nueva opción
@@ -170,11 +181,12 @@
                             <x-select class="w-full" wire:model="variant.features.{{ $index }}.id"
                                 wire:change="feature_change({{ $index }})">
                                 <option value="" disabled>Seleccione un valor</option>
-                                @foreach ($this->features as $optFeature)
-                                    <option value="{{ $optFeature->id }}">
-                                        {{ $optFeature->description }}
+                                @foreach ($this->features as $feature)
+                                    <option value="{{ $feature->id }}">
+                                        {{ $feature->description }}
                                     </option>
                                 @endforeach
+
                             </x-select>
                         </div>
 
@@ -199,31 +211,30 @@
         </x-slot>
     </x-dialog-modal>
 
-    {{-- MODAL: Editar variantes --}}
+
+    {{-- modal editar variantes --}}
+    <!-- MODAL EDITAR VARIANTES -->
     <x-dialog-modal wire:model="variantEdit.open">
         <x-slot name="title">
             Editar variantes
         </x-slot>
+
         <x-slot name="content">
             <div class="mb-4">
-                <x-label>
-                    SKU
-                </x-label>
+                <x-label>SKU</x-label>
                 <x-input wire:model.defer="variantEdit.sku" class="w-full" />
                 {{-- validaciones --}}
                 <x-validation-errors for="variantEdit.sku" />
             </div>
 
             <div>
-                <x-label>
-                    Stock
-                </x-label>
+                <x-label>Stock</x-label>
                 <x-input wire:model.defer="variantEdit.stock" class="w-full" />
                 {{-- validaciones --}}
                 <x-validation-errors for="variantEdit.stock" />
             </div>
-
         </x-slot>
+
         <x-slot name="footer">
             <x-danger-button wire:click="$set('variantEdit.open', false)">
                 Cancelar
@@ -233,6 +244,7 @@
             </x-button>
         </x-slot>
     </x-dialog-modal>
+
 
     @push('js')
         <script>
