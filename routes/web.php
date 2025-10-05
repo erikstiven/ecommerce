@@ -26,7 +26,9 @@ Route::get('products/{product}', [ControllersProductController::class, 'show'])-
 Route::get('cart', [CartController::class, 'index'])->name('cart.index');
 
 // Envíos
-Route::get('shipping', [ShippingController::class, 'index'])->name('shipping.index');
+Route::get('shipping', [ShippingController::class, 'index'])
+->middleware(['auth']) // <-- AÑADIDO)
+->name('shipping.index');
 Route::post('shipping', [ShippingController::class, 'store'])->name('shipping.store'); // <-- NUEVA
 
 

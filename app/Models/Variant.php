@@ -12,7 +12,6 @@ class Variant extends Model
     use HasFactory;
     protected $fillable = [
         'sku',
-        'image_path',
         'stock',
         'product_id',
     ];

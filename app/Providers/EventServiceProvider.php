@@ -35,5 +35,7 @@ class EventServiceProvider extends ServiceProvider
     {
         \App\Models\Cover::observe(\App\Observers\CoverObserver::class);
         \App\Models\Order::observe(\App\Observers\OrderObserver::class);
+        \App\Models\Product::observe(\App\Observers\ProductObserver::class);
+        \App\Models\Variant::observe(\App\Observers\VariantObserver::class);
     }
 }

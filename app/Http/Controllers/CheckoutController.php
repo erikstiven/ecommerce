@@ -11,8 +11,14 @@ use Gloudemans\Shoppingcart\Facades\Cart;
 use Illuminate\Support\Str;
 use App\Models\Address;
 
+
 class CheckoutController extends Controller
 {
+    //auth
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     public function checkout()
     {
         return view('checkout.index');
