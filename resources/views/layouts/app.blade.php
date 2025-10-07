@@ -36,11 +36,11 @@
     @livewire('navegation')
 
     <!-- Page Content -->
-    <main class="flex-1">
+    <main class="flex-1 mb-12">
         {{ $slot }}
     </main>
 
-    {{-- Footer (sin márgenes extras) --}}
+    {{-- Footer --}}
     @include('layouts.partials.app.footer')
 
     @stack('modals')

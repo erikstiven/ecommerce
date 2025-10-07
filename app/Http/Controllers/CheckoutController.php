@@ -12,6 +12,8 @@ use Illuminate\Support\Str;
 use App\Models\Address;
 
 
+
+
 class CheckoutController extends Controller
 {
     //auth
@@ -19,6 +21,31 @@ class CheckoutController extends Controller
     {
         $this->middleware('auth');
     }
+
+    //index
+    public function index()
+    {
+        Cart::instance('shopping');
+        $content = Cart::content()->filter(function ($item) {
+            return $item->qty <= $item->options['stock'];
+        });
+
+        $subtotal = $content->sum(function ($item) {
+            return $item->subtotal;
+        });
+
+        $delivery = number_format(5, 2);
+
+        $total = $subtotal + $delivery;
+
+        $access_token = $this->generateAccessToken();
+        $sessionToken = $this->generateSessionToken($access_token, $total);
+
+        return view('checkout.index', compact('content','subtotal' , 'delivery','total', 'access_token', 'access_token', 'sessionToken'));
+
+    }
+
+    //checkout
     public function checkout()
     {
         return view('checkout.index');

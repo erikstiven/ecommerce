@@ -1,6 +1,7 @@
 <div>
 
 
+
     <h1 class="text-xl text-gray-600 mb-2">
         {{ $product->name }}
     </h1>
@@ -27,13 +28,20 @@
         <p class="text-sm text-gray-700">4,1 (55)</p>
     </div>
 
-    <p class="font-semibold text-2xl text-gray-600 mb-4">
-        $/ {{ $product->price }}
-    </p>
+    <div class="flex items-center justify-between">
+        <p class="font-semibold text-2xl text-gray-600 mb-4">
+            $/ {{ $product->price }}
+        </p>
+        <p class="text-sm text-gray-700">
+            Stock: {{ $stock ?? $product->stock }}
+        </p>
+    </div>
 
 
     <div class="flex items-center space-x-6 mb-6" x-data="{
-        qty: @entangle('qty')
+        qty: @entangle('qty'),
+        stock: @entangle('stock')
+    
     }">
 
         <button class="btn btn-gradient-gray" x-on:click="qty = qty - 1" x-bind:disabled="qty == 1">
@@ -44,7 +52,7 @@
 
         </span>
 
-        <button class="btn btn-gradient-gray" x-on:click="qty = qty + 1">
+        <button class="btn btn-gradient-gray" x-on:click="qty = qty + 1" :disabled="qty == stock">
             +
         </button>
 

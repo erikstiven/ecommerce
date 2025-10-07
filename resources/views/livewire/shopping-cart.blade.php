@@ -14,18 +14,28 @@
                 </button>
             </div>
 
+            
+
 
             <div class="card-form">
 
                 <ul class="space-y-4">
 
                     @forelse (Cart::content() as $item)
-                        <li class="lg:flex">
+                        <li class="lg:flex lg:items-center space-y-2 lg:space-y-0 {{ $item->qty > $item->options['stock'] ? 'text-red-600' : '' }}">
 
                             <img class="w-full lg:w-36 aspect-[16/9] object-cover object-center mr-2"
                                 src="{{ $item->options->image }}" alt="">
-                            <div class="w-80">
-                                <p class="text-sm">
+                            <div class="lg:w-64 xl:w-80">
+
+                                @if($item->qty > $item->options['stock'])
+                                    <p class="font-semibold text-red-600">
+                                        Sin stock
+                                    </p>
+                                @endif
+
+
+                                <p class="text-sm truncate">
                                     <a href="{{ route('products.show', $item->id) }}">
                                         {{ $item->name }}
                                     </a>
@@ -53,7 +63,7 @@
                             </div>
 
                             <p>
-                                $/. {{ $item->price }}
+                                $/. {{ $this->subtotal }}
                             </p>
 
                             <div class="ml-auto space-x-3">
@@ -65,7 +75,11 @@
                                     {{ $item->qty }}
                                 </span>
 
-                                <button class="btn btn-gradient-gray" wire:click="increase('{{ $item->rowId }}')">
+                                <button class="btn btn-gradient-gray" 
+                                wire:click="increase('{{ $item->rowId }}')"
+                                wire:loading.attr="disabled"
+                                wire:target="increase('{{ $item->rowId }}')"
+                                @disabled($item->qty >= $item->options['stock'])>
                                     +
                                 </button>
                             </div>
