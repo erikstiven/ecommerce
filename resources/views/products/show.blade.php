@@ -66,14 +66,32 @@
 
     </x-container>
 
+    <x-container>
+
+        <div class="card">
+
+            <div class="grid md:grid-cols-2 gap-6">
+
+                <div class="col-span-1">
+
+                    <figure>
+                        <img src="{{ $product->image }}" class="aspect-[16/9] w-full object-cover object-center">
+                    </figure>
 
 
-    @if ($product->variants->count())
-        @livewire('products.add-to-cart-variants', ['product' => $product])
-    @else
-        @livewire('products.add-to-cart', ['product' => $product])
-    @endif
+
+                </div>
 
 
+                <div class="col-span-1">
+
+                    @livewire('products.add-to-cart', ['product' => $product])
+
+                </div>
+
+            </div>
+
+        </div>
+    </x-container>
 
 </x-app-layout>

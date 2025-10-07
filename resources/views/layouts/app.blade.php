@@ -14,10 +14,9 @@
 
     @stack('css')
 
-    <!--iconos importados awesome google-->
+    <!-- Iconos -->
     <script src="https://kit.fontawesome.com/624f2e432c.js" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -30,32 +29,25 @@
     <script type="module" src="https://cdn.payphonetodoesposible.com/box/v1.1/payphone-payment-box.js"></script>
 </head>
 
-
-<body class="font-sans antialiased">
+<body class="font-sans antialiased bg-gray-100 dark:bg-gray-900 flex flex-col min-h-screen">
     <x-banner />
 
-    <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
-        {{-- @livewire('navigation-menu') --}}
-        @livewire('navegation')
+    {{-- Navegación --}}
+    @livewire('navegation')
 
-        <!-- Page Content -->
-        <main>
-            {{ $slot }}
-        </main>
+    <!-- Page Content -->
+    <main class="flex-1">
+        {{ $slot }}
+    </main>
 
-        {{-- Llamamos al footer --}}
-        <div class="mt-16">
-            @include('layouts.partials.app.footer')
-        </div>
-    </div>
+    {{-- Footer (sin márgenes extras) --}}
+    @include('layouts.partials.app.footer')
 
     @stack('modals')
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-
     @livewireScripts
-
     @stack('js')
 
     @if (session('swal'))
@@ -64,15 +56,11 @@
         </script>
     @endif
 
-    {{-- script para las swal con livewire --}}
     <script>
         Livewire.on('swal', data => {
             Swal.fire(data[0]);
         });
     </script>
-
-
-
 </body>
 
 </html>

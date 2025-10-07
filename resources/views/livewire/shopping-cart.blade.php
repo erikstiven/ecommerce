@@ -1,6 +1,3 @@
-
-
-
 <div>
 
     <div class="grid grid-cols-1 lg:grid-cols-7 gap-6">
@@ -12,7 +9,6 @@
                 </h1>
 
                 <button class="font-semibold text-gray-600 hover:text-purple-400 underline hover:no-under"
-                
                     wire:click="destroy()">
                     Limpiar carrito
                 </button>
@@ -33,6 +29,18 @@
                                     <a href="{{ route('products.show', $item->id) }}">
                                         {{ $item->name }}
                                     </a>
+                                    @php
+                                        $features = collect(data_get($item, 'options.features'))->values();
+                                    @endphp
+
+                                    @if ($features->isNotEmpty())
+                                        <br>
+                                        <span class="text-xs text-gray-500">
+                                            {{ $features->implode(' | ') }}
+                                        </span>
+                                    @endif
+
+
                                 </p>
 
                                 <button
@@ -97,4 +105,3 @@
     </div>
 
 </div>
-

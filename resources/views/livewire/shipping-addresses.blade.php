@@ -14,7 +14,7 @@
                     <div class="col-span-1">
                         <x-select wire:model.live="createAddress.type"
                             class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
-                            <option value="" disabled>Tipo de dirección</option>
+                            <option value="" disabled selected>Tipo de dirección</option>
                             <option value="1">Domicilio</option>
                             <option value="2">Oficina</option>
                         </x-select>

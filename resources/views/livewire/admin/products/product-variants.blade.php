@@ -72,6 +72,40 @@
                                     </div>
                                 @endforeach
                             </div>
+                            {{-- Nuevos valores --}}
+                            <div class="flex space-x-4">
+
+                                <div class="flex-1">
+
+                                    <x-label>
+                                        Valor
+                                    </x-label>
+
+                                    <x-select 
+                                    wire:model.defer="new_features.{{ $option->id }}"
+                                    class="w-full">
+
+                                        <option value="">Seleccione un valor</option>
+
+                                        @foreach ($this->getFeatures($option->id) as $feature)
+                                            <option value="{{ $feature->id }}">
+                                                {{ $feature->description }}
+                                            </option>
+                                        @endforeach
+
+                                    </x-select>
+
+                                </div>
+
+                                <div class="pt-6">
+
+                                    <x-button 
+                                    wire:click="addNewFeature({{ $option->id }})">
+                                        Agregar
+                                    </x-button>
+
+                                </div>
+                            </div>
 
                         </div>
                     @endforeach
@@ -152,10 +186,11 @@
                 </x-label>
                 <x-select class="w-full" wire:model.live="variant.option_id">
                     <option value="" disabled>Seleccione una opción</option>
-                    @foreach ($options as $option)
+                    @foreach ($this->options as $option)
                         <option value="{{ $option->id }}">{{ $option->name }}</option>
                     @endforeach
                 </x-select>
+
             </div>
 
             <div class="flex items-center mb-6">
@@ -212,7 +247,6 @@
     </x-dialog-modal>
 
 
-    {{-- modal editar variantes --}}
     <!-- MODAL EDITAR VARIANTES -->
     <x-dialog-modal wire:model="variantEdit.open">
         <x-slot name="title">
