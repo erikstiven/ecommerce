@@ -7,50 +7,51 @@ use App\Models\Product;
 use Gloudemans\Shoppingcart\Facades\Cart;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
-use Illuminate\Support\Facades\Auth; //
+use Illuminate\Support\Facades\Auth;
 
+/**
+ * Componente Livewire para añadir productos al carrito teniendo en cuenta variantes y stock.
+ */
 class AddToCart extends Component
 {
-
+    /** @var \App\Models\Product */
     public $product;
-
+    /** @var \App\Models\Variant|null Variante seleccionada según las características */
     public $variant;
-
+    /** Cantidad solicitada */
     public $qty = 1;
-
+    /** Stock disponible de la variante */
     public $stock;
-
+    /** Características seleccionadas por el usuario */
     public $selectedFeatures = [];
 
-
-
-
-    //mount
+    /**
+     * Inicializa el componente asignando las características por defecto y obteniendo la variante inicial.
+     */
     public function mount()
     {
-
+        // Selecciona las características de la primera variante por defecto
         $this->selectedFeatures = $this->product->variants->first()->features->pluck('id', 'option_id')->toArray();
         $this->getvariant();
     }
-    //update
-    // public function update($name, $value)
-    // {
-    //     if ($name == 'selectedFeatures') {
-    //         $this->selectedFeatures = array_merge($this->selectedFeatures, $value);
-    //         $this->getvariant();
-    //     }
-    // }
 
+    /**
+     * Se ejecuta al modificar las características seleccionadas para recalcular la variante.
+     */
     public function updatingSelectedFeatures()
     {
         $this->getvariant();
     }
 
-    //public variant
+    /**
+     * Busca y asigna la variante actual en función de las características seleccionadas.
+     */
     public function getvariant()
     {
         if (!$this->product?->variants || empty($this->selectedFeatures)) {
-            return null;
+            $this->variant = null;
+            $this->stock   = 0;
+            return;
         }
 
         $this->variant = $this->product->variants
@@ -63,64 +64,82 @@ class AddToCart extends Component
             ->first();
 
         $this->stock = $this->variant->stock;
-        $this->qty = 1;
+        $this->qty   = 1;
     }
 
-    //funcion add_to_cart
+    /**
+     * Añade el producto al carrito validando el stock disponible.
+     */
     public function add_to_cart()
     {
         Cart::instance('shopping');
 
-        $cartItem = Cart::search(function ($cartItem, $rowId) {
+        // Verificar que exista una variante y que tenga stock disponible
+        if (!$this->variant || $this->stock <= 0) {
+            $this->dispatch('swal', [
+                'icon'  => 'error',
+                'title' => '¡Lo siento!',
+                'text'  => 'No hay stock disponible para esta variante.',
+            ]);
+            return;
+        }
+
+        // Buscar si ya hay un item con la misma SKU en el carrito
+        $cartItem = Cart::search(function ($cartItem) {
             return $cartItem->options->sku === $this->variant->sku;
         })->first();
 
+        // Stock disponible considerando unidades en el carrito
+        $availableStock = $this->stock;
         if ($cartItem) {
-            $stock = $this->stock - $cartItem->qty;
-
-            if ($stock < $this->qty) {
-                $this->dispatch('swal', [
-                    'icon' => 'error',
-                    'title' => '¡Lo siento!',
-                    'text' => 'No hay suficiente stock disponible',
-                ]);
-                return;
-            }
+            $availableStock -= $cartItem->qty;
         }
 
+        // Validar que la cantidad solicitada no supere el stock disponible
+        if ($this->qty > $availableStock) {
+            $this->dispatch('swal', [
+                'icon'  => 'error',
+                'title' => '¡Lo siento!',
+                'text'  => 'No hay suficiente stock disponible',
+            ]);
+            return;
+        }
 
-
+        // Agregar al carrito con los datos y opciones necesarias
         Cart::add([
             'id'    => $this->product->id,
             'name'  => $this->product->name,
             'qty'   => $this->qty,
             'price' => $this->product->price,
             'options' => [
-                'sku'     => $this->variant->sku,      // <-- aquí el cambio clave
-                'image'   => $this->product->image,
-                'stock'   => $this->variant->stock,
+                'sku'      => $this->variant->sku,
+                'image'    => $this->product->image,
+                'stock'    => $this->variant->stock,
                 'features' => Feature::whereIn('id', $this->selectedFeatures)
-                    ->pluck('description', 'id')->toArray(),
+                    ->pluck('description', 'id')
+                    ->toArray(),
             ],
             'tax' => 18,
         ])->associate(Product::class);
 
+        // Guardar el carrito para el usuario autenticado
         if (Auth::check()) {
             Cart::store(Auth::id());
         }
 
+        // Actualizar contador del carrito y notificar éxito
         $this->dispatch('cartUpdated', Cart::count());
 
-
         $this->dispatch('swal', [
-            'icon' => 'success',
+            'icon'  => 'success',
             'title' => '¡Bien hecho!',
-            'text' => 'Producto agregado al carrito de compras',
+            'text'  => 'Producto agregado al carrito de compras',
         ]);
     }
 
-
-
+    /**
+     * Renderiza la vista del componente.
+     */
     public function render()
     {
         return view('livewire.products.add-to-cart');
