@@ -54,7 +54,20 @@ class CheckoutController extends Controller
             return redirect()->route('cart.index')
                 ->with('error', 'Algunos productos en tu carrito no tienen suficiente stock.');
         }
-        return view('checkout.index');
+
+        // Obtener contenido del carrito y totales
+        $cart     = Cart::instance('shopping');
+        $content  = $cart->content();
+        $subtotal = (float) preg_replace('/[^\d\.]/', '', (string) $cart->subtotal(2, '.', ''));
+        $shipping = 5.00;
+        $total    = round($subtotal + $shipping, 2);
+
+        return view('checkout.index', [
+            'content'  => $content,
+            'subtotal' => $subtotal,
+            'delivery' => $shipping,
+            'total'    => $total,
+        ]);
     }
 
     /**
@@ -147,27 +160,35 @@ class CheckoutController extends Controller
             'address'         => $addressData,
         ]);
 
-        $subtotal = $order->subtotal_cents;
-        $shipping = $order->shipping_cost_cents;
-        $amount   = $order->total_cents;
+        // Obtener contenido del carrito y totales
+        $cart     = Cart::instance('shopping');
+        $content  = $cart->content();
+        $subtotal = (float) preg_replace('/[^\d\.]/', '', (string) $cart->subtotal(2, '.', ''));
+        $shipping = 5.00;
+        $total    = round($subtotal + $shipping, 2);
 
         $ppParams = [
             'token'               => config('services.payphone.token'),
             'storeId'             => config('services.payphone.store_id'),
             'clientTransactionId' => $clientTxId,
-            'amount'              => $amount,
+            'amount'              => $order->total_cents,
             'amountWithTax'       => 0,
-            'amountWithoutTax'    => $subtotal,
+            'amountWithoutTax'    => $order->subtotal_cents,
             'tax'                 => 0,
-            'service'             => $shipping,
+            'service'             => $order->shipping_cost_cents,
             'tip'                 => 0,
         ];
 
         return view('checkout.index', [
-            'order' => $order,
-            'pp'    => $ppParams,
+            'order'    => $order,
+            'pp'       => $ppParams,
+            'content'  => $content,
+            'subtotal' => $subtotal,
+            'delivery' => $shipping,
+            'total'    => $total,
         ]);
     }
+
 
     /**
      * Procesa la respuesta de PayPhone.  Actualiza la orden y el stock en función del
@@ -197,19 +218,19 @@ class CheckoutController extends Controller
         if ($order) {
             // Guardar identificadores y datos de la transacción
             $order->pp_transaction_id     = $result['transactionId']
-                                            ?? $result['payphoneTransactionId']
-                                            ?? $result['id']
-                                            ?? null;
+                ?? $result['payphoneTransactionId']
+                ?? $result['id']
+                ?? null;
 
             $order->pp_authorization_code = $result['authorizationCode'] ?? null;
 
             $order->pp_card_brand         = $result['cardBrand']
-                                            ?? ($result['card']['brand'] ?? null);
+                ?? ($result['card']['brand'] ?? null);
 
             $order->pp_last_digits        = $result['cardLastDigits']
-                                            ?? ($result['card']['lastDigits'] ?? null)
-                                            ?? (isset($result['cardNumber']) ? substr(preg_replace('/\D/', '', $result['cardNumber']), -4) : null)
-                                            ?? (isset($result['maskedCard']) ? substr(preg_replace('/\D/', '', $result['maskedCard']), -4) : null);
+                ?? ($result['card']['lastDigits'] ?? null)
+                ?? (isset($result['cardNumber']) ? substr(preg_replace('/\D/', '', $result['cardNumber']), -4) : null)
+                ?? (isset($result['maskedCard']) ? substr(preg_replace('/\D/', '', $result['maskedCard']), -4) : null);
 
             $order->pp_raw                = $result;
 
