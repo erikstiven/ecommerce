@@ -328,18 +328,18 @@ class CheckoutController extends Controller
     private function confirmarTransaccion($id, $clientTxId, $token)
     {
         $headers = [
-            "Authorization: Bearer $token",
+            "Authorization: bearer $token",
             "Content-Type: application/json",
         ];
 
         $body = json_encode([
-            'id'         => $id,         // usar como string, no (int)$id
+            'id'         => (int) $id,        // Payphone espera un número
             'clientTxId' => $clientTxId,
         ]);
 
-        // Usa la URL de confirmación correcta para tu entorno (sandbox o producción)
         $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, "https://pay.sandbox.payphone.ec/api/button/V2/Confirm");
+        // Endpoint oficial para sandbox y producción
+        curl_setopt($curl, CURLOPT_URL, "https://pay.payphonetodoesposible.com/api/button/V2/Confirm");
         curl_setopt($curl, CURLOPT_POST, 1);
         curl_setopt($curl, CURLOPT_POSTFIELDS, $body);
         curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
