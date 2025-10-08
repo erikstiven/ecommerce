@@ -11,6 +11,8 @@ use Gloudemans\Shoppingcart\Facades\Cart;
 use Illuminate\Support\Str;
 use App\Models\Address;
 use App\Models\Product;
+use Illuminate\Support\Facades\Log;
+
 
 /**
  * Controlador para el proceso de checkout.
@@ -190,6 +192,7 @@ class CheckoutController extends Controller
     }
 
 
+
     /**
      * Procesa la respuesta de PayPhone.  Actualiza la orden y el stock en función del
      * estado de la transacción y redirige a la pantalla final.
@@ -213,28 +216,18 @@ class CheckoutController extends Controller
                 ->with('error', 'Respuesta inválida de PayPhone.');
         }
 
+        // Verificar si la orden existe
         $order = Order::where('pp_client_tx_id', $clientTxId)->first();
 
         if ($order) {
-            // Guardar identificadores y datos de la transacción
-            $order->pp_transaction_id     = $result['transactionId']
-                ?? $result['payphoneTransactionId']
-                ?? $result['id']
-                ?? null;
-
+            // Guardar detalles de la transacción
+            $order->pp_transaction_id = $result['transactionId'] ?? null;
             $order->pp_authorization_code = $result['authorizationCode'] ?? null;
-
-            $order->pp_card_brand         = $result['cardBrand']
-                ?? ($result['card']['brand'] ?? null);
-
-            $order->pp_last_digits        = $result['cardLastDigits']
-                ?? ($result['card']['lastDigits'] ?? null)
-                ?? (isset($result['cardNumber']) ? substr(preg_replace('/\D/', '', $result['cardNumber']), -4) : null)
-                ?? (isset($result['maskedCard']) ? substr(preg_replace('/\D/', '', $result['maskedCard']), -4) : null);
-
-            $order->pp_raw                = $result;
+            $order->pp_card_brand = $result['cardBrand'] ?? null;
+            $order->pp_last_digits = $result['cardLastDigits'] ?? null;
 
             if ($result['transactionStatus'] === 'Approved') {
+                // Si la transacción fue aprobada, cambiar el estado
                 $order->payment_status = 'paid';
                 $order->status         = OrderStatus::Completado;
                 $order->save();
@@ -252,21 +245,22 @@ class CheckoutController extends Controller
                 session()->flash('pago_estado', 'Approved');
 
                 return redirect()->route('checkout.paid');
+            } else {
+                // Si no se aprobó, marcar como rechazado
+                $order->payment_status = 'rejected';
+                $order->status         = OrderStatus::Fallido;
+                $order->save();
+
+                session()->flash('pago_estado', 'Rejected');
+
+                return redirect()->route('checkout.paid');
             }
-
-            // Si no se aprobó, se marca como rechazado
-            $order->payment_status = 'rejected';
-            $order->status         = OrderStatus::Fallido;
-            $order->save();
-
-            session()->flash('pago_estado', 'Rejected');
-
-            return redirect()->route('checkout.paid');
         }
 
         session()->flash('pago_estado', 'Invalid');
         return redirect()->route('checkout.paid');
     }
+
 
     /**
      * Registra un pago por depósito bancario.  Crea la orden y almacena el comprobante.
@@ -339,14 +333,13 @@ class CheckoutController extends Controller
         ];
 
         $body = json_encode([
-            'id'         => (int) $id,
+            'id'         => $id,         // usar como string, no (int)$id
             'clientTxId' => $clientTxId,
         ]);
 
+        // Usa la URL de confirmación correcta para tu entorno (sandbox o producción)
         $curl = curl_init();
-        // curl_setopt($curl, CURLOPT_URL, "https://pay.payphonetodoesposible.com/api/button/V2/Confirm");
         curl_setopt($curl, CURLOPT_URL, "https://pay.sandbox.payphone.ec/api/button/V2/Confirm");
-
         curl_setopt($curl, CURLOPT_POST, 1);
         curl_setopt($curl, CURLOPT_POSTFIELDS, $body);
         curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);

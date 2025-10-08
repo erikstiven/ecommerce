@@ -136,9 +136,9 @@
 
         {{-- Modal de pago --}}
         <div x-show="mostrarModal" x-cloak @click.self="mostrarModal = false"
-            class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm overflow-auto p-4">
+            class="fixed inset-0 z-50 flex items-start justify-center bg-black bg-opacity-50 backdrop-blur-sm overflow-auto p-4">
 
-            <div class="bg-white p-6 rounded shadow-lg w-full max-w-md text-center">
+            <div class="bg-white p-6 rounded shadow-lg  w-[600px] text-center max-h-[90vh] overflow-y-auto">
                 <h2 class="text-xl font-semibold mb-4">¿Confirmar pago?</h2>
                 <p class="mb-4">Se abrirá la pasarela PayPhone con el monto final.</p>
 
@@ -149,6 +149,7 @@
                 </button>
             </div>
         </div>
+
     </div>
 
     @push('js')
