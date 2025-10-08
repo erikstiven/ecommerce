@@ -153,8 +153,12 @@
 
     @push('js')
         {{-- Payphone --}}
-        <link rel="stylesheet" href="https://cdn.payphonetodoesposible.com/box/v1.1/payphone-payment-box.css">
-        <script type="module" src="https://cdn.payphonetodoesposible.com/box/v1.1/payphone-payment-box.js"></script>
+        {{-- <link rel="stylesheet" href="https://cdn.payphonetodoesposible.com/box/v1.1/payphone-payment-box.css">
+        <script type="module" src="https://cdn.payphonetodoesposible.com/box/v1.1/payphone-payment-box.js"></script> --}}
+        {{-- Payphone (entorno de pruebas) --}}
+        <link rel="stylesheet" href="https://cdn.payphonetodoesposible.com/box/sandbox/v1.1/payphone-payment-box.css">
+        <script type="module" src="https://cdn.payphonetodoesposible.com/box/sandbox/v1.1/payphone-payment-box.js"></script>
+
 
         @php
             $telefono = Auth::user()?->phone ?? '000000000';

@@ -344,7 +344,9 @@ class CheckoutController extends Controller
         ]);
 
         $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, "https://pay.payphonetodoesposible.com/api/button/V2/Confirm");
+        // curl_setopt($curl, CURLOPT_URL, "https://pay.payphonetodoesposible.com/api/button/V2/Confirm");
+        curl_setopt($curl, CURLOPT_URL, "https://pay.sandbox.payphone.ec/api/button/V2/Confirm");
+
         curl_setopt($curl, CURLOPT_POST, 1);
         curl_setopt($curl, CURLOPT_POSTFIELDS, $body);
         curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
