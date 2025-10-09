@@ -10,6 +10,10 @@ use Illuminate\Http\Request;
 
 class SubcategoryController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('can:manage subcategories');
+    }
     /**
      * Display a listing of the resource.
      */

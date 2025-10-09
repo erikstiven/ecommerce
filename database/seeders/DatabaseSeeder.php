@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use App\Models\Product;
 use Illuminate\Support\Facades\Storage;
+use Spatie\Permission\Contracts\Permission;
 
 class DatabaseSeeder extends Seeder
 {
@@ -37,8 +38,13 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('Nasa4036'), // Password is hashed
         ]);
 
+        \App\Models\User::factory(20)->create();
+
+
         $this->call(
             [
+                PermissionSeeder::class,
+                RoleSeeder::class,
                 FamilySeeder::class,                    // Add other seeders here if needed
                 OptionSeeder::class,
             ]

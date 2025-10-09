@@ -14,7 +14,8 @@ use Database\Seeders\OptionSeeder;
 
 Route::get('/', function () {
     return view('admin.dashboard');
-})->name('dashboard');
+})->middleware('can:access dashboard')
+->name('dashboard');
 
 Route::get('/options', [OptionController::class, 'index'])->name('options.index');
 

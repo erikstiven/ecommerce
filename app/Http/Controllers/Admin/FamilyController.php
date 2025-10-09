@@ -8,6 +8,11 @@ use Illuminate\Http\Request;
 
 class FamilyController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('can:manage families');
+    }
     /**
      * Display a listing of the resource.
      */
