@@ -85,7 +85,7 @@
                 </x-input>
             </div>
 
-            @empty($product->variants->count() > 0)
+            @if ($product->variants->count() == 0)
                 <div class="mb-4">
                     <x-label class="mb-1">
                         Stock
@@ -94,7 +94,7 @@
                         placeholder="Ingrese el stock del producto">
                     </x-input>
                 </div>
-            @endempty
+            @endif
 
 
             <div class="flex justify-end mt-4">

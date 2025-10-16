@@ -27,7 +27,8 @@ class ProductEdit extends Component
     public function mount($product)
     {
         $this->product = $product; // Asignar el producto completo
-        $this->productEdit = $product->only('sku', 'name', 'description', 'image_path', 'price', 'stock', 'subcategory_id');
+        //$this->productEdit = $product->only('sku', 'name', 'description', 'image_path', 'price', 'stock', 'subcategory_id');
+        $this->productEdit = $product->only('sku', 'name', 'description', 'image_path', 'price', 'subcategory_id');
 
         $this->families = Family::all();
 
@@ -67,9 +68,9 @@ class ProductEdit extends Component
     }
 
     #[On('variant-generate')]
-    public function updateProduct(){
+    public function updateProduct()
+    {
         $this->product = $this->product->fresh();
-
     }
 
     #[Computed()]
@@ -86,7 +87,7 @@ class ProductEdit extends Component
             'productEdit.name' => 'required|max:255',
             'productEdit.description' => 'nullable',
             'productEdit.price' => 'required|numeric|min:0',
-            'productEdit.stock' => 'required|numeric|min:0',
+            //'productEdit.stock' => 'required|numeric|min:0',
             'productEdit.subcategory_id' => 'required|exists:subcategories,id',
         ]);
 
@@ -96,7 +97,7 @@ class ProductEdit extends Component
             if ($this->productEdit['image_path']) {
                 Storage::delete($this->productEdit['image_path']);
             }
-            
+
             // Guardar nueva imagen
             $this->productEdit['image_path'] = $this->image->store('products');
         }

@@ -36,29 +36,33 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             @foreach ($lastProducts as $product)
-                <article class="bg-white rounded shadow overflow-hidden">
-                    <img src="{{ $product->image }}" class="w-full h-48 object-cover object-center">
-
-                    <div class="p-4">
-                        <h1 class="text-lg font-bold text-gray-700 line-clamp-2 min-h-[56px] mb-2">
-                            {{ $product->name }}
-
-                        </h1>
-
-                        <p class="text-gray-600 mb-4">
-                          $ {{ $product->price }}
-                        </p>
-
-                        <a href="{{ route('products.show', $product) }}" class="btn btn-gradient-purple block w-full text-center">
-                            Ver mas
-                        </a>
-
+                <article
+                    class="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 flex flex-col">
+                    <!-- Imagen -->
+                    <div class="overflow-hidden">
+                        <img src="{{ $product->image }}"
+                            class="w-full h-48 object-cover transition-transform duration-300 hover:scale-110">
                     </div>
 
+                    <!-- Contenido -->
+                    <div class="flex flex-col justify-between flex-grow p-5">
+                        <div>
+                            <h1 class="text-lg font-bold text-gray-800 mb-1 line-clamp-2">
+                                {{ $product->name }}
+                            </h1>
+                            <p class="text-gray-500 mb-4">$ {{ $product->price }}</p>
+                        </div>
+
+                        <!-- Botón al fondo -->
+                        <a href="{{ route('products.show', $product) }}"
+                            class="mt-auto block text-center bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-lg font-semibold transition">
+                            Ver más
+                        </a>
+                    </div>
                 </article>
             @endforeach
-
         </div>
+
     </x-container>
 
 
