@@ -13,11 +13,15 @@
                          </path>
                      </svg>
                  </button>
-                 <a href="https://flowbite.com" class="flex ms-2 md:me-24">
-                     <img src="https://flowbite.com/docs/images/logo.svg" class="h-8 me-3" alt="FlowBite Logo" />
-                     <span
-                         class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">Flowbite</span>
+                 <a  class="flex ms-2 md:me-24">
+                     <img src="{{ asset('img/logo.png') }}" class="h-8 me-3" alt="Codecima Logo" />
+                     <span class="self-center text-xl font-semibold sm:text-xl whitespace-nowrap text-blue-600 dark:text-white">
+                        Codecima
+                     </span>
                  </a>
+
+
+
              </div>
              <div class="flex items-center">
                  <div class="flex items-center ms-3">

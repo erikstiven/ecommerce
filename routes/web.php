@@ -1,15 +1,20 @@
 <?php
 
+use App\Http\Controllers\AboutController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\Admin\FamilyController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\FamilyController as ControllersFamilyController;
+use App\Http\Controllers\LegalController;
+use App\Http\Controllers\LocationController;
 use App\Http\Controllers\ProductController as ControllersProductController;
+use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\ShippingController;
 use App\Http\Controllers\SubcategoryController;
 use App\Http\Controllers\WelcomeController;
+
 use Illuminate\Support\Facades\Route;
 use App\Models\Product;
 use App\Models\Variant;
@@ -24,6 +29,18 @@ Route::get('subcategories/{subcategory}', [SubcategoryController::class, 'show']
 Route::get('products/{product}', [ControllersProductController::class, 'show'])->name('products.show');
 
 Route::get('cart', [CartController::class, 'index'])->name('cart.index');
+
+//Nosotros
+Route::get('/sobre-nosotros', [AboutController::class, 'index'])->name('sobre-nosotros');
+//Servicios
+Route::get('/servicios', [ServicesController::class, 'index'])->name('servicios');
+//Ubicación
+Route::get('/ubicacion', [LocationController::class, 'index'])->name('ubicacion');
+
+//Legal
+Route::get('/legal', [LegalController::class, 'index'])->name('legal');
+
+
 
 // Envíos
 Route::get('shipping', [ShippingController::class, 'index'])
