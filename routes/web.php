@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\Admin\FamilyController;
@@ -15,14 +17,27 @@ use App\Http\Controllers\ShippingController;
 use App\Http\Controllers\SubcategoryController;
 use App\Http\Controllers\WelcomeController;
 
-use Illuminate\Support\Facades\Route;
 use App\Models\Product;
 use App\Models\Variant;
 use App\Models\Order;
 use Barryvdh\DomPDF\Facade\Pdf;
 
-Route::get('/', [WelcomeController::class, 'index'])->name('welcome.index');
+/*
+|--------------------------------------------------------------------------
+| Rutas web
+|--------------------------------------------------------------------------
+| TEMPORAL: mientras no hay BD, la home devuelve una vista estática
+| (no consulta base de datos).
+*/
+Route::get('/', function () {
+    // Si prefieres texto plano momentáneo:
+    // return 'Hola, Laravel en Hostinger!';
+    return view('welcome');
+})->name('welcome.index');
 
+// Cuando conectes la BD, vuelve a esta línea:
+// Route::get('/', [WelcomeController::class, 'index'])->name('welcome.index');
+//ultimo verificar
 Route::get('families/{family}', [ControllersFamilyController::class, 'show'])->name('families.show');
 Route::get('categories/{category}', [CategoryController::class, 'show'])->name('categories.show');
 Route::get('subcategories/{subcategory}', [SubcategoryController::class, 'show'])->name('subcategories.show');
@@ -30,24 +45,23 @@ Route::get('products/{product}', [ControllersProductController::class, 'show'])-
 
 Route::get('cart', [CartController::class, 'index'])->name('cart.index');
 
-//Nosotros
+// Nosotros
 Route::get('/sobre-nosotros', [AboutController::class, 'index'])->name('sobre-nosotros');
-//Servicios
+// Servicios
 Route::get('/servicios', [ServicesController::class, 'index'])->name('servicios');
-//Ubicación
+// Ubicación
 Route::get('/ubicacion', [LocationController::class, 'index'])->name('ubicacion');
 
-//Legal
+// Legal
 Route::get('/legal', [LegalController::class, 'index'])->name('legal');
-
-
 
 // Envíos
 Route::get('shipping', [ShippingController::class, 'index'])
-->middleware(['auth']) // <-- AÑADIDO)
-->name('shipping.index');
-Route::post('shipping', [ShippingController::class, 'store'])->name('shipping.store'); // <-- NUEVA
+    ->middleware(['auth']) // <-- requiere login
+    ->name('shipping.index');
 
+Route::post('shipping', [ShippingController::class, 'store'])
+    ->name('shipping.store'); // <-- nueva
 
 // Checkout (requiere login)
 Route::middleware('auth')->group(function () {
@@ -83,7 +97,7 @@ Route::middleware([
     })->name('dashboard');
 });
 
-
+// Ruta de prueba (usa BD; no la abras si aún no configuras la base)
 Route::get('prueba', function () {
     $order = Order::first();
     $pdf = Pdf::loadView('orders.ticket', compact('order'))->setPaper('a4','landscape');
@@ -91,9 +105,8 @@ Route::get('prueba', function () {
     $pdf->save(storage_path('app/public/tickets/ticket-' . $order->id . '.pdf'));
 
     $order->pdf_path = 'tickets/ticket-' . $order->id . '.pdf';
-
     $order->save();
-    return "Ticket generado correctamente";
 
-    return view('orders.ticket', compact('order'));
+    return "Ticket generado correctamente";
+    // return view('orders.ticket', compact('order'));
 });
