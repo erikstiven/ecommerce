@@ -30,10 +30,9 @@ use Barryvdh\DomPDF\Facade\Pdf;
 | (no consulta base de datos).
 */
 Route::get('/', function () {
-    // Si prefieres texto plano momentáneo:
-    // return 'Hola, Laravel en Hostinger!';
-    return view('welcome');
+    return response('<!doctype html><meta charset="utf-8"><title>OK</title><h1>Laravel en Hostinger ✔️</h1><p>Sin BD y sin Vite (temporal).</p>', 200);
 })->name('welcome.index');
+
 
 // Cuando conectes la BD, vuelve a esta línea:
 // Route::get('/', [WelcomeController::class, 'index'])->name('welcome.index');
