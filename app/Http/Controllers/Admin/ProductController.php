@@ -70,7 +70,9 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        Storage::delete($product->image_path);
+        //Storage::delete($product->image_path);
+        Storage::disk('public')->delete($product->image_path);
+
         $product->delete();
         session()->flash('swal', [
             'icon' => 'success',
@@ -99,10 +101,13 @@ class ProductController extends Controller
         if ($request->image) {
 
             if ($variant->image_path) {
-                Storage::delete($variant->image_path);
+                //Storage::delete($variant->image_path);
+                Storage::disk('public')->delete($variant->image_path);
             }
 
-            $data['image_path'] = $request->image->store('products');
+           // $data['image_path'] = $request->image->store('products');
+           $data['image_path'] = $request->image->store('products', 'public');
+
         }
         $variant->update($data);
         session()->flash('swal', [
