@@ -11,7 +11,8 @@
                 </label>
             </div>
             <img class="aspect-[16/9] object-cover object-center w-full"
-                src="{{ $image ? $image->temporaryUrl() : Storage::url($productEdit['image_path']) }}" alt="">
+                {{-- src="{{ $image ? $image->temporaryUrl() : Storage::url($productEdit['image_path']) }}" alt="" --}}
+                src="{{ Storage::url('products/' . $productEdit['image_path']) }}" alt="">
         </figure>
 
         <x-validation-errors class="mb-4" />
