@@ -29,7 +29,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 | TEMPORAL: mientras no hay BD, la home devuelve una vista estática
 | (no consulta base de datos).
 */
-Route::get('/', function () {
+/*Route::get('/', function () {
     $html = <<<'HTML'
 <!doctype html>
 <html lang="es">
@@ -124,7 +124,9 @@ Route::get('/', function () {
 </html>
 HTML;
     return response($html, 200)->header('Content-Type', 'text/html; charset=utf-8');
-});
+});*/
+Route::get('/', [WelcomeController::class, 'index'])->name('welcome.index');
+
 
 
 
