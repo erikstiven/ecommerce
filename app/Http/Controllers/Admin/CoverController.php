@@ -43,7 +43,9 @@ class CoverController extends Controller
             'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:1024',
         ]);
 
-        $data['image_path'] = Storage::put('covers', $data['image']);
+        //$data['image_path'] = Storage::put('covers', $data['image']);
+        $data['image_path'] = $data['image']->store('covers', 'public');
+
 
         $cover = Cover::create($data);
 
@@ -86,7 +88,9 @@ class CoverController extends Controller
         ]);
         //si hay algo en el campo imagen
         if (isset($data['image'])) {
-            Storage::delete($cover->image_path);
+            //Storage::delete($cover->image_path);
+            Storage::disk('public')->delete($cover->image_path);
+
 
             $data['image_path'] = Storage::put('covers', $data['image']);
         }
