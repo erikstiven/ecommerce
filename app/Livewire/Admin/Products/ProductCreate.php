@@ -81,7 +81,9 @@ class ProductCreate extends Component
             'product.subcategory_id' => 'required|exists:subcategories,id',
         ]);
 
-        $this->product['image_path'] = $this->image->store('products');
+        //$this->product['image_path'] = $this->image->store('products');
+        $this->product['image_path'] = $this->image->store('products', 'public');
+
         $product = Product::create($this->product);
 
         session()->flash('swal', [

@@ -35,7 +35,7 @@ class DatabaseSeeder extends Seeder
             'document_number' => '0705871689',
             'email' => 'erikquisnia@gmail.com',
             'phone' => '0979018689',
-            'password' => bcrypt('Nasa4036'), // Password is hashed
+            'password' => bcrypt('Nasa4036@'), // Password is hashed
         ]);
 
         \App\Models\User::factory(20)->create();
@@ -45,8 +45,8 @@ class DatabaseSeeder extends Seeder
             [
                 PermissionSeeder::class,
                 RoleSeeder::class,
-                FamilySeeder::class,                    // Add other seeders here if needed
-                OptionSeeder::class,
+                //FamilySeeder::class,                    // Add other seeders here if needed
+                //OptionSeeder::class,
             ]
         );
 

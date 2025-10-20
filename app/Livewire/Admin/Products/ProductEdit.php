@@ -99,7 +99,9 @@ class ProductEdit extends Component
             }
 
             // Guardar nueva imagen
-            $this->productEdit['image_path'] = $this->image->store('products');
+            //$this->productEdit['image_path'] = $this->image->store('products');
+            $this->productEdit['image_path'] = $this->image->store('products', 'public');
+
         }
 
         $this->product->update($this->productEdit);
