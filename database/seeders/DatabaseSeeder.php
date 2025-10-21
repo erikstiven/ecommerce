@@ -50,6 +50,6 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        Product::factory(150)->create();
+        //Product::factory(150)->create();
     }
 }
