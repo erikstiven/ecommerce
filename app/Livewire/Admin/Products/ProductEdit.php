@@ -95,7 +95,8 @@ class ProductEdit extends Component
         if ($this->image) {
             // Eliminar imagen anterior si existe
             if ($this->productEdit['image_path']) {
-                Storage::delete($this->productEdit['image_path']);
+                //Storage::delete($this->productEdit['image_path']);
+                Storage::disk('public')->delete($this->productEdit['image_path']);
             }
 
             // Guardar nueva imagen

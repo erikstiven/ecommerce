@@ -13,104 +13,101 @@ class CoverController extends Controller
     {
         $this->middleware('can:manage covers');
     }
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
         $covers = Cover::orderBy('order')->get();
         return view('admin.covers.index', compact('covers'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('admin.covers.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $data = $request->validate([
-            'title' => 'required|string|max:255',
-            'start_at' => 'required|date',
-            'end_at' => 'nullable|date|after_or_equal:start_at',
+            'title'     => 'required|string|max:255',
+            'start_at'  => 'required|date',
+            'end_at'    => 'nullable|date|after_or_equal:start_at',
             'is_active' => 'required|boolean',
-            'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:1024',
+            'image'     => 'required|image|mimes:jpg,jpeg,png,webp|max:1024',
         ]);
 
-        //$data['image_path'] = Storage::put('covers', $data['image']);
+        // Guardar la imagen SIEMPRE en el disco 'public'
         $data['image_path'] = $data['image']->store('covers', 'public');
-
+        unset($data['image']); // no intentamos guardar el UploadedFile en la BD
 
         $cover = Cover::create($data);
 
         session()->flash('swal', [
-            'icon' => 'success',
+            'icon'  => 'success',
             'title' => '¡Portada creada!',
-            'text' => 'La portada ha sido creada exitosamente.',
+            'text'  => 'La portada ha sido creada exitosamente.',
         ]);
 
         return redirect()->route('admin.covers.edit', $cover);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Cover $cover)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Cover $cover)
     {
         return view('admin.covers.edit', compact('cover'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Cover $cover)
     {
         $data = $request->validate([
-            'title' => 'required|string|max:255',
-            'start_at' => 'required|date',
-            'end_at' => 'nullable|date|after_or_equal:start_at',
+            'title'     => 'required|string|max:255',
+            'start_at'  => 'required|date',
+            'end_at'    => 'nullable|date|after_or_equal:start_at',
             'is_active' => 'required|boolean',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:1024',
+            'image'     => 'nullable|image|mimes:jpg,jpeg,png,webp|max:1024',
         ]);
-        //si hay algo en el campo imagen
-        if (isset($data['image'])) {
-            //Storage::delete($cover->image_path);
-            Storage::disk('public')->delete($cover->image_path);
 
-
-            $data['image_path'] = Storage::put('covers', $data['image']);
+        // Si llega nueva imagen, borrar la anterior del disco 'public' y subir la nueva al mismo disco
+        if (!empty($data['image'])) {
+            if (!empty($cover->image_path)) {
+                Storage::disk('public')->delete($cover->image_path);
+            }
+            $data['image_path'] = $data['image']->store('covers', 'public');
+            unset($data['image']);
+        } else {
+            // evitar que quede la clave 'image' sin usar
+            unset($data['image']);
         }
 
         $cover->update($data);
 
         session()->flash('swal', [
-            'icon' => 'success',
+            'icon'  => 'success',
             'title' => '¡Portada actualizada!',
-            'text' => 'La portada ha sido actualizada exitosamente.',
+            'text'  => 'La portada ha sido actualizada exitosamente.',
         ]);
 
-        return redirect()->route('admin.covers.edit', $cover);  
+        return redirect()->route('admin.covers.edit', $cover);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Cover $cover)
     {
-        //
+        // Borra el archivo físico si existe
+        if (!empty($cover->image_path)) {
+            Storage::disk('public')->delete($cover->image_path);
+        }
+
+        $cover->delete();
+
+        session()->flash('swal', [
+            'icon'  => 'success',
+            'title' => '¡Portada eliminada!',
+            'text'  => 'La portada ha sido eliminada correctamente.',
+        ]);
+
+        return redirect()->route('admin.covers.index');
     }
 }
