@@ -10,9 +10,13 @@
                     <input type="file" class="hidden" accept="image/*" wire:model="image">
                 </label>
             </div>
-            <img class="aspect-[16/9] object-cover object-center w-full"
+            {{-- <img class="aspect-[16/9] object-cover object-center w-full"
                 {{-- src="{{ $image ? $image->temporaryUrl() : Storage::url($productEdit['image_path']) }}" alt="" --}}
-                src="{{ Storage::url('products/' . $productEdit['image_path']) }}" alt="">
+            {{-- src="{{ Storage::url('products/' . $productEdit['image_path']) }}" alt=""> --}}
+
+            <img class="aspect-[16/9] object-cover object-center w-full"
+                src="{{ $image ? $image->temporaryUrl() : $product->image }}" alt="Imagen del producto">
+
         </figure>
 
         <x-validation-errors class="mb-4" />
