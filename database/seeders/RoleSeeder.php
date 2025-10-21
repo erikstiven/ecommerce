@@ -3,21 +3,23 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\PermissionRegistrar;
 
 class RoleSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        $admin =Role::create([
-            'name' => 'admin',
-        ]);
+        // Limpia el caché de permisos
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
+        // Crear roles
+        $admin = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
+        $driver = Role::firstOrCreate(['name' => 'driver', 'guard_name' => 'web']);
+
+        // Asignar permisos al rol admin
         $admin->syncPermissions([
             'access dashboard',
             'manage options',
@@ -31,16 +33,20 @@ class RoleSeeder extends Seeder
             'manage shipments',
         ]);
 
-        $user = User::find(1);
-        $user->assignRole('admin');
-
-        $driver = Role::create([
-            'name' => 'driver',
-        ]);
-
+        // Asignar permisos al rol driver
         $driver->syncPermissions([
             'access dashboard',
             'manage shipments',
         ]);
+
+        // Buscar usuario por email (más confiable que ID)
+        $user = User::where('email', 'erikquisnia@gmail.com')->first();
+
+        if ($user) {
+            $user->assignRole('admin');
+            $this->command->info('✅ Usuario admin encontrado y rol asignado correctamente.');
+        } else {
+            $this->command->warn('⚠️ No se encontró el usuario con email erikquisnia@gmail.com.');
+        }
     }
 }
