@@ -38,8 +38,33 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Validar que sea una imagen válida
+            'name' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            // Añadir otros campos que quieras validar
+        ]);
+
+        $data = $request->all();
+
+        if ($request->hasFile('image') && $request->file('image')->isValid()) {
+            // Guardar la imagen en el directorio 'products' dentro de 'storage/app/public'
+            $imagePath = $request->file('image')->store('products', 'public');
+            $data['image_path'] = $imagePath;
+        }
+
+        // Crear el producto con los datos validados
+        Product::create($data);
+
+        session()->flash('swal', [
+            'icon' => 'success',
+            'title' => '¡Bien hecho!',
+            'text' => 'Producto creado correctamente.',
+        ]);
+
+        return redirect()->route('admin.products.index');
     }
+
 
     /**
      * Display the specified resource.
@@ -105,9 +130,8 @@ class ProductController extends Controller
                 Storage::disk('public')->delete($variant->image_path);
             }
 
-           // $data['image_path'] = $request->image->store('products');
-           $data['image_path'] = $request->image->store('products', 'public');
-
+            // $data['image_path'] = $request->image->store('products');
+            $data['image_path'] = $request->image->store('products', 'public');
         }
         $variant->update($data);
         session()->flash('swal', [
