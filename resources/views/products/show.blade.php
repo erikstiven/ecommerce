@@ -73,10 +73,20 @@
             <div class="grid md:grid-cols-2 gap-6">
 
                 <div class="col-span-1">
-
+                    {{-- 
                     <figure>
                         <img src="{{ $product->image }}" class="aspect-[16/9] w-full object-cover object-center">
+                    </figure> --}}
+
+                    <figure class="bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center p-3">
+                        <img src="{{ $product->image }}" {{-- Si tus imágenes están en storage; si no, usa $product->image --}}
+                            alt="{{ $product->name }}" loading="lazy"
+                            onerror="this.onerror=null; this.src='/img/Image_placeholder_4.jpg';"
+                            class="block w-auto max-h-[420px] md:max-h-[520px] object-contain">
                     </figure>
+
+
+
 
 
 

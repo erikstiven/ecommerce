@@ -29,9 +29,10 @@
 
     {{-- contenedor de productos agregados resientemenre --}}
 
-    <x-container>
-        <h1 class="text-2xl font-bold text-gray-700 mb-4">
-            Ultimos productos
+    <x-container class="px-4 sm:px-6 lg:px-8">
+
+        <h1 class="text-2xl font-bold text-gray-700 dark:text-gray-100 mb-4">
+            Últimos productos
         </h1>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -39,18 +40,23 @@
                 <article
                     class="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 flex flex-col">
                     <!-- Imagen -->
-                    <div class="overflow-hidden">
-                        <img src="{{ $product->image }}"
-                            class="w-full h-48 object-cover transition-transform duration-300 hover:scale-110">
+                    <div class="overflow-hidden bg-gray-100 flex items-center justify-center">
+                        <img src="{{ $product->image }}" alt="{{ $product->name }}" loading="lazy"
+                            onerror="this.onerror=null; this.src='/img/Image_placeholder_4.jpg';"
+                            class="w-full aspect-[4/3] object-cover object-center transition-transform duration-300 hover:scale-110">
+
                     </div>
+
 
                     <!-- Contenido -->
                     <div class="flex flex-col justify-between flex-grow p-5">
                         <div>
-                            <h1 class="text-lg font-bold text-gray-800 mb-1 line-clamp-2">
+                            <h1 class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-1 line-clamp-2">
                                 {{ $product->name }}
                             </h1>
-                            <p class="text-gray-500 mb-4">$ {{ $product->price }}</p>
+                            <p class="text-gray-500 dark:text-gray-300 mb-4">
+                                $ {{ $product->price }}
+                            </p>
                         </div>
 
                         <!-- Botón al fondo -->

@@ -28,6 +28,10 @@
         <p class="text-sm text-gray-700">4,1 (55)</p>
     </div>
 
+       <div class="text-sm mb-4">
+        {{ $product->description }}
+    </div>
+
     <div class="flex items-center justify-between">
         <p class="font-semibold text-2xl text-gray-600 mb-4">
             $/ {{ $product->price }}
@@ -110,9 +114,7 @@
         Agregar al carrito
     </button>
 
-    <div class="text-sm mb-4">
-        {{ $product->description }}
-    </div>
+ 
 
     <div class="text-gray-700 flex items-center space-x-4">
 

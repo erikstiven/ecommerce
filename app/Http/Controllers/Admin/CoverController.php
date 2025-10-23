@@ -32,7 +32,7 @@ class CoverController extends Controller
             'start_at'  => 'required|date',
             'end_at'    => 'nullable|date|after_or_equal:start_at',
             'is_active' => 'required|boolean',
-            'image'     => 'required|image|mimes:jpg,jpeg,png,webp|max:1024',
+            'image'     => 'required|image|mimes:jpg,jpeg,png,webp,svg|max:5024',
         ]);
 
         // Guardar la imagen SIEMPRE en el disco 'public'

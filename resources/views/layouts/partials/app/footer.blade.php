@@ -112,7 +112,7 @@
                     <li>
                         <a href="https://wa.me/593989009428?text=Hola%2C%20me%20interesan%20los%20servicios%20y%20productos%20que%20muestran%20en%20su%20p%C3%A1gina%20web."
                             class="hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 rounded">
-                            +593989009428
+                            WhatsApp / Teléfono
                         </a>
                     </li>
                 </ul>

@@ -31,7 +31,7 @@ class ProductController extends Controller
         $data = $request->validate([
             'name'  => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp,svg|max:5024',
             // agrega aquí otros campos que uses (sku, subcategory_id, etc.)
         ]);
 
