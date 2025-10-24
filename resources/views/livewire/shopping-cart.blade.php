@@ -24,7 +24,7 @@
                     @forelse (Cart::content() as $item)
                         <li class="lg:flex lg:items-center space-y-2 lg:space-y-0 {{ $item->qty > $item->options['stock'] ? 'text-red-600' : '' }}">
 
-                            <img class="w-full lg:w-36 aspect-[16/9] object-cover object-center mr-2"
+                            <img class="w-full lg:w-36 aspect-[4/3] object-cover object-center mr-2"
                                 src="{{ $item->options->image }}" alt="">
                             <div class="lg:w-64 xl:w-80">
 
