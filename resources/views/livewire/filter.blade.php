@@ -52,8 +52,10 @@
                         class="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 flex flex-col">
                         <!-- Imagen -->
                         <div class="overflow-hidden">
-                            <img src="{{ $product->image }}"
-                                class="w-full h-48 object-cover object-center transition-transform duration-300 hover:scale-110">
+                             <img src="{{ $product->image }}" {{-- Si tus imágenes están en storage; si no, usa $product->image --}}
+                            alt="{{ $product->name }}" loading="lazy"
+                            onerror="this.onerror=null; this.src='/img/Image_placeholder_4.jpg';"
+                            class="block w-auto max-h-[420px] md:max-h-[520px] object-contain">
                         </div>
 
                         <!-- Contenido -->
