@@ -1,5 +1,5 @@
 <div>
-    <section class="bg-white rounded-lg shadow overflow-hidden">
+    <section class="bg-white rounded-lg shadow overflow-hidden ">
         <header class="bg-gray-900 px-4 py-2">
             <h2 class="text-white text-lg">Direcciones de envío guardadas</h2>
         </header>

@@ -1,8 +1,7 @@
 <div>
 
 
-
-    <h1 class="text-xl text-gray-600 mb-2">
+    <h1 class="text-2xl text-black mb-2 font-bold">
         {{ $product->name }}
     </h1>
 
