@@ -11,7 +11,7 @@
                     <a href="/" class="inline-flex" aria-label="Ir al inicio">
                         <img src="/img/logohmbsport.svg" alt="HMB Sport" class="h-16 md:h-20 object-contain mx-auto" />
                     </a>
-                </div>
+                </div>      
 
                 <!-- Redes sociales -->
                 <div class="flex justify-center md:justify-start gap-4">
@@ -46,10 +46,10 @@
             <div class="md:col-span-3">
                 <h2 class="mb-3 font-semibold uppercase tracking-wide text-white/90">Atención al cliente</h2>
                 <ul class="space-y-2 text-white/90">
-                      <li>
-                        <a href="/ubicacion"
+                    <li>
+                        <a href="/sobre-nosotros"
                             class="hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 rounded">
-                            Ubicación
+                            Preguntas frecuentes
                         </a>
                     </li>
                     <li>
@@ -58,7 +58,7 @@
                             Sobre Nosotros
                         </a>
                     </li>
-                  
+
                     <li>
                         <a href="https://wa.me/593989009428?text=Hola%2C%20me%20interesan%20los%20servicios%20y%20productos%20que%20muestran%20en%20su%20p%C3%A1gina%20web."
                             class="hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 rounded">
