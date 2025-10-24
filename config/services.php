@@ -39,6 +39,8 @@ return [
     'payphone' => [
         'token' => env('PAYPHONE_TOKEN'),
         'store_id' => env('PAYPHONE_STORE_ID'),
+        'api_url'  => env('PAYPHONE_API_URL', 'https://sandbox.payphonetodoesposible.com/api'),
+
     ],
 
 
