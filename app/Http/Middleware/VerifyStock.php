@@ -20,17 +20,25 @@ class VerifyStock
         Cart::instance('shopping');
 
         foreach (Cart::content() as $item) {
+            $options = $item->options ?? [];
 
-            $options = $item->options;
-            $variant = Variant::where('sku', $options['sku'])->first();
+            // Intentar obtener el variant por SKU
+            $variant = Variant::where('sku', $options['sku'] ?? null)->first();
 
+            if (!$variant) {
+                // 🔧 Si no existe, eliminar el producto del carrito
+                Cart::remove($item->rowId);
+                continue; // Pasar al siguiente item
+            }
+
+            // Si existe, actualizar el stock actual
             $options['stock'] = $variant->stock;
 
             Cart::update($item->rowId, [
-                'options' =>  $options,
-
+                'options' => $options,
             ]);
         }
+
         return $next($request);
     }
 }
