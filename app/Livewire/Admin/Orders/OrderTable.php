@@ -92,7 +92,12 @@ class OrderTable extends DataTableComponent
         return 'admin.orders.modal';
     }
     //assing driver
-    public function assingDriver(Order $order)
+    // public function assingDriver(Order $order)
+    // {
+    //     $this->new_shipment['order_id'] = $order->id;
+    //     $this->new_shipment['openModal'] = true;
+    // }
+    public function assignDriver(Order $order)
     {
         $this->new_shipment['order_id'] = $order->id;
         $this->new_shipment['openModal'] = true;
@@ -122,7 +127,9 @@ class OrderTable extends DataTableComponent
         $order->status = OrderStatus::Reembolsado;
         $order->save();
 
-        $shipment = $order->shipments()->lasted();
+        //$shipment = $order->shipments()->lasted();
+        $shipment = $order->shipments()->latest()->first();
+
         $shipment->refunded_at = now();
         $shipment->save();
     }
@@ -131,7 +138,7 @@ class OrderTable extends DataTableComponent
     {
 
         if ($order->status === OrderStatus::Enviado) {
-            $this->distpach('swal',[
+            $this->dispatch('swal', [
                 'title' => 'No se puede cancelar',
                 'text' => 'La orden tiene envios pendientes',
                 'icon' => 'error',
@@ -139,17 +146,15 @@ class OrderTable extends DataTableComponent
             return;
         }
 
-        if($order->status === OrderStatus::Fallido){
-            $this->distpach('swal',[
+        if ($order->status === OrderStatus::Fallido) {
+            $this->dispatch('swal', [
                 'title' => 'No se puede cancelar',
                 'text' => 'El pedido a sido reembolsado por el delivery',
                 'icon' => 'error',
             ]);
             return;
-
         }
         $order->status = OrderStatus::Cancelado;
         $order->save();
-
     }
 }

@@ -42,24 +42,56 @@ class ProductVariants extends Component
 
     ];
 
-  
+
     //update variant
+    // public function updateVariant()
+    // {
+    //     $this->validate([
+    //         'variantEdit.stock' => 'required|numeric',
+    //         'variantEdit.sku' => 'required',
+    //     ]);
+
+    //     $variant = Variant::find($this->variantEdit['id']);
+    //     $variant->update([
+    //         'stock' => $this->variantEdit['stock'],
+    //         'sku' => $this->variantEdit['sku'],
+    //     ]);
+
+    //     $this->reset('variantEdit');
+    //     $this->product = $this->product->fresh();
+    // }
     public function updateVariant()
     {
+        // Validar campos obligatorios y tipos
         $this->validate([
             'variantEdit.stock' => 'required|numeric',
-            'variantEdit.sku' => 'required',
+            'variantEdit.sku'   => 'required',
         ]);
 
+        // Buscar la variante a editar por su ID
         $variant = Variant::find($this->variantEdit['id']);
-        $variant->update([
-            'stock' => $this->variantEdit['stock'],
-            'sku' => $this->variantEdit['sku'],
-        ]);
 
-        $this->reset('variantEdit');
-        $this->product = $this->product->fresh();
+        // Verificar que la variante exista antes de actualizarla
+        if ($variant) {
+            $variant->update([
+                'stock' => $this->variantEdit['stock'],
+                'sku'   => $this->variantEdit['sku'],
+            ]);
+
+            // Reiniciar los campos de edición y refrescar la relación del producto
+            $this->reset('variantEdit');
+            $this->product = $this->product->fresh();
+        } else {
+            // Manejar el caso de variante inexistente (opcional)
+            // Por ejemplo, mostrar una alerta usando dispatch:
+            $this->dispatch('swal', [
+                'icon'  => 'error',
+                'title' => 'Variante no encontrada',
+                'text'  => 'No se pudo actualizar porque la variante no existe.',
+            ]);
+        }
     }
+
 
 
     // public function mount()
@@ -93,26 +125,46 @@ class ProductVariants extends Component
         return Feature::where('option_id', $this->variant['option_id'])->get();
     }
 
-    public function getFeatures($options_id){
-        
-        $features = DB::table('option_product')
-        ->where('product_id', $this->product->id)
-        ->where('option_id', $options_id)
-        ->first()
-        ->features;
+    // public function getFeatures($options_id){
 
-        $features = collect(json_decode($features))->pluck('id');
+    //     $features = DB::table('option_product')
+    //     ->where('product_id', $this->product->id)
+    //     ->where('option_id', $options_id)
+    //     ->first()->features;
 
+    //     $features = collect(json_decode($features))->pluck('id');
+
+    //     return Feature::where('option_id', $options_id)
+    //     ->whereNotIn('id', $features)
+    //     ->get();
+    // }
+
+    public function getFeatures($options_id)
+    {
+        $record = DB::table('option_product')
+            ->where('product_id', $this->product->id)
+            ->where('option_id', $options_id)
+            ->first();
+
+        // Si existe un registro y tiene la columna features, lo decodificamos; de lo contrario usamos un array vacío
+        if ($record && $record->features) {
+            $featureIds = collect(json_decode($record->features))->pluck('id');
+        } else {
+            $featureIds = collect(); // colección vacía
+        }
+
+        // Retornar las features que aún no están asociadas al producto
         return Feature::where('option_id', $options_id)
-        ->whereNotIn('id', $features)
-        ->get();
+            ->whereNotIn('id', $featureIds)
+            ->get();
     }
 
-      public function addNewFeature($option_id, $feature_id)
+
+    public function addNewFeature($option_id, $feature_id)
     {
-        
+
         $this->validate([
-            'new_features.'.$option_id => 'required',
+            'new_features.' . $option_id => 'required',
         ]);
 
         $feature = Feature::find($this->new_features[$option_id]);
@@ -133,7 +185,6 @@ class ProductVariants extends Component
 
 
         $this->generarVariantes();
-
     }
 
 
@@ -173,9 +224,9 @@ class ProductVariants extends Component
 
 
         Variant::where('product_id', $this->product->id)
-        ->whereHas('features', function ($query) use ($feature_id) {
-            $query->where('features.id', $feature_id);
-        })->delete();
+            ->whereHas('features', function ($query) use ($feature_id) {
+                $query->where('features.id', $feature_id);
+            })->delete();
 
         $this->product = $this->product->fresh();
 
@@ -189,38 +240,106 @@ class ProductVariants extends Component
         $this->product = $this->product->fresh();
 
         $this->product->variants()->delete();
-
-
         $this->generarVariantes();
     }
 
+    // public function save()
+    // {
+    //     //validaciones
+    //     $this->validate([
+    //         'variant.option_id' => 'required',
+    //         'variant.features.*.id' => 'required',
+    //         'variant.features.*.value' => 'required',
+    //         'variant.features.*.description' => 'required',
+    //     ]);
+
+    //     $features = collect($this->variant['features']);
+    //     $features = $features->unique('id')->values()->all();
+
+
+    //     $this->product->options()->attach($this->variant['option_id'], [
+    //         'features' => $features
+    //     ]);
+
+    //     // $this->product = $this->product->fresh();
+
+    //     $this->product->variants()->delete();
+
+    //     $this->generarVariantes();
+
+
+    //     $this->reset(['variant', 'openModal']);
+    // }
+
     public function save()
     {
-        //validaciones
+        // Validar que se haya seleccionado la opción y sus features
         $this->validate([
-            'variant.option_id' => 'required',
-            'variant.features.*.id' => 'required',
+            'variant.option_id'        => 'required',
+            'variant.features.*.id'    => 'required',
             'variant.features.*.value' => 'required',
             'variant.features.*.description' => 'required',
         ]);
 
-        $features = collect($this->variant['features']);
-        $features = $features->unique('id')->values()->all();
+        // Eliminar features repetidas y obtener sólo los IDs
+        $features = collect($this->variant['features'])
+            ->unique('id')
+            ->values()
+            ->map(function ($feature) {
+                return [
+                    'id'          => $feature['id'],
+                    'value'       => $feature['value'],
+                    'description' => $feature['description'],
+                ];
+            })
+            ->all();
 
+        // Registrar la nueva opción asociada al producto (si no existía)
+        $this->product->options()->attach(
+            $this->variant['option_id'],
+            ['features' => $features]
+        );
 
-        $this->product->options()->attach($this->variant['option_id'], [
-            'features' => $features
-        ]);
+        // Refrescar la relación para obtener features actualizadas
+        $this->product = $this->product->fresh();
 
-        // $this->product = $this->product->fresh();
+        // 1) Generar todas las combinaciones válidas de features actuales
+        $featuresPivot = $this->product->options->pluck('pivot.features');
+        $combinaciones = $this->generarCombinaciones($featuresPivot);
 
-        $this->product->variants()->delete();
+        // 2) Recorrer variantes actuales y eliminar solo las que ya no estén en combinaciones válidas
+        foreach ($this->product->variants as $variant) {
+            $ids = $variant->features->pluck('id')->sort()->values()->toArray();
+            if (!in_array($ids, $combinaciones)) {
+                // Esta variante ya no corresponde a ninguna combinación, se elimina
+                $variant->delete();
+            }
+        }
 
-        $this->generarVariantes();
+        // 3) Crear variantes nuevas para combinaciones que todavía no existen
+        foreach ($combinaciones as $combinacion) {
+            // Verificar si ya existe una variante con exactamente estas features
+            $exists = Variant::where('product_id', $this->product->id)
+                ->has('features', count($combinacion))
+                ->whereHas('features', function ($query) use ($combinacion) {
+                    $query->whereIn('features.id', $combinacion);
+                })
+                ->whereDoesntHave('features', function ($query) use ($combinacion) {
+                    $query->whereNotIn('features.id', $combinacion);
+                })
+                ->first();
 
+            if (!$exists) {
+                // Crear la nueva variante y asociarle las features
+                $variant = Variant::create(['product_id' => $this->product->id]);
+                $variant->features()->attach($combinacion);
+            }
+        }
 
+        // Resetear la entrada del formulario y cerrar el modal
         $this->reset(['variant', 'openModal']);
     }
+
 
     public function generarVariantes()
     {
@@ -236,10 +355,10 @@ class ProductVariants extends Component
                 ->whereHas('features', function ($query) use ($combinacion) {
                     $query->whereIn('features.id', $combinacion);
                 })
-            ->whereDoesntHave('features', function ($query) use ($combinacion) {
-                $query->whereNotIn('features.id', $combinacion);
-            })->first();
-        
+                ->whereDoesntHave('features', function ($query) use ($combinacion) {
+                    $query->whereNotIn('features.id', $combinacion);
+                })->first();
+
             if ($variant) {
                 continue;
             }

@@ -47,7 +47,13 @@
                 <x-label class="mb-1">
                     Familias
                 </x-label>
-                <x-select class="w-full" wire:model.live="family_id">
+                {{-- <x-select class="w-full" wire:model.live="family_id">
+                    <option value="" disabled selected>Seleccione una familia</option>
+                    @foreach ($families as $family)
+                        <option value="{{ $family->id }}">{{ $family->name }}</option>
+                    @endforeach
+                </x-select> --}}
+                <x-select class="w-full" wire:model="family_id">
                     <option value="" disabled selected>Seleccione una familia</option>
                     @foreach ($families as $family)
                         <option value="{{ $family->id }}">{{ $family->name }}</option>
@@ -59,8 +65,14 @@
                     Categorias
                 </x-label>
 
-                <x-select class="w-full" wire:model.live="category_id">
+                {{-- <x-select class="w-full" wire:model.live="category_id">
                     <option value="" disabled selected>Seleccione una categoria</option>
+                    @foreach ($this->categories as $category)
+                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                    @endforeach
+                </x-select> --}}
+                <x-select class="w-full" wire:model="category_id">
+                    <option value="" disabled selected>Seleccione una categoría</option>
                     @foreach ($this->categories as $category)
                         <option value="{{ $category->id }}">{{ $category->name }}</option>
                     @endforeach

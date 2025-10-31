@@ -7,7 +7,7 @@
         @break
 
         @case(\App\Enums\OrderStatus::Procesando)
-            <button wire:click="assingDriver({{ $order->id }})" class="underline text-yellow-500 hover:no-underline">
+            <button wire:click="assignDriver({{ $order->id }})" class="underline text-yellow-500 hover:no-underline">
                 Asignar repartidor
             </button>
         @break
@@ -20,7 +20,7 @@
         @break
 
         @case(\App\Enums\OrderStatus::Reembolsado)
-            <button wire:click="assingDriver({{ $order->id }})" class="underline text-yellow-500 hover:no-underline">
+            <button wire:click="assignDriver({{ $order->id }})" class="underline text-yellow-500 hover:no-underline">
                 Asignar repartidor
             </button>
         @break
