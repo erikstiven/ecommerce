@@ -22,9 +22,10 @@
 
                 <!-- Buscador (escritorio) -->
                 <div class="flex-1 hidden md:block px-4">
-                    <x-input oninput="search(this.value)"
+                    <x-input onkeypress="handleEnter(event)" oninput="search(this.value)"
                         class="w-full rounded-lg bg-white/10 hover:bg-white/20 transition-colors duration-300 border-none text-white placeholder-white/60 px-4 py-2 text-sm backdrop-blur-sm"
                         placeholder="Buscar por producto, tienda o marca" />
+
                 </div>
 
                 <!-- Iconos -->
@@ -106,8 +107,9 @@
 
                     <a href="{{ route('cart.index') }}" class="relative">
                         <i class="fas fa-shopping-cart text-white text-xl"></i>
-                        <span id="cart-count" class="absolute -top-2 -end-4 inline-flex items-center justify-center w-6 h-6 bg-red-500 rounded-full text-xs font-bold text-white">
-                        {{ Cart::instance('shopping')->count() }}
+                        <span id="cart-count"
+                            class="absolute -top-2 -end-4 inline-flex items-center justify-center w-6 h-6 bg-red-500 rounded-full text-xs font-bold text-white">
+                            {{ Cart::instance('shopping')->count() }}
                         </span>
                     </a>
 
@@ -122,9 +124,10 @@
 
             <!-- Buscador (móvil) -->
             <div class="mt-4 md:hidden">
-                <x-input oninput="search(this.value)"
+                <x-input onkeypress="handleEnter(event)" oninput="search(this.value)"
                     class="w-full rounded-lg bg-white/10 hover:bg-white/20 transition-colors duration-300 border-none text-white placeholder-white/60 px-4 py-2 text-sm backdrop-blur-sm"
                     placeholder="Buscar por producto, tienda o marca" />
+
             </div>
         </x-container>
     </header>
@@ -156,7 +159,8 @@
                 <div class="h-[calc(100vh-52px)] overflow-auto">
                     <ul>
                         @foreach ($families as $family)
-                            <li wire:mouseover="set('family_id', {{ $family->id }})" class="border-b border-gray-100">
+                            <li wire:mouseover="set('family_id', {{ $family->id }})"
+                                class="border-b border-gray-100">
                                 <a href="{{ route('families.show', $family) }}"
                                     class="flex items-center justify-between px-4 py-4 text-gray-700 hover:bg-gray-100">
                                     <span>{{ $family->name }}</span>
@@ -182,13 +186,15 @@
                     <ul class="grid w-full grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
                         @foreach ($this->categories as $category)
                             <li>
-                                <a href="{{ route('categories.show', $category) }}" class="text-purple-600 font-semibold text-base md:text-lg">
+                                <a href="{{ route('categories.show', $category) }}"
+                                    class="text-purple-600 font-semibold text-base md:text-lg">
                                     {{ $category->name }}
                                 </a>
                                 <ul class="mt-3 space-y-2">
                                     @foreach ($category->subcategories as $subcategory)
                                         <li>
-                                            <a href="{{ route('subcategories.show', $subcategory) }}" class="text-sm text-gray-700 hover:text-purple-600">
+                                            <a href="{{ route('subcategories.show', $subcategory) }}"
+                                                class="text-sm text-gray-700 hover:text-purple-600">
                                                 {{ $subcategory->name }}
                                             </a>
                                         </li>
@@ -205,15 +211,26 @@
 
     @push('js')
         <script>
+            // Actualiza el contador del carrito cuando Livewire emite el evento cartUpdated
             Livewire.on('cartUpdated', (count) => {
                 document.getElementById('cart-count').innerHTML = count;
-            })
+            });
 
+            // Envía el término de búsqueda a cualquier componente Livewire que escuche el evento 'search'
             function search(value) {
                 Livewire.dispatch('search', {
                     search: value
-                })
+                });
+            }
+
+            // Redirige a la página de búsqueda al pulsar Enter
+            function handleEnter(event) {
+                const value = event.target.value.trim();
+                if (event.key === 'Enter' && value !== '') {
+                    window.location.href = "{{ route('search') }}?search=" + encodeURIComponent(value);
+                }
             }
         </script>
     @endpush
+
 </div>

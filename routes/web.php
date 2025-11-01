@@ -16,6 +16,8 @@ use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\ShippingController;
 use App\Http\Controllers\SubcategoryController;
 use App\Http\Controllers\WelcomeController;
+use App\Http\Controllers\SearchController;
+
 
 use App\Models\Product;
 use App\Models\Variant;
@@ -127,6 +129,7 @@ HTML;
 });*/
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome.index');
 
+Route::get('/buscar', [SearchController::class, '__invoke'])->name('search');
 
 
 

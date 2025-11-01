@@ -61,7 +61,7 @@
                         required />
                 </div>
 
-                <div>
+                {{-- <div>
                     <x-label for="password" value="{{ __('Password') }}" class="text-white/90 font-medium" />
                     <x-input id="password" class="block mt-1 w-full text-black" type="password" name="password"
                         required autocomplete="new-password" />
@@ -72,7 +72,43 @@
                         class="text-white/90 font-medium" />
                     <x-input id="password_confirmation" class="block mt-1 w-full text-black" type="password"
                         name="password_confirmation" required autocomplete="new-password" />
+                </div> --}}
+
+                {{-- Contraseña --}}
+                <div class="relative">
+                    <x-label for="password" value="{{ __('Password') }}" class="text-white/90 font-medium" />
+                    <div class="relative">
+                        <x-input id="password" class="block mt-1 w-full text-black pr-10" type="password"
+                            name="password" required autocomplete="new-password" />
+                        <button type="button" id="togglePassword"
+                            class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-600 dark:text-gray-300">
+                            <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                fill="currentColor">
+                                <path
+                                    d="M10 3C5 3 1.73 7.11 1.07 10c.66 2.89 3.93 7 8.93 7s8.27-4.11 8.93-7C18.27 7.11 15 3 10 3zm0 10a3 3 0 110-6 3 3 0 010 6z" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
+
+                {{-- Confirmar contraseña --}}
+                <div class="relative">
+                    <x-label for="password_confirmation" value="{{ __('Confirm Password') }}"
+                        class="text-white/90 font-medium" />
+                    <div class="relative">
+                        <x-input id="password_confirmation" class="block mt-1 w-full text-black pr-10" type="password"
+                            name="password_confirmation" required autocomplete="new-password" />
+                        <button type="button" id="toggleConfirmPassword"
+                            class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-600 dark:text-gray-300">
+                            <svg id="eyeIconConfirm" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                                viewBox="0 0 20 20" fill="currentColor">
+                                <path
+                                    d="M10 3C5 3 1.73 7.11 1.07 10c.66 2.89 3.93 7 8.93 7s8.27-4.11 8.93-7C18.27 7.11 15 3 10 3zm0 10a3 3 0 110-6 3 3 0 010 6z" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
 
             </div>
 
@@ -116,3 +152,31 @@
         </form>
     </x-authentication-card>
 </x-guest-layout>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Función reutilizable
+    function togglePassword(buttonId, inputId, iconId) {
+        const button = document.getElementById(buttonId);
+        const input = document.getElementById(inputId);
+        const icon = document.getElementById(iconId);
+
+        if (!button || !input || !icon) return; // Seguridad por si no existen
+
+        button.addEventListener('click', function () {
+            const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+            input.setAttribute('type', type);
+
+            // Cambiar el ícono (ojo abierto/cerrado)
+            icon.innerHTML = type === 'text'
+                ? '<path d="M4.03 3.97a.75.75 0 011.06 0L16.03 14.9a.75.75 0 11-1.06 1.06l-1.41-1.41A8.956 8.956 0 0110 17c-5 0-8.27-4.11-8.93-7 .39-1.7 1.3-3.38 2.74-4.77L4.03 3.97z" />'
+                : '<path d="M10 3C5 3 1.73 7.11 1.07 10c.66 2.89 3.93 7 8.93 7s8.27-4.11 8.93-7C18.27 7.11 15 3 10 3zm0 10a3 3 0 110-6 3 3 0 010 6z" />';
+        });
+    }
+
+    // Aplicar a ambos campos
+    togglePassword('togglePassword', 'password', 'eyeIcon');
+    togglePassword('toggleConfirmPassword', 'password_confirmation', 'eyeIconConfirm');
+});
+</script>

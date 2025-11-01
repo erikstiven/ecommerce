@@ -37,7 +37,7 @@ class OrderTable extends DataTableComponent
     {
         return [
             Column::make("No. Orden", "id")
-                ->sortable(),
+                ->sortable()->searchable(),
 
             Column::make("Ticket")
                 ->label(function ($row) {
@@ -48,25 +48,25 @@ class OrderTable extends DataTableComponent
                 ->format(function ($value) {
                     return $value->format('d/m/Y');
                 })
-                ->sortable(),
+                ->sortable()->searchable(),
 
             Column::make("total")
                 ->format(function ($value) {
                     return '$' . number_format($value, 2);
                 })
-                ->sortable(),
+                ->sortable()->searchable(),
 
             Column::make("Cantidad", "content")
                 ->format(function ($value) {
                     return count($value);
                 })
-                ->sortable(),
+                ->sortable()->searchable(),
 
             Column::make("Estado", "status")
                 ->format(function ($value) {
                     return $value->name;
                 })
-                ->sortable(),
+                ->sortable()->searchable(),
 
             Column::make("Acciones", "id")
                 ->label(function ($row) {

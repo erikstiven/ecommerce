@@ -18,12 +18,13 @@ class ProductTable extends DataTableComponent
     public function columns(): array
     {
         return [
-            Column::make('ID', 'id')->sortable(),
-            Column::make('SKU', 'sku')->sortable(),
-            Column::make('Nombre', 'name')->sortable(),
+            Column::make('ID', 'id')->sortable()->searchable(),
+            Column::make('SKU', 'sku')->sortable()->searchable(),
+            Column::make('Nombre', 'name')->sortable()->searchable(),
             Column::make('Precio', 'price')
                 ->format(fn($value) => '$' . number_format($value, 2))
-                ->sortable(),
+                ->sortable()
+                ->searchable(),
             Column::make('Acciones', 'id')
                 ->label(fn($row) => view('admin.products.actions', ['product' => $row])),
         ];
