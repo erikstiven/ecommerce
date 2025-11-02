@@ -178,7 +178,7 @@
                 <div class="w-[600px] lg:w-[800px] xl:w-[900px] bg-white h-[calc(100vh-52px)] overflow-auto px-6 py-8 mt-[52px]"
                     x-on:click.stop>
                     <div class="mb-8 flex justify-between items-center">
-                        <p class="border-b-[3px] border-lime-400 uppercase text-xl font-semibold pb-1">
+                        <p class="border-b-[3px] border-purple-600 uppercase text-xl font-semibold pb-1">
                             {{ $this->familyName }}
                         </p>
                         <a href="{{ route('families.show', $family_id) }}" class="btn btn-gradient-purple">Ver todo</a>
