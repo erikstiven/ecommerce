@@ -57,8 +57,26 @@
     @endif
 
     <script>
+       Livewire.on('refreshIcons', () => {
+        // Espera 50 ms antes de redibujar para que el HTML esté listo
+        setTimeout(() => {
+            if (window.lucide) lucide.createIcons();
+        }, 50);
+    });
+        // 🧃 Muestra alertas de Livewire (SweetAlert)
         Livewire.on('swal', data => {
             Swal.fire(data[0]);
+        });
+
+        // 🔁 Refresca íconos después de actualización Livewire
+        document.addEventListener('livewire:load', () => {
+            Livewire.hook('morph.updated', () => {
+                if (window.lucide) lucide.createIcons();
+            });
+        });
+
+        document.addEventListener('livewire:navigated', () => {
+            if (window.lucide) lucide.createIcons();
         });
     </script>
 </body>
