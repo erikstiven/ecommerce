@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Product;
@@ -8,10 +9,8 @@ class SearchController extends Controller
 {
     public function __invoke(Request $request)
     {
-        $query = $request->input('search');
-        $products = Product::where('name', 'like', "%{$query}%")
-            ->orderBy('name')
-            ->paginate(12);
+        $query    = $request->input('search');
+        $products = Product::searchByName($query)->paginate(12);
 
         return view('search.index', [
             'products' => $products,
