@@ -12,12 +12,39 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ShipmentController;
 use Database\Seeders\OptionSeeder;
 
+
+use App\Models\Order;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+
 Route::get('/', function () {
     return view('admin.dashboard');
 })->middleware('can:access dashboard')
 ->name('dashboard');
 
 Route::get('/options', [OptionController::class, 'index'])->name('options.index');
+
+
+Route::get('/', function () {
+    // Contar pedidos por estado (enum OrderStatus)
+    $ordersByStatus = Order::select(DB::raw('status'), DB::raw('count(*) as total'))
+        ->groupBy('status')
+        ->get()
+        ->mapWithKeys(function ($item) {
+            // El campo status se castea al enum OrderStatus; usamos su nombre para mostrarlo
+            return [$item->status->name => $item->total];
+        });
+
+    // Contar pedidos por mes del año actual
+    $ordersByMonth = Order::select(DB::raw('MONTH(created_at) as month'), DB::raw('count(*) as total'))
+        ->whereYear('created_at', date('Y'))
+        ->groupBy(DB::raw('MONTH(created_at)'))
+        ->orderBy(DB::raw('MONTH(created_at)'))
+        ->pluck('total', 'month');
+
+    return view('admin.dashboard', compact('ordersByStatus', 'ordersByMonth'));
+})->middleware('can:access dashboard')
+  ->name('dashboard');
 
 //
 Route::resource('families', FamilyController::class);

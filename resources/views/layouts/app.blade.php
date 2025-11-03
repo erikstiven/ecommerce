@@ -7,6 +7,9 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('app.name', 'HMBSport') }}</title>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('hmbsports-new.svg') }}?v={{ time() }}">
+
+
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -43,7 +46,11 @@
     {{-- Footer --}}
     @include('layouts.partials.app.footer')
 
+    {{-- Botones flotantes --}}
+    @include('layouts.partials.app.floating-buttons')
+
     @stack('modals')
+
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
