@@ -12,20 +12,15 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ShipmentController;
 use Database\Seeders\OptionSeeder;
 
-
 use App\Models\Order;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
+// =========================
+// Dashboard con gráficas
+// =========================
 Route::get('/', function () {
-    return view('admin.dashboard');
-})->middleware('can:access dashboard')
-->name('dashboard');
 
-Route::get('/options', [OptionController::class, 'index'])->name('options.index');
-
-
-Route::get('/', function () {
     // Contar pedidos por estado (enum OrderStatus)
     $ordersByStatus = Order::select(DB::raw('status'), DB::raw('count(*) as total'))
         ->groupBy('status')
@@ -46,17 +41,25 @@ Route::get('/', function () {
 })->middleware('can:access dashboard')
   ->name('dashboard');
 
-//
+// =========================
+// Resto de recursos admin
+// =========================
+
+Route::get('/options', [OptionController::class, 'index'])->name('options.index');
+
 Route::resource('families', FamilyController::class);
 Route::resource('categories', CategoryController::class);
 Route::resource('subcategories', SubcategoryController::class);
 Route::resource('products', ProductController::class);
-Route::get('products/{product}/variants/{variant}', [ProductController::class, 'variants'])->name('products.variants')->scopeBindings();
+Route::get('products/{product}/variants/{variant}', [ProductController::class, 'variants'])
+    ->name('products.variants')
+    ->scopeBindings();
 
-Route::put('products/{product}/variants/{variant}', [ProductController::class, 'variantsUpdate'])->name('products.variantsUpdate')->scopeBindings();
+Route::put('products/{product}/variants/{variant}', [ProductController::class, 'variantsUpdate'])
+    ->name('products.variantsUpdate')
+    ->scopeBindings();
 
 Route::resource('covers', CoverController::class);
-
 Route::resource('drivers', DriverController::class);
 
 Route::get('shipments', [ShipmentController::class, 'index'])->name('shipments.index');

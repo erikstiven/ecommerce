@@ -51,13 +51,11 @@
                     <article
                         class="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 flex flex-col">
                         <!-- Imagen -->
-                        <div class="overflow-hidden bg-gray-100 flex items-center justify-center">
+                        <div class="bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
                             <img src="{{ $product->image }}" alt="{{ $product->name }}" loading="lazy"
                                 onerror="this.onerror=null; this.src='/img/Image_placeholder_4.jpg';"
-                                class="w-full aspect-[4/3] object-cover object-center transition-transform duration-300 hover:scale-110">
-
+                                class="object-contain h-48 w-full" />
                         </div>
-
 
                         <!-- Contenido -->
                         <div class="flex flex-col justify-between flex-grow p-5">

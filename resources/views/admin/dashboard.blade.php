@@ -31,19 +31,29 @@
         </div>
     </div>
 
+
+
     @push('js')
         {{-- Incluir Chart.js --}}
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
         <script>
+            if (ordersByStatusData.length === 0) {
+                document.getElementById('ordersStatusChart').parentElement.innerHTML =
+                    '<p class="text-center text-gray-500">No hay datos de pedidos por estado</p>';
+            }
+            if (ordersByMonthData.length === 0) {
+                document.getElementById('ordersMonthChart').parentElement.innerHTML =
+                    '<p class="text-center text-gray-500">No hay datos de pedidos por mes</p>';
+            }
+
+
             document.addEventListener('DOMContentLoaded', function() {
                 // === Preparar datos seguros ===
                 const ordersByStatusLabels = @json($ordersByStatus->keys());
                 const ordersByStatusData = @json($ordersByStatus->values()->map(fn($v) => $v ?? 0));
 
-                const ordersByMonthLabels = @json(
-                    $ordersByMonth->keys()->map(fn($month) => \Carbon\Carbon::create()->month($month)->translatedFormat('M'))
-                );
+                const ordersByMonthLabels = @json($ordersByMonth->keys()->map(fn($month) => \Carbon\Carbon::create()->month($month)->translatedFormat('M')));
                 const ordersByMonthData = @json($ordersByMonth->values()->map(fn($v) => $v ?? 0));
 
                 // === Destruir instancias previas si existen ===
@@ -63,8 +73,11 @@
                         datasets: [{
                             label: 'Total de pedidos',
                             data: ordersByStatusData,
-                            backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                            borderColor: 'rgba(54, 162, 235, 1)',
+                            backgroundColor: [
+                                '#4F46E5', '#22C55E', '#EF4444', '#F59E0B', '#06B6D4', '#8B5CF6'
+                            ],
+                            borderColor: '#1E293B',
+
                             borderWidth: 1,
                             borderRadius: 8
                         }]
@@ -75,7 +88,9 @@
                         scales: {
                             y: {
                                 beginAtZero: true,
-                                ticks: { stepSize: 1 }
+                                ticks: {
+                                    stepSize: 1
+                                }
                             }
                         }
                     }
@@ -91,8 +106,11 @@
                             label: 'Total de pedidos',
                             data: ordersByMonthData,
                             fill: false,
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            backgroundColor: [
+                                '#4F46E5', '#22C55E', '#EF4444', '#F59E0B', '#06B6D4', '#8B5CF6'
+                            ],
+                            borderColor: '#1E293B',
+
                             borderWidth: 3,
                             tension: 0.3,
                             pointRadius: 5,
@@ -105,7 +123,9 @@
                         scales: {
                             y: {
                                 beginAtZero: true,
-                                ticks: { stepSize: 1 }
+                                ticks: {
+                                    stepSize: 1
+                                }
                             }
                         }
                     }
