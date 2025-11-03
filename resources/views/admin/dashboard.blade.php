@@ -2,53 +2,45 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         {{-- Tarjeta de bienvenida --}}
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-            <h2 class="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">
-                Bienvenido, {{ Auth::user()->name }}
-            </h2>
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-lg font-semibold mb-2">Bienvenido, {{ Auth::user()->name }}</h2>
             <button onclick="window.location.href='{{ route('logout') }}'"
-                class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition">
+                class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
                 Cerrar sesión
             </button>
         </div>
 
         {{-- Tarjeta con nombre de empresa --}}
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 flex items-center justify-center">
-            <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-200">HMB Sports</h2>
+        <div class="bg-white rounded-lg shadow-lg p-6 flex items-center justify-center">
+            <h2 class="text-lg font-semibold text-gray-700">HMB Sports</h2>
         </div>
     </div>
 
     {{-- Sección de gráficas --}}
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
         {{-- Gráfico: Pedidos por estado --}}
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 relative" style="height: 300px;">
-            <h2 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100">Pedidos por estado</h2>
+        <div class="bg-white rounded-lg shadow-lg p-6 relative" style="height: 300px;">
+            <h2 class="text-lg font-semibold mb-0">Pedidos por estado</h2>
             <canvas id="ordersStatusChart"></canvas>
         </div>
 
         {{-- Gráfico: Pedidos por mes --}}
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 relative" style="height: 300px;">
-            <h2 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100">Pedidos por mes ({{ date('Y') }})</h2>
+        <div class="bg-white rounded-lg shadow-lg p-6 relative" style="height: 300px;">
+            <h2 class="text-lg font-semibold mb-0">Pedidos por mes ({{ date('Y') }})</h2>
             <canvas id="ordersMonthChart"></canvas>
         </div>
     </div>
 
     @push('js')
-        {{-- Chart.js + etiquetas --}}
         <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
 
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                // === Datos desde backend ===
                 const ordersByStatusLabels = @json($ordersByStatus->keys());
                 const ordersByStatusData = @json($ordersByStatus->values()->map(fn($v) => $v ?? 0));
                 const ordersByMonthLabels = @json($ordersByMonth->keys()->map(fn($m) => \Carbon\Carbon::create()->month($m)->translatedFormat('M')));
                 const ordersByMonthData = @json($ordersByMonth->values()->map(fn($v) => $v ?? 0));
-
-                // === Colores adaptativos ===
-                const isDark = document.documentElement.classList.contains('dark');
-                const textColor = isDark ? '#f3f4f6' : '#111827';
 
                 // === GRÁFICO DE BARRAS ===
                 const statusCanvas = document.getElementById('ordersStatusChart');
@@ -70,43 +62,45 @@
                                 backgroundColor: gradient,
                                 borderColor: '#312E81',
                                 borderWidth: 1,
-                                borderRadius: 6,
-                                hoverBackgroundColor: 'rgba(79,70,229,0.8)',
-                                hoverBorderColor: '#4338CA',
+                                borderRadius: 6
                             }]
                         },
                         options: {
                             responsive: true,
                             maintainAspectRatio: false,
-                            animation: {
-                                duration: 1200,
-                                easing: 'easeOutBounce'
+                            layout: {
+                                padding: {
+                                    top: 20
+                                } // separa etiquetas de la leyenda
                             },
-                            layout: { padding: { top: 20 } },
                             plugins: {
                                 legend: {
                                     display: true,
                                     position: 'top',
-                                    labels: { color: textColor, font: { size: 12 } }
+                                    labels: {
+                                        font: {
+                                            size: 12
+                                        }
+                                    }
                                 },
                                 datalabels: {
-                                    color: textColor,
+                                    color: '#111',
                                     anchor: 'end',
                                     align: 'top',
-                                    offset: 6,
-                                    font: { size: 11, weight: 'bold' },
+                                    offset: 4, // un pequeño espacio
+                                    font: {
+                                        size: 11,
+                                        weight: 'bold'
+                                    },
                                     formatter: (value) => value > 0 ? value : ''
                                 }
                             },
                             scales: {
                                 y: {
                                     beginAtZero: true,
-                                    ticks: { stepSize: 1, color: textColor },
-                                    grid: { color: isDark ? '#374151' : '#E5E7EB' }
-                                },
-                                x: {
-                                    ticks: { color: textColor },
-                                    grid: { color: 'transparent' }
+                                    ticks: {
+                                        stepSize: 1
+                                    }
                                 }
                             }
                         },
@@ -135,43 +129,38 @@
                                 backgroundColor: gradient2,
                                 borderColor: '#1E3A8A',
                                 borderWidth: 2,
-                                tension: 0.45,
+                                tension: 0.3,
                                 pointRadius: 4,
                                 pointBackgroundColor: '#1E40AF',
-                                pointHoverRadius: 7,
+                                pointHoverRadius: 6,
                             }]
                         },
                         options: {
                             responsive: true,
                             maintainAspectRatio: false,
-                            animation: {
-                                duration: 1000,
-                                easing: 'easeOutQuart'
-                            },
                             plugins: {
                                 legend: {
                                     display: true,
-                                    position: 'bottom',
-                                    labels: { color: textColor, font: { size: 12 } }
-                                },
+                                    position: 'bottom'
+                                }, // leyenda abajo
                                 datalabels: {
-                                    color: textColor,
+                                    color: '#111',
                                     anchor: 'end',
                                     align: 'top',
-                                    offset: 6,
-                                    font: { size: 11, weight: 'bold' },
+                                    offset: 4,
+                                    font: {
+                                        size: 11,
+                                        weight: 'bold'
+                                    },
                                     formatter: (value) => value > 0 ? value : ''
                                 }
                             },
                             scales: {
                                 y: {
                                     beginAtZero: true,
-                                    ticks: { stepSize: 1, color: textColor },
-                                    grid: { color: isDark ? '#374151' : '#E5E7EB' }
-                                },
-                                x: {
-                                    ticks: { color: textColor },
-                                    grid: { color: 'transparent' }
+                                    ticks: {
+                                        stepSize: 1
+                                    }
                                 }
                             }
                         },
@@ -181,4 +170,5 @@
             });
         </script>
     @endpush
+
 </x-admin-layout>
