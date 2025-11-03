@@ -20,116 +20,127 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
         {{-- Gráfico: Pedidos por estado --}}
         <div class="bg-white rounded-lg shadow-lg p-6 relative" style="height: 300px;">
-            <h2 class="text-lg font-semibold mb-4">Pedidos por estado</h2>
+            <h2 class="text-lg font-semibold mb-0">Pedidos por estado</h2>
             <canvas id="ordersStatusChart"></canvas>
         </div>
 
         {{-- Gráfico: Pedidos por mes --}}
         <div class="bg-white rounded-lg shadow-lg p-6 relative" style="height: 300px;">
-            <h2 class="text-lg font-semibold mb-4">Pedidos por mes ({{ date('Y') }})</h2>
+            <h2 class="text-lg font-semibold mb-0">Pedidos por mes ({{ date('Y') }})</h2>
             <canvas id="ordersMonthChart"></canvas>
         </div>
     </div>
 
-
-
     @push('js')
-        {{-- Incluir Chart.js --}}
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        {{-- Chart.js + plugin etiquetas --}}
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
 
         <script>
-            if (ordersByStatusData.length === 0) {
-                document.getElementById('ordersStatusChart').parentElement.innerHTML =
-                    '<p class="text-center text-gray-500">No hay datos de pedidos por estado</p>';
-            }
-            if (ordersByMonthData.length === 0) {
-                document.getElementById('ordersMonthChart').parentElement.innerHTML =
-                    '<p class="text-center text-gray-500">No hay datos de pedidos por mes</p>';
-            }
-
-
             document.addEventListener('DOMContentLoaded', function() {
-                // === Preparar datos seguros ===
                 const ordersByStatusLabels = @json($ordersByStatus->keys());
                 const ordersByStatusData = @json($ordersByStatus->values()->map(fn($v) => $v ?? 0));
 
-                const ordersByMonthLabels = @json($ordersByMonth->keys()->map(fn($month) => \Carbon\Carbon::create()->month($month)->translatedFormat('M')));
+                const ordersByMonthLabels = @json($ordersByMonth->keys()->map(fn($m) => \Carbon\Carbon::create()->month($m)->translatedFormat('M')));
                 const ordersByMonthData = @json($ordersByMonth->values()->map(fn($v) => $v ?? 0));
 
-                // === Destruir instancias previas si existen ===
-                if (window.ordersStatusChart) {
-                    window.ordersStatusChart.destroy();
-                }
-                if (window.ordersMonthChart) {
-                    window.ordersMonthChart.destroy();
-                }
+                // === GRÁFICO DE BARRAS ===
+                const statusCanvas = document.getElementById('ordersStatusChart');
+                if (statusCanvas) {
+                    const ctx = statusCanvas.getContext('2d');
+                    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+                    gradient.addColorStop(0, 'rgba(99,102,241,0.9)');
+                    gradient.addColorStop(1, 'rgba(99,102,241,0.2)');
 
-                // === Gráfico de barras: Pedidos por estado ===
-                const statusCtx = document.getElementById('ordersStatusChart').getContext('2d');
-                window.ordersStatusChart = new Chart(statusCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: ordersByStatusLabels,
-                        datasets: [{
-                            label: 'Total de pedidos',
-                            data: ordersByStatusData,
-                            backgroundColor: [
-                                '#4F46E5', '#22C55E', '#EF4444', '#F59E0B', '#06B6D4', '#8B5CF6'
-                            ],
-                            borderColor: '#1E293B',
+                    if (window.ordersStatusChart?.destroy) window.ordersStatusChart.destroy();
 
-                            borderWidth: 1,
-                            borderRadius: 8
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    stepSize: 1
+                    window.ordersStatusChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ordersByStatusLabels,
+                            datasets: [{
+                                label: 'Total de pedidos',
+                                data: ordersByStatusData,
+                                backgroundColor: gradient,
+                                borderColor: '#312E81',
+                                borderWidth: 1,
+                                borderRadius: 6
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: true, position: 'top' },
+                                datalabels: {
+                                    color: '#111',
+                                    anchor: 'end',
+                                    align: 'top',
+                                    font: { weight: 'bold' },
+                                    formatter: (value) => value > 0 ? value : ''
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: { stepSize: 1 }
                                 }
                             }
-                        }
-                    }
-                });
+                        },
+                        plugins: [ChartDataLabels]
+                    });
+                }
 
-                // === Gráfico de línea: Pedidos por mes ===
-                const monthCtx = document.getElementById('ordersMonthChart').getContext('2d');
-                window.ordersMonthChart = new Chart(monthCtx, {
-                    type: 'line',
-                    data: {
-                        labels: ordersByMonthLabels,
-                        datasets: [{
-                            label: 'Total de pedidos',
-                            data: ordersByMonthData,
-                            fill: false,
-                            backgroundColor: [
-                                '#4F46E5', '#22C55E', '#EF4444', '#F59E0B', '#06B6D4', '#8B5CF6'
-                            ],
-                            borderColor: '#1E293B',
+                // === GRÁFICO DE LÍNEA ===
+                const monthCanvas = document.getElementById('ordersMonthChart');
+                if (monthCanvas) {
+                    const ctx2 = monthCanvas.getContext('2d');
+                    const gradient2 = ctx2.createLinearGradient(0, 0, 0, 400);
+                    gradient2.addColorStop(0, 'rgba(59,130,246,0.9)');
+                    gradient2.addColorStop(1, 'rgba(59,130,246,0.1)');
 
-                            borderWidth: 3,
-                            tension: 0.3,
-                            pointRadius: 5,
-                            pointBackgroundColor: 'rgba(75, 192, 192, 1)',
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    stepSize: 1
+                    if (window.ordersMonthChart?.destroy) window.ordersMonthChart.destroy();
+
+                    window.ordersMonthChart = new Chart(ctx2, {
+                        type: 'line',
+                        data: {
+                            labels: ordersByMonthLabels,
+                            datasets: [{
+                                label: 'Total de pedidos',
+                                data: ordersByMonthData,
+                                fill: true,
+                                backgroundColor: gradient2,
+                                borderColor: '#1E3A8A',
+                                borderWidth: 2,
+                                tension: 0.3,
+                                pointRadius: 4,
+                                pointBackgroundColor: '#1E40AF',
+                                pointHoverRadius: 6,
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: true, position: 'top' },
+                                datalabels: {
+                                    color: '#111',
+                                    anchor: 'end',
+                                    align: 'top',
+                                    font: { weight: 'bold' },
+                                    formatter: (value) => value > 0 ? value : ''
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: { stepSize: 1 }
                                 }
                             }
-                        }
-                    }
-                });
+                        },
+                        plugins: [ChartDataLabels]
+                    });
+                }
             });
         </script>
     @endpush

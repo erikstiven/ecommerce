@@ -94,7 +94,7 @@
                                         @csrf
 
                                         <x-dropdown-link href="{{ route('logout') }}" @click.prevent="$root.submit();">
-                                            {{ __('Log Out') }}
+                                            {{ __('Cerrar Sesión') }}
                                         </x-dropdown-link>
                                     </form>
 
