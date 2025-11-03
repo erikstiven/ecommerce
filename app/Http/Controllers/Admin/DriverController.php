@@ -35,20 +35,37 @@ class DriverController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'type' => 'required|in:1,2', // 1: Moto, 2: Auto
+        $rules = [
+            'user_id'      => 'required|exists:users,id',
+            'type'         => 'required|in:1,2', // 1: Moto, 2: Auto
             'plate_number' => 'required|string',
+        ];
+        $messages = [
+            'user_id.required'      => 'Debes asignar un usuario como conductor.',
+            'user_id.exists'        => 'El usuario seleccionado no existe.',
+            'type.required'         => 'Selecciona el tipo de vehículo (moto o auto).',
+            'type.in'               => 'El tipo de vehículo debe ser 1 (moto) o 2 (auto).',
+            'plate_number.required' => 'Debes ingresar el número de placa.',
+        ];
+        $attributes = [
+            'user_id'      => 'usuario',
+            'type'         => 'tipo de vehículo',
+            'plate_number' => 'número de placa',
+        ];
+
+        $data = $request->validate($rules, $messages, $attributes);
+
+        Driver::create($data);
+
+        session()->flash('swal', [
+            'icon'  => 'success',
+            'title' => '¡Bien hecho!',
+            'text'  => 'Conductor creado correctamente.',
         ]);
 
-        Driver::create($request->all());
-        session()->flash('swal', [
-            'icon' => 'success',
-            'title' => '¡Bien hecho!',
-            'text' => 'Conductor creado correctamente.',
-        ]);
         return redirect()->route('admin.drivers.index');
     }
+
 
     /**
      * Display the specified resource.
@@ -73,19 +90,35 @@ class DriverController extends Controller
      */
     public function update(Request $request, Driver $driver)
     {
-        $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'type' => 'required|in:1,2', // 1: Moto, 2: Auto
+        $rules = [
+            'user_id'      => 'required|exists:users,id',
+            'type'         => 'required|in:1,2',
             'plate_number' => 'required|string',
+        ];
+        $messages = [
+            'user_id.required'      => 'Debes asignar un usuario como conductor.',
+            'user_id.exists'        => 'El usuario seleccionado no existe.',
+            'type.required'         => 'Selecciona el tipo de vehículo (moto o auto).',
+            'type.in'               => 'El tipo de vehículo debe ser 1 (moto) o 2 (auto).',
+            'plate_number.required' => 'Debes ingresar el número de placa.',
+        ];
+        $attributes = [
+            'user_id'      => 'usuario',
+            'type'         => 'tipo de vehículo',
+            'plate_number' => 'número de placa',
+        ];
+
+        $data = $request->validate($rules, $messages, $attributes);
+
+        $driver->update($data);
+
+        session()->flash('swal', [
+            'icon'  => 'success',
+            'title' => '¡Bien hecho!',
+            'text'  => 'Conductor actualizado correctamente.',
         ]);
 
-        $driver->update($request->all());
-        session()->flash('swal', [
-            'icon' => 'success',
-            'title' => '¡Bien hecho!',
-            'text' => 'Conductor actualizado correctamente.',
-        ]);
-        return redirect()->route('admin.drivers.edit', $driver);    
+        return redirect()->route('admin.drivers.edit', $driver);
     }
 
     /**

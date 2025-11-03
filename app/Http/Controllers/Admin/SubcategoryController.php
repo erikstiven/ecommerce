@@ -40,18 +40,30 @@ class SubcategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
-         $request->validate([
+        $rules = [
             'category_id' => 'required|exists:categories,id',
-            'name' => 'required',
+            'name'        => 'required',
+        ];
+        $messages = [
+            'category_id.required' => 'Debes seleccionar una categoría.',
+            'category_id.exists'   => 'La categoría seleccionada no existe.',
+            'name.required'        => 'Por favor, ingresa el nombre de la subcategoría.',
+        ];
+        $attributes = [
+            'category_id' => 'categoría',
+            'name'        => 'nombre de la subcategoría',
+        ];
+
+        $data = $request->validate($rules, $messages, $attributes);
+
+        SubCategory::create($data);
+
+        session()->flash('swal', [
+            'icon'  => 'success',
+            'title' => '¡Bien hecho!',
+            'text'  => 'Subcategoría creada correctamente.',
         ]);
 
-        SubCategory::create($request->all());
-        session()->flash('swal', [
-            'icon' => 'success',
-            'title' => '¡Bien hecho!',
-            'text' => 'Subcategoria creada correctamente.',
-        ]);
         return redirect()->route('admin.subcategories.index');
     }
 
@@ -69,7 +81,7 @@ class SubcategoryController extends Controller
     public function edit(Subcategory $subcategory)
     {
         //
-         $subcategories = Subcategory::all();
+        $subcategories = Subcategory::all();
         return view('admin.subcategories.edit', compact('subcategory'));
     }
 
@@ -87,7 +99,7 @@ class SubcategoryController extends Controller
     public function destroy(Subcategory $subcategory)
     {
         //
-        if($subcategory ->products()->count() > 0) {
+        if ($subcategory->products()->count() > 0) {
             session()->flash('swal', [
                 'icon' => 'error',
                 'title' => '¡Error!',
@@ -102,6 +114,5 @@ class SubcategoryController extends Controller
             'text' => 'Subcategoría eliminada correctamente.',
         ]);
         return redirect()->route('admin.subcategories.index');
-
     }
 }

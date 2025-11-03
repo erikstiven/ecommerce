@@ -39,18 +39,31 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
-        $request->validate([
+        $rules = [
             'family_id' => 'required|exists:families,id',
-            'name' => 'required',
+            'name'      => 'required',
+        ];
+        $messages = [
+            'family_id.required' => 'Debes seleccionar una familia.',
+            'family_id.exists'   => 'La familia seleccionada no existe.',
+            'name.required'      => 'El nombre de la categoría es obligatorio.',
+        ];
+        $attributes = [
+            'family_id' => 'familia',
+            'name'      => 'nombre de la categoría',
+        ];
+
+        // Validar con reglas, mensajes y atributos personalizados
+        $data = $request->validate($rules, $messages, $attributes);
+
+        Category::create($data);
+
+        session()->flash('swal', [
+            'icon'  => 'success',
+            'title' => '¡Bien hecho!',
+            'text'  => 'Categoría creada correctamente.',
         ]);
 
-        Category::create($request->all());
-        session()->flash('swal', [
-            'icon' => 'success',
-            'title' => '¡Bien hecho!',
-            'text' => 'Categoria creada correctamente.',
-        ]);
         return redirect()->route('admin.categories.index');
     }
 
@@ -77,18 +90,30 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
-        //
-        $request->validate([
+        $rules = [
             'family_id' => 'required|exists:families,id',
-            'name' => 'required',
-        ]);
-        $category->update($request->all());
+            'name'      => 'required',
+        ];
+        $messages = [
+            'family_id.required' => 'Debes seleccionar una familia.',
+            'family_id.exists'   => 'La familia seleccionada no existe.',
+            'name.required'      => 'El nombre de la categoría es obligatorio.',
+        ];
+        $attributes = [
+            'family_id' => 'familia',
+            'name'      => 'nombre de la categoría',
+        ];
+
+        $data = $request->validate($rules, $messages, $attributes);
+
+        $category->update($data);
 
         session()->flash('swal', [
-            'icon' => 'success',
+            'icon'  => 'success',
             'title' => '¡Bien hecho!',
-            'text' => 'Categoria actualizada correctamente.',
+            'text'  => 'Categoría actualizada correctamente.',
         ]);
+
         return redirect()->route('admin.categories.edit', $category);
     }
 

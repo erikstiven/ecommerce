@@ -37,17 +37,22 @@ class FamilyController extends Controller
      */
     public function store(Request $request)
     {
-        //
-        $request->validate([
-            'name' => 'required',
-        ]);
-        Family::create($request->all());
+        $rules = ['name' => 'required'];
+        $messages = [
+            'name.required' => 'Por favor, ingresa el nombre de la familia.',
+        ];
+        $attributes = [
+            'name' => 'nombre de la familia',
+        ];
 
-        // Flash message
+        $data = $request->validate($rules, $messages, $attributes);
+
+        Family::create($data);
+
         session()->flash('swal', [
-            'icon' => 'success',
+            'icon'  => 'success',
             'title' => '¡Bien hecho!',
-            'text' => 'Familia creada correctamente.',
+            'text'  => 'Familia creada correctamente.',
         ]);
 
         return redirect()->route('admin.families.index');
@@ -75,16 +80,22 @@ class FamilyController extends Controller
      */
     public function update(Request $request, Family $family)
     {
-        //
-        $request->validate([
-            'name' => 'required',
-        ]);
-        $family->update($request->all());
-        // Flash message
+        $rules = ['name' => 'required'];
+        $messages = [
+            'name.required' => 'Por favor, ingresa el nombre de la familia.',
+        ];
+        $attributes = [
+            'name' => 'nombre de la familia',
+        ];
+
+        $data = $request->validate($rules, $messages, $attributes);
+
+        $family->update($data);
+
         session()->flash('swal', [
-            'icon' => 'success',
+            'icon'  => 'success',
             'title' => '¡Bien hecho!',
-            'text' => 'Familia Actualizada Correctamente',
+            'text'  => 'Familia actualizada correctamente.',
         ]);
 
         return redirect()->route('admin.families.edit', $family);

@@ -267,11 +267,22 @@ class CheckoutController extends Controller
      */
     public function deposit(Request $request)
     {
-        $validated = $request->validate([
+        $rules = [
             'deposit_proof' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
-        ]);
+        ];
+        $messages = [
+            'deposit_proof.required' => 'Debes subir el comprobante de depósito.',
+            'deposit_proof.file'     => 'El comprobante debe ser un archivo válido.',
+            'deposit_proof.mimes'    => 'El comprobante debe ser JPG, JPEG, PNG o PDF.',
+            'deposit_proof.max'      => 'El comprobante no debe superar los 5 MB.',
+        ];
+        $attributes = [
+            'deposit_proof' => 'comprobante de depósito',
+        ];
 
-        // Dirección por defecto
+        $validated = $request->validate($rules, $messages, $attributes);
+
+        // Dirección por defecto (igual que antes)
         $defaultAddress = Address::where('user_id', Auth::id())
             ->where('default', true)
             ->first();
@@ -284,7 +295,7 @@ class CheckoutController extends Controller
             'address'        => $addressData,
         ]);
 
-        // Reservar stock para cada producto del pedido
+        // Reservar stock para cada producto
         foreach ($order->items as $item) {
             $product = $item->product;
             if ($product && !is_null($product->stock)) {
@@ -295,7 +306,7 @@ class CheckoutController extends Controller
         session()->flash('order_id', $order->id);
         session()->flash('pago_estado', 'Processing');
 
-        // Guardar comprobante de depósito
+        // Guardar comprobante de depósito en disco 'public'
         $path = $request->file('deposit_proof')->store("deposits/{$order->id}", 'public');
         $order->update(['deposit_proof_path' => $path]);
 

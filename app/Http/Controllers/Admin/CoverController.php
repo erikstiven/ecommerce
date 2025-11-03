@@ -25,30 +25,51 @@ class CoverController extends Controller
         return view('admin.covers.create');
     }
 
-    public function store(Request $request)
-    {
-        $data = $request->validate([
-            'title'     => 'required|string|max:255',
-            'start_at'  => 'required|date',
-            'end_at'    => 'nullable|date|after_or_equal:start_at',
-            'is_active' => 'required|boolean',
-            'image'     => 'required|image|mimes:jpg,jpeg,png,webp,svg|max:5024',
-        ]);
+   public function store(Request $request)
+{
+    $rules = [
+        'title'     => 'required|string|max:255',
+        'start_at'  => 'required|date',
+        'end_at'    => 'nullable|date|after_or_equal:start_at',
+        'is_active' => 'required|boolean',
+        'image'     => 'required|image|mimes:jpg,jpeg,png,webp,svg|max:5024',
+    ];
 
-        // Guardar la imagen SIEMPRE en el disco 'public'
-        $data['image_path'] = $data['image']->store('covers', 'public');
-        unset($data['image']); // no intentamos guardar el UploadedFile en la BD
+    $messages = [
+        'title.required'   => 'Por favor, ingresa el título de la portada.',
+        'start_at.required'=> 'Debes especificar la fecha de inicio.',
+        'end_at.after_or_equal' => 'La fecha de fin debe ser posterior o igual a la fecha de inicio.',
+        'image.required'   => 'Debes subir una imagen para la portada.',
+        'image.image'      => 'El archivo subido debe ser una imagen.',
+        'image.mimes'      => 'La imagen debe tener formato: jpg, jpeg, png, webp o svg.',
+        'image.max'        => 'La imagen no debe exceder los 5 MB.',
+    ];
 
-        $cover = Cover::create($data);
+    $attributes = [
+        'title'     => 'título de la portada',
+        'start_at'  => 'fecha de inicio',
+        'end_at'    => 'fecha de fin',
+        'image'     => 'imagen de la portada',
+        'is_active' => 'estado (activo/inactivo)',
+    ];
 
-        session()->flash('swal', [
-            'icon'  => 'success',
-            'title' => '¡Portada creada!',
-            'text'  => 'La portada ha sido creada exitosamente.',
-        ]);
+    $data = $request->validate($rules, $messages, $attributes);
 
-        return redirect()->route('admin.covers.edit', $cover);
-    }
+    // …resto del método sin cambios…
+    $data['image_path'] = $data['image']->store('covers', 'public');
+    unset($data['image']);
+
+    $cover = Cover::create($data);
+
+    session()->flash('swal', [
+        'icon'  => 'success',
+        'title' => '¡Portada creada!',
+        'text'  => 'La portada ha sido creada exitosamente.',
+    ]);
+
+    return redirect()->route('admin.covers.edit', $cover);
+}
+
 
     public function show(Cover $cover)
     {
@@ -62,13 +83,34 @@ class CoverController extends Controller
 
     public function update(Request $request, Cover $cover)
     {
-        $data = $request->validate([
+        $rules = [
             'title'     => 'required|string|max:255',
             'start_at'  => 'required|date',
             'end_at'    => 'nullable|date|after_or_equal:start_at',
             'is_active' => 'required|boolean',
-            'image'     => 'nullable|image|mimes:jpg,jpeg,png,webp|max:1024',
-        ]);
+            'image'     => 'required|image|mimes:jpg,jpeg,png,webp,svg|max:5024',
+        ];
+
+        $messages = [
+            'title.required'   => 'Por favor, ingresa el título de la portada.',
+            'start_at.required' => 'Debes especificar la fecha de inicio.',
+            'end_at.after_or_equal' => 'La fecha de fin debe ser posterior o igual a la fecha de inicio.',
+            'image.required'   => 'Debes subir una imagen para la portada.',
+            'image.image'      => 'El archivo subido debe ser una imagen.',
+            'image.mimes'      => 'La imagen debe tener formato: jpg, jpeg, png, webp o svg.',
+            'image.max'        => 'La imagen no debe exceder los 5 MB.',
+        ];
+
+        $attributes = [
+            'title'     => 'título de la portada',
+            'start_at'  => 'fecha de inicio',
+            'end_at'    => 'fecha de fin',
+            'image'     => 'imagen de la portada',
+            'is_active' => 'estado (activo/inactivo)',
+        ];
+
+        $data = $request->validate($rules, $messages, $attributes);
+
 
         // Si llega nueva imagen, borrar la anterior del disco 'public' y subir la nueva al mismo disco
         if (!empty($data['image'])) {
