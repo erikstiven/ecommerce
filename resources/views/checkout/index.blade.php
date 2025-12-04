@@ -55,7 +55,7 @@
                                         <p><strong>2. Enviar comprobante de pago:</strong></p>
                                             <input type="button" value="Enviar por WhatsApp">
                                             
-                                        <a href="https://wa.me/979018689" class="text-blue-600 underline"
+                                        <a href="https://wa.me/593979018689?text=Hola%2C%20me%20interesan%20los%20servicios%20y%20productos%20que%20muestran%20en%20su%20p%C3%A1gina%20web." class="text-blue-600 underline"
                                                 target="_blank">
                                                 +593 97 901 86 89
                                         </a>

@@ -31,6 +31,7 @@ class OrderTable extends DataTableComponent
     public function configure(): void
     {
         $this->setPrimaryKey('id');
+        $this->setTheme('tailwind');
     }
 
     public function columns(): array

@@ -18,24 +18,24 @@
                     <a href="https://www.facebook.com/hmbsportt" target="_blank" rel="noopener noreferrer"
                         aria-label="Facebook"
                         class="w-11 h-11 flex items-center justify-center rounded-full border border-white/20 bg-white/5
-              hover:bg-[#1877F2]/80 hover:scale-110 hover:shadow-lg transition
-              focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60">
+                        hover:bg-[#1877F2]/80 hover:scale-110 hover:shadow-lg transition
+                        focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60">
                         <i class="fab fa-facebook-f text-white"></i>
                     </a>
 
                     <a href="https://www.instagram.com/hmb_sport/" target="_blank" rel="noopener noreferrer"
                         aria-label="Instagram"
                         class="w-11 h-11 flex items-center justify-center rounded-full border border-white/20 bg-white/5
-              hover:bg-gradient-to-tr from-pink-500 via-red-500 to-yellow-400 hover:scale-110 hover:shadow-lg transition
-              focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60">
+                        hover:bg-gradient-to-tr from-pink-500 via-red-500 to-yellow-400 hover:scale-110 hover:shadow-lg transition
+                        focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60">
                         <i class="fab fa-instagram text-white"></i>
                     </a>
 
                     <a href="https://www.tiktok.com/@hmbsport_ec?lang=es" target="_blank" rel="noopener noreferrer"
                         aria-label="TikTok"
                         class="w-11 h-11 flex items-center justify-center rounded-full border border-white/20 bg-white/5
-              hover:bg-black/80 hover:scale-110 hover:shadow-lg transition
-              focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60">
+                        hover:bg-black/80 hover:scale-110 hover:shadow-lg transition
+                        focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60">
                         <i class="fab fa-tiktok text-white"></i>
                     </a>
                 </div>
@@ -60,7 +60,7 @@
                     </li>
 
                     <li>
-                        <a href="https://wa.me/593989009428?text=Hola%2C%20me%20interesan%20los%20servicios%20y%20productos%20que%20muestran%20en%20su%20p%C3%A1gina%20web."
+                        <a href="https://wa.me/593979018689?text=Hola%2C%20me%20interesan%20los%20servicios%20y%20productos%20que%20muestran%20en%20su%20p%C3%A1gina%20web."
                             class="hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 rounded">
                             Envíos y devoluciones
                         </a>

@@ -62,9 +62,10 @@
                                 </button>
                             </div>
 
-                            <p>
-                                $/. {{ $this->subtotal }}
-                            </p>
+                            <div class="text-right">
+                                <p class="font-semibold">$/. {{ $item->price }}</p>
+                                <p class="text-sm text-gray-500">Subtotal: $/. {{ $item->subtotal }}</p>
+                            </div>
 
                             <div class="ml-auto space-x-3">
                                 <button class="btn btn-gradient-gray" wire:click="decrease('{{ $item->rowId }}')">

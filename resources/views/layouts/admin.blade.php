@@ -85,7 +85,24 @@
     </script>
 
     <script>
+        //lucide.createIcons();
+        document.addEventListener('livewire:init', () => {
+            const renderIcons = () => lucide.createIcons();
+
+            renderIcons();
+
+            Livewire.hook('commit', ({ succeed }) => {
+                succeed(renderIcons);
+            });
+
+            Livewire.on('refreshIcons', renderIcons);
+        });
+    </script>
+
+    <script>
+    Livewire.on('refreshIcons', () => {
         lucide.createIcons();
+    });
     </script>
 
 </body>
