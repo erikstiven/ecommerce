@@ -48,19 +48,17 @@
                                     class="p-4 bg-gray-100 text-sm border-t border-gray-400">
                                     <div class="max-w-md mx-auto space-y-1">
                                         <p><strong>1. Pago por depósito o transferencia bancaria:</strong></p>
-                                        <p>- BCP: 198-987654321-98</p>
-                                        <p>- CCI: 002-198-987654321</p>
-                                        <p>- Razón social: Ecommerce S.A.C</p>
-                                        <p>- RUC: 20987654321</p>
-                                        <p class="mt-3"><strong>2. Pago --</strong></p>
-                                        <p>- Cuenta bancaria: RUC 20987654321 - Razón social número <strong>987 654
-                                                321</strong> (Ecommerce S.A.C)</p>
-                                        <p>
-                                            Enviar el comprobante de pago a
-                                            <a href="https://wa.me/51987654321" class="text-blue-600 underline"
+                                        <p>- Banco Pichincha</p>
+                                        <p>- Cuenta de ahorro transaccional</p>
+                                        <p>- Número de cuenta: 2208765620</p>
+                                        <p></p>
+                                        <p><strong>2. Enviar comprobante de pago:</strong></p>
+                                            <input type="button" value="Enviar por WhatsApp">
+                                            
+                                        <a href="https://wa.me/979018689" class="text-blue-600 underline"
                                                 target="_blank">
-                                                987 654 321
-                                            </a>
+                                                +593 97 901 86 89
+                                        </a>
                                         </p>
                                     </div>
                                 </div>
