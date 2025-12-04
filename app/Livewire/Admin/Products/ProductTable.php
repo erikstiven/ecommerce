@@ -25,6 +25,7 @@ class ProductTable extends DataTableComponent
     public function configure(): void
     {
         $this->setPrimaryKey('id');
+        $this->setTheme('tailwind');
     }
 
     public function columns(): array
@@ -38,7 +39,8 @@ class ProductTable extends DataTableComponent
                 ->sortable()
                 ->searchable(),
             Column::make('Acciones', 'id')
-                ->label(fn($row) => view('admin.products.actions', ['product' => $row])),
+                ->label(fn($row) => view('admin.products.actions', ['product' => $row]))
+                ->html(),
         ];
     }
 
