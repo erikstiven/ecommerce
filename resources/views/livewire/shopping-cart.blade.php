@@ -104,7 +104,7 @@
                     </p>
 
                     <p>
-                        $/. {{ Cart::subtotal() }}
+                        $/. {{ $this->subtotal }}
                     </p>
 
                 </div>
