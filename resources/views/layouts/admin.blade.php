@@ -11,64 +11,52 @@
     <title>{{ config('', 'Ecommerce-Codecima') }}</title>
     <link rel="icon" type="image/svg+xml" href="{{ asset('logo.png') }}?v={{ time() }}">
 
-
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-    <!--iconos importados awesome google-->
+    <!--iconos-->
     <script src="https://kit.fontawesome.com/624f2e432c.js" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
 
-    <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    <!-- Styles -->
     @livewireStyles
 </head>
 
 <body class="font-sans antialiased" x-data="{ sidebarOpen: false }" :class="{
     'overflow-y-hidden': sidebarOpen,
 }">
-    {{-- //parte negra en modo responsive --}}
-    <div class="fixed inset-0 bg-gray-900 bg-opacity-50 z-20 sm:hidden" style="display: none" x-show="sidebarOpen"
-        x-on:click="sidebarOpen = false">
 
+    {{-- Overlay --}}
+    <div class="fixed inset-0 bg-gray-900 bg-opacity-50 z-20 sm:hidden"
+        style="display: none" x-show="sidebarOpen"
+        x-on:click="sidebarOpen = false">
     </div>
 
-    {{-- //llamamos al componente de navegacion --}}
     @include('layouts.partials.admin.navegation')
-    {{-- //llamamos al componente de slidebar --}}
     @include('layouts.partials.admin.sidebar')
-    <div class="p-4 sm:ml-64">
 
+    <div class="p-4 sm:ml-64">
         <div class="mt-14">
 
             <div class="flex justify-between items-center">
-                {{-- //llamamos al componente de breadcrumb --}}
                 @include('layouts.partials.admin.breadcrumb')
 
                 @isset($action)
-                    <div>
-                        {{ $action }}
-                    </div>
+                    <div>{{ $action }}</div>
                 @endisset
-
             </div>
 
             <div class="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700 ">
-                {{-- //defino el slot para que se muestre el contenido de las vistas --}}
                 {{ $slot }}
             </div>
-
         </div>
-
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     @livewireScripts
-
     @stack('js')
 
     @if (session('swal'))
@@ -77,34 +65,20 @@
         </script>
     @endif
 
-    {{-- script para las swal con livewire --}}
     <script>
         Livewire.on('swal', data => {
             Swal.fire(data[0]);
         });
     </script>
 
+    <!-- ESTE ES EL ÚNICO SCRIPT DE LUCIDE QUE DEBE QUEDAR -->
     <script>
-        //lucide.createIcons();
-        document.addEventListener('livewire:init', () => {
-            const renderIcons = () => lucide.createIcons();
-
-            renderIcons();
-
-            Livewire.hook('commit', ({ succeed }) => {
-                succeed(renderIcons);
-            });
-
-            Livewire.on('refreshIcons', renderIcons);
+    document.addEventListener('livewire:init', () => {
+        Livewire.hook('message.processed', () => {
+            lucide.createIcons();
         });
-    </script>
-
-    <script>
-    Livewire.on('refreshIcons', () => {
-        lucide.createIcons();
     });
     </script>
 
 </body>
-
 </html>

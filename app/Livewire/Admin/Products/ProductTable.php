@@ -38,8 +38,10 @@ class ProductTable extends DataTableComponent
                 ->format(fn($value) => '$' . number_format($value, 2))
                 ->sortable()
                 ->searchable(),
-            Column::make('Acciones', 'id')
-                ->label(fn($row) => view('admin.products.actions', ['product' => $row])),
+            Column::make('Acciones')
+                ->label(fn($row) => view('admin.products.actions', ['product' => $row]))
+                ->html()
+                ->collapseOnTablet(),    
         ];
     }
 
