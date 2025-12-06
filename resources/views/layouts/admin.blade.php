@@ -15,22 +15,19 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-    <!--iconos-->
+    <!-- Iconos -->
     <script src="https://kit.fontawesome.com/624f2e432c.js" crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     @livewireStyles
 </head>
 
-<body class="font-sans antialiased" x-data="{ sidebarOpen: false }" :class="{
-    'overflow-y-hidden': sidebarOpen,
-}">
+<body class="font-sans antialiased" x-data="{ sidebarOpen: false }">
 
-    {{-- Overlay --}}
+    {{-- Overlay responsive --}}
     <div class="fixed inset-0 bg-gray-900 bg-opacity-50 z-20 sm:hidden"
-        style="display: none" x-show="sidebarOpen"
+        x-show="sidebarOpen"
         x-on:click="sidebarOpen = false">
     </div>
 
@@ -48,36 +45,24 @@
                 @endisset
             </div>
 
-            <div class="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700 ">
+            <div class="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700">
                 {{ $slot }}
             </div>
+
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     @livewireScripts
+
     @stack('js')
 
-    @if (session('swal'))
-        <script>
-            Swal.fire({!! json_encode(session('swal')) !!});
-        </script>
-    @endif
-
+    {{-- SweetAlert desde Livewire --}}
     <script>
         Livewire.on('swal', data => {
             Swal.fire(data[0]);
         });
-    </script>
-
-    <!-- ESTE ES EL ÚNICO SCRIPT DE LUCIDE QUE DEBE QUEDAR -->
-    <script>
-    document.addEventListener('livewire:init', () => {
-        Livewire.hook('message.processed', () => {
-            lucide.createIcons();
-        });
-    });
     </script>
 
 </body>

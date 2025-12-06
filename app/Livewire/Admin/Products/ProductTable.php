@@ -11,16 +11,22 @@ class ProductTable extends DataTableComponent
 {
     protected $model = Product::class;
 
-    // Indica que escuchamos el evento deleteProduct
-    protected $listeners = ['deleteProduct'];
+    // Checkboxes seleccionados
+    public array $selected = [];
 
-    public function render(): \Illuminate\Contracts\View\View
+    public function toggleSelectAll()
     {
-        $this->dispatch('refreshIcons'); // 🔁 Dispara el evento JS en cada render
-        return parent::render();
+        // Si hay todos seleccionados → desmarcar todos
+        if (count($this->selected) === Product::count()) {
+            $this->selected = [];
+            return;
+        }
+
+        // Si no → seleccionar TODOS
+        $this->selected = Product::pluck('id')->toArray();
     }
 
-
+    protected $listeners = ['deleteProduct'];
 
     public function configure(): void
     {
@@ -31,38 +37,69 @@ class ProductTable extends DataTableComponent
     public function columns(): array
     {
         return [
+            // Columna de checkbox manual
+            Column::make('Sel.')
+            ->label(fn($row) => view('admin.products.checkbox', ['row' => $row]))
+            ->html()
+            ->header(view('admin.products.checkbox-header')),
+
             Column::make('ID', 'id')->sortable()->searchable(),
+
             Column::make('SKU', 'sku')->sortable()->searchable(),
+
             Column::make('Nombre', 'name')->sortable()->searchable(),
+
             Column::make('Precio', 'price')
                 ->format(fn($value) => '$' . number_format($value, 2))
                 ->sortable()
                 ->searchable(),
+
             Column::make('Acciones')
                 ->label(fn($row) => view('admin.products.actions', ['product' => $row]))
-                ->html()
-                ->collapseOnTablet(),    
+                ->html(),
         ];
     }
 
-    // Aquí se procesa la eliminación del producto al recibir el evento
     public function deleteProduct($id)
     {
         $product = Product::findOrFail($id);
 
-        // Borra la imagen del disco si existe
         if ($product->image_path && Storage::disk('public')->exists($product->image_path)) {
             Storage::disk('public')->delete($product->image_path);
         }
 
-        // Elimina el producto de la base de datos
         $product->delete();
 
-        // Opcional: muestra notificación SweetAlert en la interfaz
         $this->dispatch('swal', [
             'icon'  => 'success',
-            'title' => '¡Producto eliminado!',
+            'title' => 'Producto eliminado',
             'text'  => 'El producto se eliminó correctamente.',
+        ]);
+    }
+
+    // Eliminación masiva
+    public function deleteSelected()
+    {
+        if (empty($this->selected)) {
+            return;
+        }
+
+        $products = Product::whereIn('id', $this->selected)->get();
+
+        foreach ($products as $product) {
+            if ($product->image_path && Storage::disk('public')->exists($product->image_path)) {
+                Storage::disk('public')->delete($product->image_path);
+            }
+
+            $product->delete();
+        }
+
+        $this->selected = [];
+
+        $this->dispatch('swal', [
+            'icon'  => 'success',
+            'title' => 'Productos eliminados',
+            'text'  => 'Los elementos seleccionados se eliminaron correctamente.',
         ]);
     }
 }

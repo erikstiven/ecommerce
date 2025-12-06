@@ -9,11 +9,20 @@
     ],
 ]">
 
-<x-slot name="action">
+    <x-slot name="action">
         <a href="{{ route('admin.products.create') }}" class="btn-gradient-blue">
             Nuevo
         </a>
     </x-slot>
+
+    <div class="mb-4">
+        @if(count($this->selected ?? []) > 0)
+            <button wire:click="deleteSelected"
+                class="bg-red-600 text-white px-4 py-2 rounded shadow hover:bg-red-700 transition">
+                Eliminar seleccionados ({{ count($this->selected) }})
+            </button>
+        @endif
+    </div>
 
     @if ($products->count())
 
