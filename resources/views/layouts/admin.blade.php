@@ -65,5 +65,23 @@
         });
     </script>
 
+    <script>
+    document.addEventListener('livewire:init', () => {
+        Livewire.hook('message.processed', () => {
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        });
+    });
+
+    // Ejecutar la primera vez
+    document.addEventListener('DOMContentLoaded', () => {
+        if (window.lucide) {
+            lucide.createIcons();
+        }
+    });
+    </script>
+
+
 </body>
 </html>

@@ -11,20 +11,8 @@ class ProductTable extends DataTableComponent
 {
     protected $model = Product::class;
 
-    // Checkboxes seleccionados
+    // IDs seleccionados
     public array $selected = [];
-
-    public function toggleSelectAll()
-    {
-        // Si hay todos seleccionados → desmarcar todos
-        if (count($this->selected) === Product::count()) {
-            $this->selected = [];
-            return;
-        }
-
-        // Si no → seleccionar TODOS
-        $this->selected = Product::pluck('id')->toArray();
-    }
 
     protected $listeners = ['deleteProduct'];
 
@@ -34,19 +22,30 @@ class ProductTable extends DataTableComponent
         $this->setTheme('tailwind');
     }
 
+    public function toggleSelectAll()
+    {
+        $all = Product::pluck('id')->toArray();
+
+        // Si todos están seleccionados → limpiar
+        if (count($this->selected) === count($all)) {
+            $this->selected = [];
+            return;
+        }
+
+        // Si no → seleccionar todos
+        $this->selected = $all;
+    }
+
     public function columns(): array
     {
         return [
-            // Columna de checkbox manual
+            // Checkbox manual (sin header)
             Column::make('Sel.')
-            ->label(fn($row) => view('admin.products.checkbox', ['row' => $row]))
-            ->html()
-            ->header(view('admin.products.checkbox-header')),
+                ->label(fn($row) => view('admin.products.checkbox', ['row' => $row]))
+                ->html(),
 
             Column::make('ID', 'id')->sortable()->searchable(),
-
             Column::make('SKU', 'sku')->sortable()->searchable(),
-
             Column::make('Nombre', 'name')->sortable()->searchable(),
 
             Column::make('Precio', 'price')
@@ -77,7 +76,12 @@ class ProductTable extends DataTableComponent
         ]);
     }
 
-    // Eliminación masiva
+    public function getHasSelectedProperty()
+    {
+        return count($this->selected) > 0;
+    }
+
+
     public function deleteSelected()
     {
         if (empty($this->selected)) {
@@ -87,6 +91,7 @@ class ProductTable extends DataTableComponent
         $products = Product::whereIn('id', $this->selected)->get();
 
         foreach ($products as $product) {
+
             if ($product->image_path && Storage::disk('public')->exists($product->image_path)) {
                 Storage::disk('public')->delete($product->image_path);
             }
@@ -94,7 +99,7 @@ class ProductTable extends DataTableComponent
             $product->delete();
         }
 
-        $this->selected = [];
+        $this->selected = []; // limpiar selección
 
         $this->dispatch('swal', [
             'icon'  => 'success',
