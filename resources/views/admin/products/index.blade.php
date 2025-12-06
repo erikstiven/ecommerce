@@ -15,14 +15,6 @@
         </a>
     </x-slot>
 
-    <div class="mb-4">
-        @if(count($this->selected ?? []) > 0)
-            <button wire:click="deleteSelected"
-                class="bg-red-600 text-white px-4 py-2 rounded shadow hover:bg-red-700 transition">
-                Eliminar seleccionados ({{ count($this->selected) }})
-            </button>
-        @endif
-    </div>
 
     @if ($products->count())
 
@@ -105,19 +97,40 @@
     @endif
 
 
-
 </x-admin-layout> --}}
 
 
-<x-admin-layout :breadcrumbs="[
-    ['name' => 'Dashboard', 'route' => route('admin.dashboard')],
-    ['name' => 'Productos', 'route' => route('admin.products.index')],
-]">
+<x-admin-layout 
+    :breadcrumbs="[
+        ['name' => 'Dashboard', 'route' => route('admin.dashboard')],
+        ['name' => 'Productos', 'route' => route('admin.products.index')],
+    ]"
+>
+
+
     <x-slot name="action">
         <a href="{{ route('admin.products.create') }}" class="btn-gradient-blue">
             Nuevo
         </a>
     </x-slot>
+
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+        <div class="flex flex-wrap items-center gap-2">
+            <button
+                class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md shadow hover:bg-gray-300 transition"
+                wire:click="$emitTo('admin.products.product-table','toggleSelectAll')">
+                Seleccionar todo
+            </button>
+
+            <button
+                class="px-4 py-2 bg-red-600 text-white rounded-md shadow hover:bg-red-700 transition"
+                wire:click="$emitTo('admin.products.product-table','deleteSelected')">
+                Eliminar seleccionados
+            </button>
+        </div>
+    </div>
+
+    
 
     {{-- Renderiza la tabla dinámica de productos --}}
     @livewire('admin.products.product-table')

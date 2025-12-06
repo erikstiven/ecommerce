@@ -17,6 +17,8 @@
 
     <!-- Iconos -->
     <script src="https://kit.fontawesome.com/624f2e432c.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -65,22 +67,24 @@
         });
     </script>
 
-    <script>
-    document.addEventListener('livewire:init', () => {
-        Livewire.hook('message.processed', () => {
-            if (window.lucide) {
-                lucide.createIcons();
-            }
-        });
-    });
+<script>
+// Ejecutar al cargar la página (categorías, dashboard, etc.)
+document.addEventListener('DOMContentLoaded', () => {
+    if (window.lucide) {
+        lucide.createIcons();
+    }
+});
 
-    // Ejecutar la primera vez
-    document.addEventListener('DOMContentLoaded', () => {
-        if (window.lucide) {
-            lucide.createIcons();
-        }
-    });
-    </script>
+document.addEventListener('livewire:init', () => {
+            Livewire.hook('message.processed', () => {
+                if (window.lucide) {
+                    lucide.createIcons();
+                }
+            });
+});
+
+</script>
+
 
 
 </body>
