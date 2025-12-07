@@ -47,11 +47,23 @@
                             <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 group-hover:text-blue-600">
                                 {{ $family->name }}
                             </td>
-                            <td class="px-6 py-4 text-sm text-right">
-                                <a href="{{ route('admin.families.edit', $family) }}"
-                                    class="inline-flex items-center gap-2 px-4 py-1.5 rounded-md bg-blue-500 text-white text-xs font-medium shadow hover:bg-blue-600 hover:scale-105 transition-all duration-200">
-                                    <i data-lucide="pencil" class="w-4 h-4"></i> Editar
-                                </a>
+                            <td class="px-6 py-4 text-sm">
+                                <div class="flex justify-end items-center gap-2">
+                                    <a href="{{ route('admin.families.edit', $family) }}"
+                                        class="inline-flex items-center gap-2 px-4 py-1.5 rounded-md bg-blue-500 text-white text-xs font-medium shadow hover:bg-blue-600 hover:scale-105 transition-all duration-200">
+                                        <i data-lucide="pencil" class="w-4 h-4"></i> Editar
+                                    </a>
+
+                                    <form action="{{ route('admin.families.destroy', $family) }}" method="POST"
+                                        onsubmit="return confirm('¿Deseas eliminar esta familia?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit"
+                                            class="inline-flex items-center gap-2 px-4 py-1.5 rounded-md bg-red-500 text-white text-xs font-medium shadow hover:bg-red-600 hover:scale-105 transition-all duration-200">
+                                            <i data-lucide="trash-2" class="w-4 h-4"></i> Eliminar
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     @endforeach
