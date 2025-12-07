@@ -39,11 +39,12 @@ class ProductTable extends DataTableComponent
 
     public function columns(): array
     {
+        $headerCheckbox = view('admin.products.checkbox-header')->render();
+
         return [
-            Column::make('')
+            Column::make($headerCheckbox)
                 ->label(fn($row) => view('admin.products.checkbox', ['row' => $row]))
                 ->html()
-                ->header(view('admin.products.checkbox-header'))
                 ->excludeFromColumnSelect(),
 
             Column::make('ID', 'id')->sortable()->searchable(),
