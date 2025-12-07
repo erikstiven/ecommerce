@@ -13,6 +13,7 @@ class ProductTable extends DataTableComponent
 
     // IDs seleccionados
     public array $selected = [];
+    public bool $selectAll = false;
 
     protected $listeners = ['deleteProduct', 'toggleSelectAll', 'deleteSelected'];
 
@@ -20,27 +21,26 @@ class ProductTable extends DataTableComponent
     {
         $this->setPrimaryKey('id');
         $this->setTheme('tailwind');
+        $this->setConfigurableAreas([
+            'toolbar-left-start' => 'admin.products.bulk-actions',
+        ]);
     }
 
-    public function toggleSelectAll()
+    public function updatedSelectAll($checked)
+    {
+        $this->selected = $checked ? Product::pluck('id')->toArray() : [];
+    }
+
+    public function updatedSelected()
     {
         $all = Product::pluck('id')->toArray();
-
-        // Si todos están seleccionados → limpiar
-        if (count($this->selected) === count($all)) {
-            $this->selected = [];
-            return;
-        }
-
-        // Si no → seleccionar todos
-        $this->selected = $all;
+        $this->selectAll = count($all) > 0 && count($this->selected) === count($all);
     }
 
     public function columns(): array
     {
         return [
-            // Checkbox manual (sin header)
-            Column::make('Sel.')
+            Column::make(view('admin.products.checkbox-header')->render())
                 ->label(fn($row) => view('admin.products.checkbox', ['row' => $row]))
                 ->html(),
 
@@ -100,6 +100,7 @@ class ProductTable extends DataTableComponent
         }
 
         $this->selected = []; // limpiar selección
+        $this->selectAll = false;
 
         $this->dispatch('swal', [
             'icon'  => 'success',
