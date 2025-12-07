@@ -1,4 +1,6 @@
-<input type="checkbox"
-       wire:model="selected"
-       value="{{ $row->id }}"
-       class="w-4 h-4 cursor-pointer">
+<div class="flex items-center justify-center w-full">
+    <input type="checkbox"
+           wire:model.live="selected"
+           value="{{ $row->id }}"
+           class="w-4 h-4 cursor-pointer">
+</div>
