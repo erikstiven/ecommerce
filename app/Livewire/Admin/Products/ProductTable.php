@@ -31,7 +31,7 @@ class ProductTable extends DataTableComponent
         $this->selected = $checked ? Product::pluck('id')->toArray() : [];
     }
 
-    public function updatedSelected()
+    public function updatedSelected(): void
     {
         $all = Product::pluck('id')->toArray();
         $this->selectAll = count($all) > 0 && count($this->selected) === count($all);
