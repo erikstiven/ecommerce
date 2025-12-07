@@ -15,7 +15,7 @@ class ProductTable extends DataTableComponent
     public array $selected = [];
     public bool $selectAll = false;
 
-    protected $listeners = ['deleteProduct'];
+    protected $listeners = ['deleteProduct', 'toggleSelectAll', 'deleteSelected'];
 
     public function configure(): void
     {
