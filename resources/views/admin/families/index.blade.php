@@ -48,10 +48,21 @@
                                 {{ $family->name }}
                             </td>
                             <td class="px-6 py-4 text-sm text-right">
-                                <a href="{{ route('admin.families.edit', $family) }}"
-                                    class="inline-flex items-center gap-2 px-4 py-1.5 rounded-md bg-blue-500 text-white text-xs font-medium shadow hover:bg-blue-600 hover:scale-105 transition-all duration-200">
-                                    <i data-lucide="pencil" class="w-4 h-4"></i> Editar
-                                </a>
+                                <div class="flex items-center justify-end space-x-2">
+                                    <a href="{{ route('admin.families.edit', $family) }}">
+                                        <img src="{{ asset('img/icons/boligrafo.png') }}" class="w-6 h-6" alt="Editar">
+                                    </a>
+
+                                    <form action="{{ route('admin.families.destroy', $family) }}" method="POST"
+                                        onsubmit="return confirm('¿Seguro que deseas eliminar esta familia?');">
+                                        @csrf
+                                        @method('DELETE')
+
+                                        <button type="submit">
+                                            <img src="{{ asset('img/icons/eliminar.png') }}" class="w-6 h-6" alt="Eliminar">
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     @endforeach

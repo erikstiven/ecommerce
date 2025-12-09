@@ -15,31 +15,27 @@ class ProductTable extends DataTableComponent
     public array $selected = [];
     public bool $selectAll = false;
 
-    protected $listeners = ['deleteProduct', 'toggleSelectAll', 'deleteSelected'];
-
-    public array $bulkActions = [
-        'deleteSelected' => 'Eliminar seleccionados',
-    ];
-    
+    protected $listeners = ['deleteProduct', 'deleteSelected'];
 
     public function configure(): void
     {
         $this->setPrimaryKey('id');
         $this->setTheme('tailwind');
-        $this->setConfigurableAreas([
-            'toolbar-left-start' => 'admin.products.bulk-actions',
-        ]);
     }
 
     public function updatedSelectAll($checked)
     {
         $this->selected = $checked ? Product::pluck('id')->toArray() : [];
+
+        $this->dispatchSelectionCount();
     }
 
     public function updatedSelected(): void
     {
         $all = Product::pluck('id')->toArray();
         $this->selectAll = count($all) > 0 && count($this->selected) === count($all);
+
+        $this->dispatchSelectionCount();
     }
 
     public function columns(): array
@@ -50,8 +46,6 @@ class ProductTable extends DataTableComponent
                 ->label(fn($row) => view('admin.products.checkbox', ['row' => $row]))
                 ->format(fn() => view('admin.products.checkbox-header'))
                 ->html()
-                ->sortable(false)
-                ->searchable(false)
                 ->excludeFromColumnSelect(),
 
             Column::make('ID', 'id')->sortable()->searchable(),
@@ -79,6 +73,12 @@ class ProductTable extends DataTableComponent
         }
 
         $product->delete();
+
+        if (($index = array_search($id, $this->selected)) !== false) {
+            unset($this->selected[$index]);
+            $this->selected = array_values($this->selected);
+            $this->dispatchSelectionCount();
+        }
 
         $this->dispatch('swal', [
             'icon'  => 'success',
@@ -113,10 +113,17 @@ class ProductTable extends DataTableComponent
         $this->selected = []; // limpiar selección
         $this->selectAll = false;
 
+        $this->dispatchSelectionCount();
+
         $this->dispatch('swal', [
             'icon'  => 'success',
             'title' => 'Productos eliminados',
             'text'  => 'Los elementos seleccionados se eliminaron correctamente.',
         ]);
+    }
+
+    protected function dispatchSelectionCount(): void
+    {
+        $this->dispatch('selection-updated', count: count($this->selected));
     }
 }

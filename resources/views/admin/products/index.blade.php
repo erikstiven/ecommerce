@@ -10,9 +10,24 @@
 ]">
 
     <x-slot name="action">
-        <a href="{{ route('admin.products.create') }}" class="btn-gradient-blue">
-            Nuevo
-        </a>
+        <div
+            x-data="{ selectedCount: 0 }"
+            x-on:selection-updated.window="selectedCount = $event.detail.count"
+            class="flex items-center gap-3"
+        >
+            <button
+                type="button"
+                class="px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-md shadow disabled:opacity-50 disabled:cursor-not-allowed hover:bg-red-700 transition"
+                :disabled="selectedCount === 0"
+                x-on:click="Livewire.dispatch('deleteSelected')"
+            >
+                Eliminar seleccionados
+            </button>
+
+            <a href="{{ route('admin.products.create') }}" class="btn-gradient-blue">
+                Nuevo
+            </a>
+        </div>
     </x-slot>
 
 
