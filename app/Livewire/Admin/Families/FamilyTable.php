@@ -18,13 +18,6 @@ class FamilyTable extends DataTableComponent
         $this->setTheme('tailwind');
     }
 
-    public function bulkActions(): array
-    {
-        return [
-            'deleteSelected' => 'Eliminar seleccionados',
-        ];
-    }
-
     public function updatedSelected(): void
     {
         $this->dispatchSelectionCount();
@@ -33,6 +26,7 @@ class FamilyTable extends DataTableComponent
     public function columns(): array
     {
         return [
+            Column::checkbox(),
             Column::make('ID', 'id')->sortable()->searchable(),
             Column::make('Nombre', 'name')->sortable()->searchable(),
             Column::make('Acciones')
