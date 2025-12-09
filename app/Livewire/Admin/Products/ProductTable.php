@@ -46,7 +46,6 @@ class ProductTable extends DataTableComponent
                 ->label(fn($row) => view('admin.products.checkbox', ['row' => $row]))
                 ->format(fn() => view('admin.products.checkbox-header'))
                 ->html()
-                ->searchable(false)
                 ->excludeFromColumnSelect(),
 
             Column::make('ID', 'id')->sortable()->searchable(),
