@@ -1,0 +1,1228 @@
+diff --git a/app/Http/Controllers/Admin/CategoryController.php b/app/Http/Controllers/Admin/CategoryController.php
+index 04a799eae456dd71f9e8f56f0a12adf3f61263f3..2914d1a98725c9e3d9d5afe5673c319134683552 100644
+--- a/app/Http/Controllers/Admin/CategoryController.php
++++ b/app/Http/Controllers/Admin/CategoryController.php
+@@ -127,26 +127,58 @@ public function destroy(Category $category)
+         //     session()->flash('swal', [
+         //         'icon' => 'error',
+         //         'title' => '¡Upss!',
+         //         'text' => 'No se puede eliminar la familia porque tiene subcategorías asociadas.',
+         //     ]);
+         //     return redirect()->route('admin.categories.edit', $category);
+         // }
+         if ($category->subcategories()->count() > 0) {
+             session()->flash('swal', [
+                 'icon'  => 'error',
+                 'title' => '¡Upss!',
+                 'text'  => 'No se puede eliminar la categoría porque tiene subcategorías asociadas.',
+             ]);
+             return redirect()->route('admin.categories.edit', $category);
+         }
+ 
+         $category->delete();
+         // Flash message
+         session()->flash('swal', [
+             'icon' => 'success',
+             'title' => '¡Bien hecho!',
+             'text' => 'Categoria eliminada correctamente.',
+         ]);
+         return redirect()->route('admin.categories.index');
+     }
++
++    public function bulkDestroy(Request $request)
++    {
++        $data = $request->validate([
++            'ids'   => 'required|array',
++            'ids.*' => 'exists:categories,id',
++        ]);
++
++        $categories = Category::whereIn('id', $data['ids'])->withCount('subcategories')->get();
++
++        $withChildren = $categories->filter(fn ($category) => $category->subcategories_count > 0);
++
++        if ($withChildren->isNotEmpty()) {
++            session()->flash('swal', [
++                'icon'  => 'error',
++                'title' => '¡Upss!',
++                'text'  => 'Algunas categorías tienen subcategorías asociadas y no se pueden eliminar.',
++            ]);
++
++            return redirect()->route('admin.categories.index');
++        }
++
++        Category::whereIn('id', $data['ids'])->delete();
++
++        session()->flash('swal', [
++            'icon'  => 'success',
++            'title' => '¡Bien hecho!',
++            'text'  => 'Categorías eliminadas correctamente.',
++        ]);
++
++        return redirect()->route('admin.categories.index');
++    }
+ }
+diff --git a/app/Http/Controllers/Admin/FamilyController.php b/app/Http/Controllers/Admin/FamilyController.php
+index fe598e3fb36951eb00a7528c66c53799f08a1516..4ec227778aa3aa93c00c0b84581a1a9a298399a4 100644
+--- a/app/Http/Controllers/Admin/FamilyController.php
++++ b/app/Http/Controllers/Admin/FamilyController.php
+@@ -102,26 +102,58 @@ public function update(Request $request, Family $family)
+     }
+ 
+     /**
+      * Remove the specified resource from storage.
+      */
+     public function destroy(Family $family)
+     {
+         //
+         if ($family->categories()->count() > 0) {
+             session()->flash('swal', [
+                 'icon' => 'error',
+                 'title' => '¡Upss!',
+                 'text' => 'No se puede eliminar la familia porque tiene categorías asociadas.',
+             ]);
+             return redirect()->route('admin.families.edit', $family);
+         }
+         $family->delete();
+         // Flash message
+         session()->flash('swal', [
+             'icon' => 'success',
+             'title' => '¡Bien hecho!',
+             'text' => 'Familia eliminada correctamente.',
+         ]);
+         return redirect()->route('admin.families.index');
+     }
++
++    public function bulkDestroy(Request $request)
++    {
++        $data = $request->validate([
++            'ids'   => 'required|array',
++            'ids.*' => 'exists:families,id',
++        ]);
++
++        $families = Family::whereIn('id', $data['ids'])->withCount('categories')->get();
++
++        $withCategories = $families->filter(fn ($family) => $family->categories_count > 0);
++
++        if ($withCategories->isNotEmpty()) {
++            session()->flash('swal', [
++                'icon'  => 'error',
++                'title' => '¡Upss!',
++                'text'  => 'No se pueden eliminar familias con categorías asociadas.',
++            ]);
++
++            return redirect()->route('admin.families.index');
++        }
++
++        Family::whereIn('id', $data['ids'])->delete();
++
++        session()->flash('swal', [
++            'icon'  => 'success',
++            'title' => '¡Bien hecho!',
++            'text'  => 'Familias eliminadas correctamente.',
++        ]);
++
++        return redirect()->route('admin.families.index');
++    }
+ }
+diff --git a/app/Http/Controllers/Admin/SubcategoryController.php b/app/Http/Controllers/Admin/SubcategoryController.php
+index 4e49e9294fb2f411bf312d194a426ecef67d53d0..b48f969d59d73b7319c4a47a84e15767813fc46a 100644
+--- a/app/Http/Controllers/Admin/SubcategoryController.php
++++ b/app/Http/Controllers/Admin/SubcategoryController.php
+@@ -93,26 +93,58 @@ public function update(Request $request, Subcategory $subcategory)
+         //
+     }
+ 
+     /**
+      * Remove the specified resource from storage.
+      */
+     public function destroy(Subcategory $subcategory)
+     {
+         //
+         if ($subcategory->products()->count() > 0) {
+             session()->flash('swal', [
+                 'icon' => 'error',
+                 'title' => '¡Error!',
+                 'text' => 'No se puede eliminar la subcategoría porque tiene productos asociados.',
+             ]);
+             return redirect()->route('admin.subcategories.edit', $subcategory);
+         }
+         $subcategory->delete();
+         session()->flash('swal', [
+             'icon' => 'success',
+             'title' => '¡Bien hecho!',
+             'text' => 'Subcategoría eliminada correctamente.',
+         ]);
+         return redirect()->route('admin.subcategories.index');
+     }
++
++    public function bulkDestroy(Request $request)
++    {
++        $data = $request->validate([
++            'ids'   => 'required|array',
++            'ids.*' => 'exists:subcategories,id',
++        ]);
++
++        $subcategories = Subcategory::whereIn('id', $data['ids'])->withCount('products')->get();
++
++        $withProducts = $subcategories->filter(fn ($subcategory) => $subcategory->products_count > 0);
++
++        if ($withProducts->isNotEmpty()) {
++            session()->flash('swal', [
++                'icon'  => 'error',
++                'title' => '¡Error!',
++                'text'  => 'No se pueden eliminar subcategorías con productos asociados.',
++            ]);
++
++            return redirect()->route('admin.subcategories.index');
++        }
++
++        Subcategory::whereIn('id', $data['ids'])->delete();
++
++        session()->flash('swal', [
++            'icon'  => 'success',
++            'title' => '¡Bien hecho!',
++            'text'  => 'Subcategorías eliminadas correctamente.',
++        ]);
++
++        return redirect()->route('admin.subcategories.index');
++    }
+ }
+diff --git a/app/Livewire/Admin/Products/ProductTable.php b/app/Livewire/Admin/Products/ProductTable.php
+index ecb1360b07017c806c98f8356bf00396cc7c06e7..db2479023148b767ffadefadbf03ee8bd3c89685 100644
+--- a/app/Livewire/Admin/Products/ProductTable.php
++++ b/app/Livewire/Admin/Products/ProductTable.php
+@@ -1,109 +1,111 @@
+ <?php
+ 
+ namespace App\Livewire\Admin\Products;
+ 
+ use App\Models\Product;
+ use Illuminate\Support\Facades\Storage;
+ use Rappasoft\LaravelLivewireTables\DataTableComponent;
+ use Rappasoft\LaravelLivewireTables\Views\Column;
++use Livewire\Attributes\On;
+ 
+ class ProductTable extends DataTableComponent
+ {
+     protected $model = Product::class;
+ 
+     // IDs seleccionados
+     public array $selected = [];
+ 
+-    protected $listeners = ['deleteProduct'];
+-
+     public function configure(): void
+     {
+         $this->setPrimaryKey('id');
+         $this->setTheme('tailwind');
+     }
+ 
++    #[On('toggleSelectAll')]
+     public function toggleSelectAll()
+     {
+-        $all = Product::pluck('id')->toArray();
++        $all = Product::pluck('id')->map(fn ($id) => (string) $id)->toArray();
+ 
+         // Si todos están seleccionados → limpiar
+         if (count($this->selected) === count($all)) {
+             $this->selected = [];
+             return;
+         }
+ 
+         // Si no → seleccionar todos
+         $this->selected = $all;
+     }
+ 
+     public function columns(): array
+     {
+         return [
+             // Checkbox manual (sin header)
+             Column::make('Sel.')
+                 ->label(fn($row) => view('admin.products.checkbox', ['row' => $row]))
+                 ->html(),
+ 
+             Column::make('ID', 'id')->sortable()->searchable(),
+             Column::make('SKU', 'sku')->sortable()->searchable(),
+             Column::make('Nombre', 'name')->sortable()->searchable(),
+ 
+             Column::make('Precio', 'price')
+                 ->format(fn($value) => '$' . number_format($value, 2))
+                 ->sortable()
+                 ->searchable(),
+ 
+             Column::make('Acciones')
+                 ->label(fn($row) => view('admin.products.actions', ['product' => $row]))
+                 ->html(),
+         ];
+     }
+ 
++    #[On('deleteProduct')]
+     public function deleteProduct($id)
+     {
+         $product = Product::findOrFail($id);
+ 
+         if ($product->image_path && Storage::disk('public')->exists($product->image_path)) {
+             Storage::disk('public')->delete($product->image_path);
+         }
+ 
+         $product->delete();
+ 
+         $this->dispatch('swal', [
+             'icon'  => 'success',
+             'title' => 'Producto eliminado',
+             'text'  => 'El producto se eliminó correctamente.',
+         ]);
+     }
+ 
+     public function getHasSelectedProperty()
+     {
+         return count($this->selected) > 0;
+     }
+ 
+ 
++    #[On('deleteSelected')]
+     public function deleteSelected()
+     {
+         if (empty($this->selected)) {
+             return;
+         }
+ 
+         $products = Product::whereIn('id', $this->selected)->get();
+ 
+         foreach ($products as $product) {
+ 
+             if ($product->image_path && Storage::disk('public')->exists($product->image_path)) {
+                 Storage::disk('public')->delete($product->image_path);
+             }
+ 
+             $product->delete();
+         }
+ 
+         $this->selected = []; // limpiar selección
+ 
+         $this->dispatch('swal', [
+             'icon'  => 'success',
+             'title' => 'Productos eliminados',
+             'text'  => 'Los elementos seleccionados se eliminaron correctamente.',
+         ]);
+     }
+diff --git a/resources/views/admin/categories/index.blade.php b/resources/views/admin/categories/index.blade.php
+index e9bf8a4b7e798f174e1c7104f0c8bdb5d63d6b11..021b58aa0903ac61dbb6f5cc9aa047e93c4335b7 100644
+--- a/resources/views/admin/categories/index.blade.php
++++ b/resources/views/admin/categories/index.blade.php
+@@ -1,90 +1,163 @@
+ <x-admin-layout :breadcrumbs="[
+     [
+         'name' => 'Dashboard',
+         'route' => route('admin.dashboard'),
+     ],
+     [
+         'name' => 'Categorías',
+         'route' => route('admin.categories.index'),
+     ],
+ ]">
+ 
+     <x-slot name="action">
+         <a href="{{ route('admin.categories.create') }}" class="btn-gradient-blue">
+             Nuevo
+         </a>
+     </x-slot>
+ 
+     @if ($categories->count())
+ 
+-        <div class="overflow-x-auto rounded-xl shadow-md border border-gray-200 dark:border-gray-700">
+-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
+-                <thead class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
+-                    <tr>
+-                        <th
+-                            class="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-gray-300 tracking-widest uppercase">
+-                            ID
+-                        </th>
+-                        <th
+-                            class="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-gray-300 tracking-widest uppercase">
+-                            Nombre
+-                        </th>
+-                        <th
+-                            class="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-gray-300 tracking-widest uppercase">
+-                            Familia
+-                        </th>
+-                        <th
+-                            class="px-6 py-4 text-right text-xs font-bold text-gray-600 dark:text-gray-300 tracking-widest uppercase">
+-                            Acciones
+-                        </th>
+-                    </tr>
+-                </thead>
+-                <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+-                    @foreach ($categories as $category)
+-                        <tr class="group hover:bg-blue-50 dark:hover:bg-gray-800 transition duration-200">
+-                            <td
+-                                class="px-6 py-4 text-sm font-semibold text-gray-700 dark:text-gray-200 group-hover:text-blue-600">
+-                                {{ $category->id }}
+-                            </td>
+-                            <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 group-hover:text-blue-600">
+-                                {{ $category->name }}
+-                            </td>
+-                            <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 group-hover:text-blue-600">
+-                                {{ $category->family->name }}
+-                            </td>
+-                            <td class="px-6 py-4 text-sm text-right">
+-                                <a href="{{ route('admin.categories.edit', $category) }}"
+-                                    class="inline-flex items-center gap-2 px-4 py-1.5 rounded-md bg-blue-500 text-white text-xs font-medium shadow hover:bg-blue-600 hover:scale-105 transition-all duration-200">
+-                                    <i data-lucide="pencil" class="w-4 h-4"></i> Editar
+-                                </a>
+-                            </td>
++        <form action="{{ route('admin.categories.bulk-destroy') }}" method="POST" id="category-bulk-form">
++            @csrf
++            @method('DELETE')
++
++            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
++                <div class="flex items-center gap-2">
++                    <label class="inline-flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-200">
++                        <input id="select-all-categories" type="checkbox" class="w-4 h-4 cursor-pointer">
++                        Seleccionar todo
++                    </label>
++
++                    <button type="submit"
++                        class="px-4 py-2 bg-red-600 text-white rounded-md shadow hover:bg-red-700 transition disabled:opacity-50"
++                        id="delete-selected-categories">
++                        Eliminar seleccionados
++                    </button>
++                </div>
++            </div>
++
++            <div class="overflow-x-auto rounded-xl shadow-md border border-gray-200 dark:border-gray-700">
++                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
++                    <thead class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
++                        <tr>
++                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-gray-300 tracking-widest uppercase">
++                                Selección
++                            </th>
++                            <th
++                                class="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-gray-300 tracking-widest uppercase">
++                                ID
++                            </th>
++                            <th
++                                class="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-gray-300 tracking-widest uppercase">
++                                Nombre
++                            </th>
++                            <th
++                                class="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-gray-300 tracking-widest uppercase">
++                                Familia
++                            </th>
++                            <th
++                                class="px-6 py-4 text-right text-xs font-bold text-gray-600 dark:text-gray-300 tracking-widest uppercase">
++                                Acciones
++                            </th>
+                         </tr>
+-                    @endforeach
+-                </tbody>
+-            </table>
+-        </div>
++                    </thead>
++                    <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
++                        @foreach ($categories as $category)
++                            <tr class="group hover:bg-blue-50 dark:hover:bg-gray-800 transition duration-200">
++                                <td class="px-6 py-4">
++                                    <input type="checkbox" name="ids[]" value="{{ $category->id }}"
++                                        class="w-4 h-4 cursor-pointer category-row-checkbox">
++                                </td>
++                                <td
++                                    class="px-6 py-4 text-sm font-semibold text-gray-700 dark:text-gray-200 group-hover:text-blue-600">
++                                    {{ $category->id }}
++                                </td>
++                                <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 group-hover:text-blue-600">
++                                    {{ $category->name }}
++                                </td>
++                                <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 group-hover:text-blue-600">
++                                    {{ $category->family->name }}
++                                </td>
++                                <td class="px-6 py-4 text-sm">
++                                    <div class="flex justify-end items-center gap-2">
++                                        <a href="{{ route('admin.categories.edit', $category) }}"
++                                            class="inline-flex items-center gap-2 px-4 py-1.5 rounded-md bg-blue-500 text-white text-xs font-medium shadow hover:bg-blue-600 hover:scale-105 transition-all duration-200">
++                                            <i data-lucide="pencil" class="w-4 h-4"></i> Editar
++                                        </a>
++
++                                        <form action="{{ route('admin.categories.destroy', $category) }}" method="POST"
++                                            onsubmit="return confirm('¿Deseas eliminar esta categoría?');">
++                                            @csrf
++                                            @method('DELETE')
++                                            <button type="submit"
++                                                class="inline-flex items-center gap-2 px-4 py-1.5 rounded-md bg-red-500 text-white text-xs font-medium shadow hover:bg-red-600 hover:scale-105 transition-all duration-200">
++                                                <i data-lucide="trash-2" class="w-4 h-4"></i> Eliminar
++                                            </button>
++                                        </form>
++                                    </div>
++                                </td>
++                            </tr>
++                        @endforeach
++                    </tbody>
++                </table>
++            </div>
++        </form>
+ 
+ 
+ 
+         <div class="mt-4">
+             {{ $categories->links() }}
+         </div>
+     @else
+         <div class="p-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400 flex items-center gap-2"
+             role="alert">
+             <!-- Icono de información -->
+             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24"
+                 stroke="currentColor">
+                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                     d="M13 16h-1v-4h-1m1-4h.01M12 20.5a8.5 8.5 0 100-17 8.5 8.5 0 000 17z" />
+             </svg>
+ 
+             <span>
+                 <span class="font-medium">Info alert!</span> Todavía no hay categorías registradas
+             </span>
+         </div>
+     @endif
+ 
+ 
+ 
+ </x-admin-layout>
++
++@push('js')
++    <script>
++        document.addEventListener('DOMContentLoaded', () => {
++            const selectAll = document.getElementById('select-all-categories');
++            const checkboxes = document.querySelectorAll('.category-row-checkbox');
++            const deleteButton = document.getElementById('delete-selected-categories');
++
++            const syncButtonState = () => {
++                const anyChecked = Array.from(checkboxes).some((cb) => cb.checked);
++                deleteButton.disabled = !anyChecked;
++            };
++
++            selectAll?.addEventListener('change', (event) => {
++                checkboxes.forEach((cb) => {
++                    cb.checked = event.target.checked;
++                });
++                syncButtonState();
++            });
++
++            checkboxes.forEach((cb) => {
++                cb.addEventListener('change', syncButtonState);
++            });
++
++            document.getElementById('category-bulk-form')?.addEventListener('submit', (event) => {
++                if (!confirm('¿Deseas eliminar las categorías seleccionadas?')) {
++                    event.preventDefault();
++                }
++            });
++
++            syncButtonState();
++        });
++    </script>
++@endpush
+diff --git a/resources/views/admin/covers/index.blade.php b/resources/views/admin/covers/index.blade.php
+index bedd0477fc4678f0ed1884cc40444684dd099813..d046ae58e318284df23d856568433878ebe37792 100644
+--- a/resources/views/admin/covers/index.blade.php
++++ b/resources/views/admin/covers/index.blade.php
+@@ -39,54 +39,64 @@ class="bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounde
+                                     class="bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-red-900 dark:text-red-300">
+                                     Inactivo
+                                 </span>
+                             @endif
+                         </p>
+                     </div>
+ 
+                     <div>
+                         <p class="text-sm font-bold">
+                             Fecha de inicio
+                         </p>
+                         <p>
+                             {{ $cover->start_at->format('d/m/Y') }}
+                         </p>
+                     </div>
+ 
+                     <div>
+                         <p class="text-sm font-bold">
+                             Fecha de finalización
+                         </p>
+                         <p>
+                             {{ $cover->end_at ? $cover->end_at->format('d/m/Y') : 'N/A' }}
+                         </p>
+                     </div>
+ 
+-                    <div>
++                    <div class="flex items-center gap-2">
+                         <a class="btn-gradient-blue" href="{{ route('admin.covers.edit', $cover) }}">
+                             Editar
+                         </a>
++
++                        <form action="{{ route('admin.covers.destroy', $cover) }}" method="POST"
++                            onsubmit="return confirm('¿Deseas eliminar esta portada?');">
++                            @csrf
++                            @method('DELETE')
++                            <button type="submit"
++                                class="inline-flex items-center gap-2 px-4 py-1.5 rounded-md bg-red-500 text-white text-xs font-medium shadow hover:bg-red-600 hover:scale-105 transition-all duration-200">
++                                <i data-lucide="trash-2" class="w-4 h-4"></i> Eliminar
++                            </button>
++                        </form>
+                     </div>
+                 </div>
+             </li>
+         @endforeach
+     </ul>
+ 
+     @push('js')
+ 
+         <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.6/Sortable.min.js">
+ 
+         </script>
+         <script>
+             new Sortable(covers, {
+                 animation: 150,
+                 ghostClass: 'bg-blue-100',
+                 store: {
+                     set : function (sortable) {
+                         const sorts = sortable.toArray();
+ 
+                         axios.post("{{ route('api.sort.covers') }}", { 
+                             sorts: sorts
+                          }).catch((error) => {
+                             alert('Ocurrio un error al ordenar las portadas');
+                          })
+ 
+diff --git a/resources/views/admin/families/index.blade.php b/resources/views/admin/families/index.blade.php
+index 10c7b60ae2bc9132db68be0f429568d86ff3a241..9908c2b2246f625e2626dccd1b8bf9acfd2c421e 100644
+--- a/resources/views/admin/families/index.blade.php
++++ b/resources/views/admin/families/index.blade.php
+@@ -1,82 +1,153 @@
+ <x-admin-layout :breadcrumbs="[
+     [
+         'name' => 'Dashboard',
+         'route' => route('admin.dashboard'),
+     ],
+     [
+         'name' => 'Familias',
+         'route' => route('admin.families.index'),
+     ],
+ ]">
+ 
+     <x-slot name="action">
+         <a href="{{ route('admin.families.create') }}" class="btn-gradient-blue">
+             Nuevo 
+         </a>
+     </x-slot>
+ 
+ 
+ 
+     @if ($families->count())
+ 
+-        <div class="overflow-x-auto rounded-xl shadow-md border border-gray-200 dark:border-gray-700">
+-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
+-                <thead class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
+-                    <tr>
+-                        <th
+-                            class="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-gray-300 tracking-widest uppercase">
+-                            ID
+-                        </th>
+-                        <th
+-                            class="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-gray-300 tracking-widest uppercase">
+-                            Nombre
+-                        </th>
+-                        <th
+-                            class="px-6 py-4 text-right text-xs font-bold text-gray-600 dark:text-gray-300 tracking-widest uppercase">
+-                            Acciones
+-                        </th>
+-                    </tr>
+-                </thead>
+-                <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+-                    @foreach ($families as $family)
+-                        <tr class="group hover:bg-blue-50 dark:hover:bg-gray-800 transition duration-200">
+-                            <td
+-                                class="px-6 py-4 text-sm font-semibold text-gray-700 dark:text-gray-200 group-hover:text-blue-600">
+-                                {{ $family->id }}
+-                            </td>
+-                            <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 group-hover:text-blue-600">
+-                                {{ $family->name }}
+-                            </td>
+-                            <td class="px-6 py-4 text-sm text-right">
+-                                <a href="{{ route('admin.families.edit', $family) }}"
+-                                    class="inline-flex items-center gap-2 px-4 py-1.5 rounded-md bg-blue-500 text-white text-xs font-medium shadow hover:bg-blue-600 hover:scale-105 transition-all duration-200">
+-                                    <i data-lucide="pencil" class="w-4 h-4"></i> Editar
+-                                </a>
+-                            </td>
++        <form action="{{ route('admin.families.bulk-destroy') }}" method="POST" id="family-bulk-form">
++            @csrf
++            @method('DELETE')
++
++            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
++                <div class="flex items-center gap-2">
++                    <label class="inline-flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-200">
++                        <input id="select-all-families" type="checkbox" class="w-4 h-4 cursor-pointer">
++                        Seleccionar todo
++                    </label>
++
++                    <button type="submit"
++                        class="px-4 py-2 bg-red-600 text-white rounded-md shadow hover:bg-red-700 transition disabled:opacity-50"
++                        id="delete-selected-families">
++                        Eliminar seleccionados
++                    </button>
++                </div>
++            </div>
++
++            <div class="overflow-x-auto rounded-xl shadow-md border border-gray-200 dark:border-gray-700">
++                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
++                    <thead class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
++                        <tr>
++                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-gray-300 tracking-widest uppercase">
++                                Selección
++                            </th>
++                            <th
++                                class="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-gray-300 tracking-widest uppercase">
++                                ID
++                            </th>
++                            <th
++                                class="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-gray-300 tracking-widest uppercase">
++                                Nombre
++                            </th>
++                            <th
++                                class="px-6 py-4 text-right text-xs font-bold text-gray-600 dark:text-gray-300 tracking-widest uppercase">
++                                Acciones
++                            </th>
+                         </tr>
+-                    @endforeach
+-                </tbody>
+-            </table>
+-        </div>
++                    </thead>
++                    <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
++                        @foreach ($families as $family)
++                            <tr class="group hover:bg-blue-50 dark:hover:bg-gray-800 transition duration-200">
++                                <td class="px-6 py-4">
++                                    <input type="checkbox" name="ids[]" value="{{ $family->id }}"
++                                        class="w-4 h-4 cursor-pointer family-row-checkbox">
++                                </td>
++                                <td
++                                    class="px-6 py-4 text-sm font-semibold text-gray-700 dark:text-gray-200 group-hover:text-blue-600">
++                                    {{ $family->id }}
++                                </td>
++                                <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 group-hover:text-blue-600">
++                                    {{ $family->name }}
++                                </td>
++                                <td class="px-6 py-4 text-sm">
++                                    <div class="flex justify-end items-center gap-2">
++                                        <a href="{{ route('admin.families.edit', $family) }}"
++                                            class="inline-flex items-center gap-2 px-4 py-1.5 rounded-md bg-blue-500 text-white text-xs font-medium shadow hover:bg-blue-600 hover:scale-105 transition-all duration-200">
++                                            <i data-lucide="pencil" class="w-4 h-4"></i> Editar
++                                        </a>
++
++                                        <form action="{{ route('admin.families.destroy', $family) }}" method="POST"
++                                            onsubmit="return confirm('¿Deseas eliminar esta familia?');">
++                                            @csrf
++                                            @method('DELETE')
++                                            <button type="submit"
++                                                class="inline-flex items-center gap-2 px-4 py-1.5 rounded-md bg-red-500 text-white text-xs font-medium shadow hover:bg-red-600 hover:scale-105 transition-all duration-200">
++                                                <i data-lucide="trash-2" class="w-4 h-4"></i> Eliminar
++                                            </button>
++                                        </form>
++                                    </div>
++                                </td>
++                            </tr>
++                        @endforeach
++                    </tbody>
++                </table>
++            </div>
++        </form>
+ 
+ 
+ 
+         <div class="mt-4">
+             {{ $families->links() }}
+         </div>
+     @else
+         <div class="p-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400 flex items-center gap-2"
+             role="alert">
+             <!-- Icono de información -->
+             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24"
+                 stroke="currentColor">
+                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                     d="M13 16h-1v-4h-1m1-4h.01M12 20.5a8.5 8.5 0 100-17 8.5 8.5 0 000 17z" />
+             </svg>
+ 
+             <span>
+                 <span class="font-medium">Info alert!</span> Todavía no hay familias registradas
+             </span>
+         </div>
+     @endif
+ </x-admin-layout>
++
++@push('js')
++    <script>
++        document.addEventListener('DOMContentLoaded', () => {
++            const selectAll = document.getElementById('select-all-families');
++            const checkboxes = document.querySelectorAll('.family-row-checkbox');
++            const deleteButton = document.getElementById('delete-selected-families');
++
++            const syncButtonState = () => {
++                const anyChecked = Array.from(checkboxes).some((cb) => cb.checked);
++                deleteButton.disabled = !anyChecked;
++            };
++
++            selectAll?.addEventListener('change', (event) => {
++                checkboxes.forEach((cb) => {
++                    cb.checked = event.target.checked;
++                });
++                syncButtonState();
++            });
++
++            checkboxes.forEach((cb) => cb.addEventListener('change', syncButtonState));
++
++            document.getElementById('family-bulk-form')?.addEventListener('submit', (event) => {
++                if (!confirm('¿Deseas eliminar las familias seleccionadas?')) {
++                    event.preventDefault();
++                }
++            });
++
++            syncButtonState();
++        });
++    </script>
++@endpush
+diff --git a/resources/views/admin/products/checkbox.blade.php b/resources/views/admin/products/checkbox.blade.php
+index b02eac37b3f3a36b6ebfbc6366eace5843298739..69ec6e81dc9dffb9466151f04d67186d88d4d784 100644
+--- a/resources/views/admin/products/checkbox.blade.php
++++ b/resources/views/admin/products/checkbox.blade.php
+@@ -1,4 +1,6 @@
+-<input type="checkbox"
+-       wire:model="selected"
+-       value="{{ $row->id }}"
+-       class="w-4 h-4 cursor-pointer">
++<input
++    type="checkbox"
++    wire:model.live="selected"
++    value="{{ $row->id }}"
++    wire:key="product-select-{{ $row->id }}"
++    class="w-4 h-4 cursor-pointer">
+diff --git a/resources/views/admin/products/index.blade.php b/resources/views/admin/products/index.blade.php
+index 6a3894d7576c04ca70a2412fb953196a4099d99d..c68705e5832968d98aa44d7ce3e49c26f8fc3a8a 100644
+--- a/resources/views/admin/products/index.blade.php
++++ b/resources/views/admin/products/index.blade.php
+@@ -97,28 +97,44 @@ class="inline-flex items-center gap-2 px-4 py-1.5 rounded-md bg-blue-500 text-wh
+                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                     d="M13 16h-1v-4h-1m1-4h.01M12 20.5a8.5 8.5 0 100-17 8.5 8.5 0 000 17z" />
+             </svg>
+ 
+             <span>
+                 <span class="font-medium">Info alert!</span> Todavía no hay productos registrados
+             </span>
+         </div>
+     @endif
+ 
+ 
+ 
+ </x-admin-layout> --}}
+ 
+ 
+ <x-admin-layout :breadcrumbs="[
+     ['name' => 'Dashboard', 'route' => route('admin.dashboard')],
+     ['name' => 'Productos', 'route' => route('admin.products.index')],
+ ]">
+     <x-slot name="action">
+         <a href="{{ route('admin.products.create') }}" class="btn-gradient-blue">
+             Nuevo
+         </a>
+     </x-slot>
+ 
++    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
++        <div class="flex flex-wrap items-center gap-2">
++            <button
++                class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md shadow hover:bg-gray-300 transition"
++                wire:click="$emitTo('admin.products.product-table','toggleSelectAll')">
++                Seleccionar todo
++            </button>
++
++            <button
++                class="px-4 py-2 bg-red-600 text-white rounded-md shadow hover:bg-red-700 transition"
++                wire:click="$emitTo('admin.products.product-table','deleteSelected')">
++                Eliminar seleccionados
++            </button>
++        </div>
++    </div>
++
+     {{-- Renderiza la tabla dinámica de productos --}}
+     @livewire('admin.products.product-table')
+ </x-admin-layout>
+diff --git a/resources/views/admin/subcategories/index.blade.php b/resources/views/admin/subcategories/index.blade.php
+index 0b96b7e94a209443ae347255f078b68994a60782..426ce91f1f74fb4e4701d1b67e24e2087834eca4 100644
+--- a/resources/views/admin/subcategories/index.blade.php
++++ b/resources/views/admin/subcategories/index.blade.php
+@@ -1,97 +1,168 @@
+ <x-admin-layout :breadcrumbs="[
+     [
+         'name' => 'Dashboard',
+         'route' => route('admin.dashboard'),
+     ],
+     [
+         'name' => 'Subcategorías',
+         'route' => route('admin.subcategories.index'),
+     ],
+ ]">
+ 
+     <x-slot name="action">
+         <a href="{{ route('admin.subcategories.create') }}" class="btn-gradient-blue">
+             Nuevo
+         </a>
+     </x-slot>
+ 
+     @if ($subcategories->count())
+ 
+-        <div class="overflow-x-auto rounded-xl shadow-md border border-gray-200 dark:border-gray-700">
+-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
+-                <thead class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
+-                    <tr>
+-                        <th
+-                            class="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-gray-300 tracking-widest uppercase">
+-                            ID
+-                        </th>
+-                        <th
+-                            class="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-gray-300 tracking-widest uppercase">
+-                            Nombre
+-                        </th>
+-                        <th
+-                            class="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-gray-300 tracking-widest uppercase">
+-                            Categoría
+-                        </th>
+-                        <th
+-                            class="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-gray-300 tracking-widest uppercase">
+-                            Familia
+-                        </th>
+-                        <th
+-                            class="px-6 py-4 text-right text-xs font-bold text-gray-600 dark:text-gray-300 tracking-widest uppercase">
+-                            Acciones
+-                        </th>
+-                    </tr>
+-                </thead>
+-                <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+-                    @foreach ($subcategories as $subcategory)
+-                        <tr class="group hover:bg-blue-50 dark:hover:bg-gray-800 transition duration-200">
+-                            <td
+-                                class="px-6 py-4 text-sm font-semibold text-gray-700 dark:text-gray-200 group-hover:text-blue-600">
+-                                {{ $subcategory->id }}
+-                            </td>
+-                            <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 group-hover:text-blue-600">
+-                                {{ $subcategory->name }}
+-                            </td>
+-                             <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 group-hover:text-blue-600">
+-                                {{ $subcategory->category->name }}
+-                            </td>
+-                            <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 group-hover:text-blue-600">
+-                                {{ $subcategory->category->family->name }}
+-                            </td>
+-                            <td class="px-6 py-4 text-sm text-right">
+-                                <a href="{{ route('admin.subcategories.edit', $subcategory) }}"
+-                                    class="inline-flex items-center gap-2 px-4 py-1.5 rounded-md bg-blue-500 text-white text-xs font-medium shadow hover:bg-blue-600 hover:scale-105 transition-all duration-200">
+-                                    <i data-lucide="pencil" class="w-4 h-4"></i> Editar
+-                                </a>
+-                            </td>
++        <form action="{{ route('admin.subcategories.bulk-destroy') }}" method="POST" id="subcategory-bulk-form">
++            @csrf
++            @method('DELETE')
++
++            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
++                <div class="flex items-center gap-2">
++                    <label class="inline-flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-200">
++                        <input id="select-all-subcategories" type="checkbox" class="w-4 h-4 cursor-pointer">
++                        Seleccionar todo
++                    </label>
++
++                    <button type="submit"
++                        class="px-4 py-2 bg-red-600 text-white rounded-md shadow hover:bg-red-700 transition disabled:opacity-50"
++                        id="delete-selected-subcategories">
++                        Eliminar seleccionados
++                    </button>
++                </div>
++            </div>
++
++            <div class="overflow-x-auto rounded-xl shadow-md border border-gray-200 dark:border-gray-700">
++                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
++                    <thead class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
++                        <tr>
++                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-gray-300 tracking-widest uppercase">
++                                Selección
++                            </th>
++                            <th
++                                class="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-gray-300 tracking-widest uppercase">
++                                ID
++                            </th>
++                            <th
++                                class="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-gray-300 tracking-widest uppercase">
++                                Nombre
++                            </th>
++                            <th
++                                class="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-gray-300 tracking-widest uppercase">
++                                Categoría
++                            </th>
++                            <th
++                                class="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-gray-300 tracking-widest uppercase">
++                                Familia
++                            </th>
++                            <th
++                                class="px-6 py-4 text-right text-xs font-bold text-gray-600 dark:text-gray-300 tracking-widest uppercase">
++                                Acciones
++                            </th>
+                         </tr>
+-                    @endforeach
+-                </tbody>
+-            </table>
+-        </div>
++                    </thead>
++                    <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
++                        @foreach ($subcategories as $subcategory)
++                            <tr class="group hover:bg-blue-50 dark:hover:bg-gray-800 transition duration-200">
++                                <td class="px-6 py-4">
++                                    <input type="checkbox" name="ids[]" value="{{ $subcategory->id }}"
++                                        class="w-4 h-4 cursor-pointer subcategory-row-checkbox">
++                                </td>
++                                <td
++                                    class="px-6 py-4 text-sm font-semibold text-gray-700 dark:text-gray-200 group-hover:text-blue-600">
++                                    {{ $subcategory->id }}
++                                </td>
++                                <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 group-hover:text-blue-600">
++                                    {{ $subcategory->name }}
++                                </td>
++                                 <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 group-hover:text-blue-600">
++                                    {{ $subcategory->category->name }}
++                                </td>
++                                <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 group-hover:text-blue-600">
++                                    {{ $subcategory->category->family->name }}
++                                </td>
++                                <td class="px-6 py-4 text-sm">
++                                    <div class="flex justify-end items-center gap-2">
++                                        <a href="{{ route('admin.subcategories.edit', $subcategory) }}"
++                                            class="inline-flex items-center gap-2 px-4 py-1.5 rounded-md bg-blue-500 text-white text-xs font-medium shadow hover:bg-blue-600 hover:scale-105 transition-all duration-200">
++                                            <i data-lucide="pencil" class="w-4 h-4"></i> Editar
++                                        </a>
++
++                                        <form action="{{ route('admin.subcategories.destroy', $subcategory) }}" method="POST"
++                                            onsubmit="return confirm('¿Deseas eliminar esta subcategoría?');">
++                                            @csrf
++                                            @method('DELETE')
++                                            <button type="submit"
++                                                class="inline-flex items-center gap-2 px-4 py-1.5 rounded-md bg-red-500 text-white text-xs font-medium shadow hover:bg-red-600 hover:scale-105 transition-all duration-200">
++                                                <i data-lucide="trash-2" class="w-4 h-4"></i> Eliminar
++                                            </button>
++                                        </form>
++                                    </div>
++                                </td>
++                            </tr>
++                        @endforeach
++                    </tbody>
++                </table>
++            </div>
++        </form>
+ 
+ 
+ 
+         <div class="mt-4">
+             {{ $subcategories->links() }}
+         </div>
+     @else
+         <div class="p-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400 flex items-center gap-2"
+             role="alert">
+             <!-- Icono de información -->
+             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24"
+                 stroke="currentColor">
+                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                     d="M13 16h-1v-4h-1m1-4h.01M12 20.5a8.5 8.5 0 100-17 8.5 8.5 0 000 17z" />
+             </svg>
+ 
+             <span>
+                 <span class="font-medium">Info alert!</span> Todavía no hay categorías registradas
+             </span>
+         </div>
+     @endif
+ 
+ 
+ 
+ </x-admin-layout>
++
++@push('js')
++    <script>
++        document.addEventListener('DOMContentLoaded', () => {
++            const selectAll = document.getElementById('select-all-subcategories');
++            const checkboxes = document.querySelectorAll('.subcategory-row-checkbox');
++            const deleteButton = document.getElementById('delete-selected-subcategories');
++
++            const syncButtonState = () => {
++                const anyChecked = Array.from(checkboxes).some((cb) => cb.checked);
++                deleteButton.disabled = !anyChecked;
++            };
++
++            selectAll?.addEventListener('change', (event) => {
++                checkboxes.forEach((cb) => {
++                    cb.checked = event.target.checked;
++                });
++                syncButtonState();
++            });
++
++            checkboxes.forEach((cb) => cb.addEventListener('change', syncButtonState));
++
++            document.getElementById('subcategory-bulk-form')?.addEventListener('submit', (event) => {
++                if (!confirm('¿Deseas eliminar las subcategorías seleccionadas?')) {
++                    event.preventDefault();
++                }
++            });
++
++            syncButtonState();
++        });
++    </script>
++@endpush
+diff --git a/resources/views/layouts/admin.blade.php b/resources/views/layouts/admin.blade.php
+index 007e1d597b8315d99f12a4052c332eec3fe0c392..19b163705566324f9b5da220412cafe0d864f669 100644
+--- a/resources/views/layouts/admin.blade.php
++++ b/resources/views/layouts/admin.blade.php
+@@ -1,87 +1,87 @@
+ @props(['breadcrumbs' => []])
+ 
+ <!DOCTYPE html>
+ <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+ 
+ <head>
+     <meta charset="utf-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+     <meta name="csrf-token" content="{{ csrf_token() }}">
+ 
+     <title>{{ config('', 'Ecommerce-Codecima') }}</title>
+     <link rel="icon" type="image/svg+xml" href="{{ asset('logo.png') }}?v={{ time() }}">
+ 
+     <!-- Fonts -->
+     <link rel="preconnect" href="https://fonts.bunny.net">
+     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+ 
+     <!-- Iconos -->
+     <script src="https://kit.fontawesome.com/624f2e432c.js" crossorigin="anonymous"></script>
++    <script src="https://unpkg.com/lucide@latest"></script>
+ 
+     @vite(['resources/css/app.css', 'resources/js/app.js'])
+ 
+     @livewireStyles
+ </head>
+ 
+ <body class="font-sans antialiased" x-data="{ sidebarOpen: false }">
+ 
+     {{-- Overlay responsive --}}
+     <div class="fixed inset-0 bg-gray-900 bg-opacity-50 z-20 sm:hidden"
+         x-show="sidebarOpen"
+         x-on:click="sidebarOpen = false">
+     </div>
+ 
+     @include('layouts.partials.admin.navegation')
+     @include('layouts.partials.admin.sidebar')
+ 
+     <div class="p-4 sm:ml-64">
+         <div class="mt-14">
+ 
+             <div class="flex justify-between items-center">
+                 @include('layouts.partials.admin.breadcrumb')
+ 
+                 @isset($action)
+                     <div>{{ $action }}</div>
+                 @endisset
+             </div>
+ 
+             <div class="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700">
+                 {{ $slot }}
+             </div>
+ 
+         </div>
+     </div>
+ 
+     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+ 
+     @livewireScripts
+ 
+     @stack('js')
+ 
+     {{-- SweetAlert desde Livewire --}}
+     <script>
+         Livewire.on('swal', data => {
+             Swal.fire(data[0]);
+         });
+     </script>
+ 
+     <script>
+-    document.addEventListener('livewire:init', () => {
+-        Livewire.hook('message.processed', () => {
++        document.addEventListener('DOMContentLoaded', () => {
+             if (window.lucide) {
+                 lucide.createIcons();
+             }
+         });
+-    });
+-
+-    // Ejecutar la primera vez
+-    document.addEventListener('DOMContentLoaded', () => {
+-        if (window.lucide) {
+-            lucide.createIcons();
+-        }
+-    });
++
++        document.addEventListener('livewire:init', () => {
++            Livewire.hook('message.processed', () => {
++                if (window.lucide) {
++                    lucide.createIcons();
++                }
++            });
++        });
+     </script>
+ 
+ 
+ </body>
+ </html>
+diff --git a/routes/admin.php b/routes/admin.php
+index 0bc538f26e9b559372e401398a49e3eef7e2eebd..75b13f90cb1b1007b14fc3f714d09a9e0158bd23 100644
+--- a/routes/admin.php
++++ b/routes/admin.php
+@@ -26,41 +26,44 @@
+         ->groupBy('status')
+         ->get()
+         ->mapWithKeys(function ($item) {
+             // El campo status se castea al enum OrderStatus; usamos su nombre para mostrarlo
+             return [$item->status->name => $item->total];
+         });
+ 
+     // Contar pedidos por mes del año actual
+     $ordersByMonth = Order::select(DB::raw('MONTH(created_at) as month'), DB::raw('count(*) as total'))
+         ->whereYear('created_at', date('Y'))
+         ->groupBy(DB::raw('MONTH(created_at)'))
+         ->orderBy(DB::raw('MONTH(created_at)'))
+         ->pluck('total', 'month');
+ 
+     return view('admin.dashboard', compact('ordersByStatus', 'ordersByMonth'));
+ })->middleware('can:access dashboard')
+   ->name('dashboard');
+ 
+ // =========================
+ // Resto de recursos admin
+ // =========================
+ 
+ Route::get('/options', [OptionController::class, 'index'])->name('options.index');
+ 
+ Route::resource('families', FamilyController::class);
++Route::delete('families/bulk-destroy', [FamilyController::class, 'bulkDestroy'])->name('families.bulk-destroy');
+ Route::resource('categories', CategoryController::class);
++Route::delete('categories/bulk-destroy', [CategoryController::class, 'bulkDestroy'])->name('categories.bulk-destroy');
+ Route::resource('subcategories', SubcategoryController::class);
++Route::delete('subcategories/bulk-destroy', [SubcategoryController::class, 'bulkDestroy'])->name('subcategories.bulk-destroy');
+ Route::resource('products', ProductController::class);
+ Route::get('products/{product}/variants/{variant}', [ProductController::class, 'variants'])
+     ->name('products.variants')
+     ->scopeBindings();
+ 
+ Route::put('products/{product}/variants/{variant}', [ProductController::class, 'variantsUpdate'])
+     ->name('products.variantsUpdate')
+     ->scopeBindings();
+ 
+ Route::resource('covers', CoverController::class);
+ Route::resource('drivers', DriverController::class);
+ 
+ Route::get('shipments', [ShipmentController::class, 'index'])->name('shipments.index');
+ Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
+

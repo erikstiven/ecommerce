@@ -17,6 +17,11 @@ class ProductTable extends DataTableComponent
 
     protected $listeners = ['deleteProduct', 'toggleSelectAll', 'deleteSelected'];
 
+    public array $bulkActions = [
+        'deleteSelected' => 'Eliminar seleccionados',
+    ];
+    
+
     public function configure(): void
     {
         $this->setPrimaryKey('id');
@@ -39,12 +44,14 @@ class ProductTable extends DataTableComponent
 
     public function columns(): array
     {
-        $headerCheckbox = view('admin.products.checkbox-header')->render();
-
         return [
-            Column::make($headerCheckbox)
+
+            Column::make('')        // Título vacío
                 ->label(fn($row) => view('admin.products.checkbox', ['row' => $row]))
+                ->format(fn() => view('admin.products.checkbox-header'))
                 ->html()
+                ->sortable(false)
+                ->searchable(false)
                 ->excludeFromColumnSelect(),
 
             Column::make('ID', 'id')->sortable()->searchable(),
@@ -61,6 +68,7 @@ class ProductTable extends DataTableComponent
                 ->html(),
         ];
     }
+
 
     public function deleteProduct($id)
     {
