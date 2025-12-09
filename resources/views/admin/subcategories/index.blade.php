@@ -10,99 +10,63 @@
 ]">
 
     <x-slot name="action">
-        <a href="{{ route('admin.subcategories.create') }}" class="btn-gradient-blue">
-            Nuevo
-        </a>
+        <div
+            x-data="{ selectedCount: 0 }"
+            x-on:selection-updated.window="selectedCount = $event.detail.count"
+            class="flex items-center gap-3"
+        >
+            <button
+                type="button"
+                class="px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-md shadow disabled:opacity-50 disabled:cursor-not-allowed hover:bg-red-700 transition"
+                :disabled="selectedCount === 0"
+                x-on:click="$dispatch('confirm-bulk-delete')"
+            >
+                Eliminar seleccionados
+            </button>
+
+            <a href="{{ route('admin.subcategories.create') }}" class="btn-gradient-blue">
+                Nuevo
+                </a>
+        </div>
     </x-slot>
 
-    @if ($subcategories->count())
-
-        <div class="overflow-x-auto rounded-xl shadow-md border border-gray-200 dark:border-gray-700">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
-                <thead class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
-                    <tr>
-                        <th
-                            class="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-gray-300 tracking-widest uppercase">
-                            ID
-                        </th>
-                        <th
-                            class="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-gray-300 tracking-widest uppercase">
-                            Nombre
-                        </th>
-                        <th
-                            class="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-gray-300 tracking-widest uppercase">
-                            Categoría
-                        </th>
-                        <th
-                            class="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-gray-300 tracking-widest uppercase">
-                            Familia
-                        </th>
-                        <th
-                            class="px-6 py-4 text-right text-xs font-bold text-gray-600 dark:text-gray-300 tracking-widest uppercase">
-                            Acciones
-                        </th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
-                    @foreach ($subcategories as $subcategory)
-                        <tr class="group hover:bg-blue-50 dark:hover:bg-gray-800 transition duration-200">
-                            <td
-                                class="px-6 py-4 text-sm font-semibold text-gray-700 dark:text-gray-200 group-hover:text-blue-600">
-                                {{ $subcategory->id }}
-                            </td>
-                            <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 group-hover:text-blue-600">
-                                {{ $subcategory->name }}
-                            </td>
-                             <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 group-hover:text-blue-600">
-                                {{ $subcategory->category->name }}
-                            </td>
-                            <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 group-hover:text-blue-600">
-                                {{ $subcategory->category->family->name }}
-                            </td>
-                            <td class="px-6 py-4 text-sm text-right">
-                                <div class="flex items-center justify-end space-x-2">
-                                    <a href="{{ route('admin.subcategories.edit', $subcategory) }}">
-                                        <img src="{{ asset('img/icons/boligrafo.png') }}" class="w-6 h-6" alt="Editar">
-                                    </a>
-
-                                    <form action="{{ route('admin.subcategories.destroy', $subcategory) }}" method="POST"
-                                        onsubmit="return confirm('¿Seguro que deseas eliminar esta subcategoría?');">
-                                        @csrf
-                                        @method('DELETE')
-
-                                        <button type="submit">
-                                            <img src="{{ asset('img/icons/eliminar.png') }}" class="w-6 h-6" alt="Eliminar">
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-
-
-
-        <div class="mt-4">
-            {{ $subcategories->links() }}
-        </div>
-    @else
-        <div class="p-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400 flex items-center gap-2"
-            role="alert">
-            <!-- Icono de información -->
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M13 16h-1v-4h-1m1-4h.01M12 20.5a8.5 8.5 0 100-17 8.5 8.5 0 000 17z" />
-            </svg>
-
-            <span>
-                <span class="font-medium">Info alert!</span> Todavía no hay categorías registradas
-            </span>
-        </div>
-    @endif
-
-
-
+    @livewire('admin.subcategories.subcategory-table')
 </x-admin-layout>
+
+@push('js')
+    <script>
+        window.addEventListener('confirm-subcategory-delete', event => {
+            Swal.fire({
+                title: '¿Eliminar subcategoría?',
+                text: 'Esta acción no se puede deshacer.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+            }).then(result => {
+                if (result.isConfirmed) {
+                    Livewire.dispatch('deleteSubcategory', { id: event.detail.id });
+                }
+            });
+        });
+
+        window.addEventListener('confirm-bulk-delete', () => {
+            Swal.fire({
+                title: '¿Eliminar seleccionados?',
+                text: 'Se eliminarán todos los elementos marcados.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+            }).then(result => {
+                if (result.isConfirmed) {
+                    Livewire.dispatch('deleteSelected');
+                }
+            });
+        });
+    </script>
+@endpush
