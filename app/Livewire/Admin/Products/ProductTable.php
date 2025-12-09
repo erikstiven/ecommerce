@@ -88,6 +88,8 @@ class ProductTable extends DataTableComponent
 
         $this->clearSelection();
 
+        $this->dispatchSelectionCount();
+
         $this->dispatch('swal', [
             'icon'  => 'success',
             'title' => 'Productos eliminados',
