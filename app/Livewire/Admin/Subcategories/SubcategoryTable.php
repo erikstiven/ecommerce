@@ -2,13 +2,15 @@
 
 namespace App\Livewire\Admin\Subcategories;
 
+use App\Livewire\Admin\Concerns\ProvidesCheckboxColumn;
 use App\Models\Subcategory;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
-use Rappasoft\LaravelLivewireTables\Views\Columns\CheckboxColumn;
 use Rappasoft\LaravelLivewireTables\Views\Columns\Column;
 
 class SubcategoryTable extends DataTableComponent
 {
+    use ProvidesCheckboxColumn;
+
     protected $model = Subcategory::class;
 
     public array $selected = [];
@@ -30,7 +32,7 @@ class SubcategoryTable extends DataTableComponent
     public function columns(): array
     {
         return [
-            CheckboxColumn::make('Seleccionar'),
+            $this->selectionColumn(),
             Column::make('ID', 'id')->sortable()->searchable(),
             Column::make('Nombre', 'name')->sortable()->searchable(),
             Column::make('Familia', 'family.name')->sortable()->searchable(),

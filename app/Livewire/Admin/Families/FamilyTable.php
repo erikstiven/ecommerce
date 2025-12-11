@@ -2,13 +2,15 @@
 
 namespace App\Livewire\Admin\Families;
 
+use App\Livewire\Admin\Concerns\ProvidesCheckboxColumn;
 use App\Models\Family;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
-use Rappasoft\LaravelLivewireTables\Views\Columns\CheckboxColumn;
 use Rappasoft\LaravelLivewireTables\Views\Columns\Column;
 
 class FamilyTable extends DataTableComponent
 {
+    use ProvidesCheckboxColumn;
+
     protected $model = Family::class;
 
     public array $selected = [];
@@ -29,7 +31,7 @@ class FamilyTable extends DataTableComponent
     public function columns(): array
     {
         return [
-            CheckboxColumn::make('Seleccionar'),
+            $this->selectionColumn(),
             Column::make('ID', 'id')->sortable()->searchable(),
             Column::make('Nombre', 'name')->sortable()->searchable(),
             Column::make('Acciones')

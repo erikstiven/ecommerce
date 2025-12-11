@@ -2,14 +2,16 @@
 
 namespace App\Livewire\Admin\Products;
 
+use App\Livewire\Admin\Concerns\ProvidesCheckboxColumn;
 use App\Models\Product;
 use Illuminate\Support\Facades\Storage;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
-use Rappasoft\LaravelLivewireTables\Views\Columns\CheckboxColumn;
 use Rappasoft\LaravelLivewireTables\Views\Columns\Column;
 
 class ProductTable extends DataTableComponent
 {
+    use ProvidesCheckboxColumn;
+
     protected $model = Product::class;
 
     // IDs seleccionados
@@ -31,7 +33,7 @@ class ProductTable extends DataTableComponent
     public function columns(): array
     {
         return [
-            CheckboxColumn::make('Seleccionar'),
+            $this->selectionColumn(),
             Column::make('ID', 'id')->sortable()->searchable(),
             Column::make('SKU', 'sku')->sortable()->searchable(),
             Column::make('Nombre', 'name')->sortable()->searchable(),
