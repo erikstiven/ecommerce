@@ -4,8 +4,7 @@ namespace App\Livewire\Admin\Families;
 
 use App\Models\Family;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
-use Rappasoft\LaravelLivewireTables\Views\Columns\CheckboxColumn;
-use Rappasoft\LaravelLivewireTables\Views\Columns\Column;
+use Rappasoft\LaravelLivewireTables\Views\Column;
 use Rappasoft\LaravelLivewireTables\Views\Columns\TextColumn;
 
 class FamilyTable extends DataTableComponent
@@ -21,6 +20,10 @@ class FamilyTable extends DataTableComponent
     {
         $this->setPrimaryKey('id');
         $this->setTheme('tailwind');
+
+        $this->setConfigurableAreas([
+            'toolbar-left-start' => 'admin.categories.toolbar',
+        ]);
     }
 
     public function updatedSelected(): void
@@ -30,8 +33,13 @@ class FamilyTable extends DataTableComponent
 
     public function columns(): array
     {
+        $headerCheckbox = view('admin.categories.checkbox-header')->render();
+
         return [
-            CheckboxColumn::make('Seleccionar'),
+            Column::make($headerCheckbox)
+                ->label(fn($row) => view('admin.categories.checkbox', ['row' => $row]))
+                ->html()
+                ->excludeFromColumnSelect(),
             TextColumn::make('ID', 'id')->sortable()->searchable(),
             TextColumn::make('Nombre', 'name')->sortable()->searchable(),
             Column::make('Acciones')
@@ -45,7 +53,8 @@ class FamilyTable extends DataTableComponent
         $family = Family::findOrFail($id);
         $family->delete();
 
-        $this->pruneSelection([$id]);
+        $this->selected = array_values(array_diff($this->getSelected(), [$id]));
+        $this->dispatchSelectionCount();
 
         $this->dispatch('swal', [
             'icon'  => 'success',
@@ -89,9 +98,4 @@ class FamilyTable extends DataTableComponent
         $this->dispatchSelectionCount();
     }
 
-    protected function pruneSelection(array $ids): void
-    {
-        $this->selected = array_values(array_diff($this->getSelected(), $ids));
-        $this->dispatchSelectionCount();
-    }
 }

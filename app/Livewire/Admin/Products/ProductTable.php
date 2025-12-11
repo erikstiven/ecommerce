@@ -5,8 +5,7 @@ namespace App\Livewire\Admin\Products;
 use App\Models\Product;
 use Illuminate\Support\Facades\Storage;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
-use Rappasoft\LaravelLivewireTables\Views\Columns\CheckboxColumn;
-use Rappasoft\LaravelLivewireTables\Views\Columns\Column;
+use Rappasoft\LaravelLivewireTables\Views\Column;
 use Rappasoft\LaravelLivewireTables\Views\Columns\TextColumn;
 
 class ProductTable extends DataTableComponent
@@ -23,6 +22,10 @@ class ProductTable extends DataTableComponent
     {
         $this->setPrimaryKey('id');
         $this->setTheme('tailwind');
+
+        $this->setConfigurableAreas([
+            'toolbar-left-start' => 'admin.categories.toolbar',
+        ]);
     }
 
     public function updatedSelected(): void
@@ -32,8 +35,13 @@ class ProductTable extends DataTableComponent
 
     public function columns(): array
     {
+        $headerCheckbox = view('admin.categories.checkbox-header')->render();
+
         return [
-            CheckboxColumn::make('Seleccionar'),
+            Column::make($headerCheckbox)
+                ->label(fn($row) => view('admin.categories.checkbox', ['row' => $row]))
+                ->html()
+                ->excludeFromColumnSelect(),
             TextColumn::make('ID', 'id')->sortable()->searchable(),
             TextColumn::make('SKU', 'sku')->sortable()->searchable(),
             TextColumn::make('Nombre', 'name')->sortable()->searchable(),
@@ -59,7 +67,8 @@ class ProductTable extends DataTableComponent
 
         $product->delete();
 
-        $this->pruneSelection([$id]);
+        $this->selected = array_values(array_diff($this->getSelected(), [$id]));
+        $this->dispatchSelectionCount();
 
         $this->dispatch('swal', [
             'icon'  => 'success',
@@ -111,9 +120,4 @@ class ProductTable extends DataTableComponent
         $this->dispatchSelectionCount();
     }
 
-    protected function pruneSelection(array $ids): void
-    {
-        $this->selected = array_values(array_diff($this->getSelected(), $ids));
-        $this->dispatchSelectionCount();
-    }
 }
