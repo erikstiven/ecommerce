@@ -26,7 +26,7 @@
 
             <a href="{{ route('admin.subcategories.create') }}" class="btn-gradient-blue">
                 Nuevo
-                </a>
+            </a>
         </div>
     </x-slot>
 
