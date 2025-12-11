@@ -5,7 +5,8 @@ namespace App\Livewire\Admin\Products;
 use App\Models\Product;
 use Illuminate\Support\Facades\Storage;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
-use Rappasoft\LaravelLivewireTables\Views\Column;
+use Rappasoft\LaravelLivewireTables\Views\Columns\CheckboxColumn;
+use Rappasoft\LaravelLivewireTables\Views\Columns\Column;
 
 class ProductTable extends DataTableComponent
 {
@@ -30,7 +31,7 @@ class ProductTable extends DataTableComponent
     public function columns(): array
     {
         return [
-            Column::checkbox(),
+            CheckboxColumn::make(),
             Column::make('ID', 'id')->sortable()->searchable(),
             Column::make('SKU', 'sku')->sortable()->searchable(),
             Column::make('Nombre', 'name')->sortable()->searchable(),

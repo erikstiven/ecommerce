@@ -4,7 +4,8 @@ namespace App\Livewire\Admin\Families;
 
 use App\Models\Family;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
-use Rappasoft\LaravelLivewireTables\Views\Column;
+use Rappasoft\LaravelLivewireTables\Views\Columns\CheckboxColumn;
+use Rappasoft\LaravelLivewireTables\Views\Columns\Column;
 
 class FamilyTable extends DataTableComponent
 {
@@ -26,7 +27,7 @@ class FamilyTable extends DataTableComponent
     public function columns(): array
     {
         return [
-            Column::checkbox(),
+            CheckboxColumn::make(),
             Column::make('ID', 'id')->sortable()->searchable(),
             Column::make('Nombre', 'name')->sortable()->searchable(),
             Column::make('Acciones')

@@ -4,7 +4,8 @@ namespace App\Livewire\Admin\Subcategories;
 
 use App\Models\Subcategory;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
-use Rappasoft\LaravelLivewireTables\Views\Column;
+use Rappasoft\LaravelLivewireTables\Views\Columns\CheckboxColumn;
+use Rappasoft\LaravelLivewireTables\Views\Columns\Column;
 
 class SubcategoryTable extends DataTableComponent
 {
@@ -27,7 +28,7 @@ class SubcategoryTable extends DataTableComponent
     public function columns(): array
     {
         return [
-            Column::checkbox(),
+            CheckboxColumn::make(),
             Column::make('ID', 'id')->sortable()->searchable(),
             Column::make('Nombre', 'name')->sortable()->searchable(),
             Column::make('Familia', 'family.name')->sortable()->searchable(),
