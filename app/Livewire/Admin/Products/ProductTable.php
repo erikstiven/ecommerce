@@ -11,7 +11,10 @@ class ProductTable extends DataTableComponent
 {
     protected $model = Product::class;
 
-    protected $listeners = ['deleteProduct', 'deleteSelected'];
+    // IDs seleccionados
+    public array $selected = [];
+
+    protected $listeners = ['deleteProduct', 'toggleSelectAll', 'deleteSelected'];
 
     public function configure(): void
     {

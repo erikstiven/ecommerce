@@ -26,6 +26,22 @@
         </div>
     </x-slot>
 
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+        <div class="flex flex-wrap items-center gap-2">
+            <button
+                class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md shadow hover:bg-gray-300 transition"
+                wire:click="$emitTo('admin.products.product-table','toggleSelectAll')">
+                Seleccionar todo
+            </button>
+
+            <button
+                class="px-4 py-2 bg-red-600 text-white rounded-md shadow hover:bg-red-700 transition"
+                wire:click="$emitTo('admin.products.product-table','deleteSelected')">
+                Eliminar seleccionados
+            </button>
+        </div>
+    </div>
+
     {{-- Renderiza la tabla dinámica de productos --}}
     @livewire('admin.products.product-table')
 </x-admin-layout>
