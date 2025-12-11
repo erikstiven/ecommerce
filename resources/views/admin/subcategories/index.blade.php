@@ -85,25 +85,49 @@
 
 
 
-        <div class="mt-4">
-            {{ $subcategories->links() }}
+            <a href="{{ route('admin.subcategories.create') }}" class="btn-gradient-blue">
+                Nuevo
+            </a>
         </div>
-    @else
-        <div class="p-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400 flex items-center gap-2"
-            role="alert">
-            <!-- Icono de información -->
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M13 16h-1v-4h-1m1-4h.01M12 20.5a8.5 8.5 0 100-17 8.5 8.5 0 000 17z" />
-            </svg>
+    </x-slot>
 
-            <span>
-                <span class="font-medium">Info alert!</span> Todavía no hay categorías registradas
-            </span>
-        </div>
-    @endif
-
-
-
+    @livewire('admin.subcategories.subcategory-table')
 </x-admin-layout>
+
+@push('js')
+    <script>
+        window.addEventListener('confirm-subcategory-delete', event => {
+            Swal.fire({
+                title: '¿Eliminar subcategoría?',
+                text: 'Esta acción no se puede deshacer.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+            }).then(result => {
+                if (result.isConfirmed) {
+                    Livewire.dispatch('deleteSubcategory', { id: event.detail.id });
+                }
+            });
+        });
+
+        window.addEventListener('confirm-bulk-delete', () => {
+            Swal.fire({
+                title: '¿Eliminar seleccionados?',
+                text: 'Se eliminarán todos los elementos marcados.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+            }).then(result => {
+                if (result.isConfirmed) {
+                    Livewire.dispatch('deleteSelected');
+                }
+            });
+        });
+    </script>
+@endpush

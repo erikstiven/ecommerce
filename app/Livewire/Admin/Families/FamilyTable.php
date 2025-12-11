@@ -1,20 +1,16 @@
 <?php
 
-namespace App\Livewire\Admin\Products;
+namespace App\Livewire\Admin\Families;
 
-use App\Models\Product;
-use Illuminate\Support\Facades\Storage;
+use App\Models\Family;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 
-class ProductTable extends DataTableComponent
+class FamilyTable extends DataTableComponent
 {
-    protected $model = Product::class;
+    protected $model = Family::class;
 
-    // IDs seleccionados
-    public array $selected = [];
-
-    protected $listeners = ['deleteProduct', 'toggleSelectAll', 'deleteSelected'];
+    protected $listeners = ['deleteFamily', 'deleteSelected'];
 
     public function configure(): void
     {
@@ -32,40 +28,28 @@ class ProductTable extends DataTableComponent
         return [
             Column::checkbox(),
             Column::make('ID', 'id')->sortable()->searchable(),
-            Column::make('SKU', 'sku')->sortable()->searchable(),
             Column::make('Nombre', 'name')->sortable()->searchable(),
-
-            Column::make('Precio', 'price')
-                ->format(fn($value) => '$' . number_format($value, 2))
-                ->sortable()
-                ->searchable(),
-
             Column::make('Acciones')
-                ->label(fn($row) => view('admin.products.actions', ['product' => $row]))
+                ->label(fn($row) => view('admin.families.actions', ['family' => $row]))
                 ->html(),
         ];
     }
 
-    public function deleteProduct($id)
+    public function deleteFamily($id)
     {
-        $product = Product::findOrFail($id);
-
-        if ($product->image_path && Storage::disk('public')->exists($product->image_path)) {
-            Storage::disk('public')->delete($product->image_path);
-        }
-
-        $product->delete();
+        $family = Family::findOrFail($id);
+        $family->delete();
 
         $this->pruneSelection([$id]);
 
         $this->dispatch('swal', [
             'icon'  => 'success',
-            'title' => 'Producto eliminado',
-            'text'  => 'El producto se eliminó correctamente.',
+            'title' => 'Familia eliminada',
+            'text'  => 'La familia se eliminó correctamente.',
         ]);
     }
 
-    public function deleteSelected()
+    public function deleteSelected(): void
     {
         $selectedIds = collect($this->selected ?? [])->filter()->all();
 
@@ -73,21 +57,13 @@ class ProductTable extends DataTableComponent
             return;
         }
 
-        $products = Product::whereIn('id', $selectedIds)->get();
-
-        foreach ($products as $product) {
-            if ($product->image_path && Storage::disk('public')->exists($product->image_path)) {
-                Storage::disk('public')->delete($product->image_path);
-            }
-
-            $product->delete();
-        }
+        Family::whereIn('id', $selectedIds)->delete();
 
         $this->clearSelection();
 
         $this->dispatch('swal', [
             'icon'  => 'success',
-            'title' => 'Productos eliminados',
+            'title' => 'Familias eliminadas',
             'text'  => 'Los elementos seleccionados se eliminaron correctamente.',
         ]);
     }

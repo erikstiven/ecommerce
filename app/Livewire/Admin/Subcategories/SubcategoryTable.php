@@ -1,25 +1,22 @@
 <?php
 
-namespace App\Livewire\Admin\Products;
+namespace App\Livewire\Admin\Subcategories;
 
-use App\Models\Product;
-use Illuminate\Support\Facades\Storage;
+use App\Models\Subcategory;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 
-class ProductTable extends DataTableComponent
+class SubcategoryTable extends DataTableComponent
 {
-    protected $model = Product::class;
+    protected $model = Subcategory::class;
 
-    // IDs seleccionados
-    public array $selected = [];
-
-    protected $listeners = ['deleteProduct', 'toggleSelectAll', 'deleteSelected'];
+    protected $listeners = ['deleteSubcategory', 'deleteSelected'];
 
     public function configure(): void
     {
         $this->setPrimaryKey('id');
         $this->setTheme('tailwind');
+        $this->setAdditionalSelects(['subcategories.id as id']);
     }
 
     public function updatedSelected(): void
@@ -32,40 +29,30 @@ class ProductTable extends DataTableComponent
         return [
             Column::checkbox(),
             Column::make('ID', 'id')->sortable()->searchable(),
-            Column::make('SKU', 'sku')->sortable()->searchable(),
             Column::make('Nombre', 'name')->sortable()->searchable(),
-
-            Column::make('Precio', 'price')
-                ->format(fn($value) => '$' . number_format($value, 2))
-                ->sortable()
-                ->searchable(),
-
+            Column::make('Familia', 'family.name')->sortable()->searchable(),
+            Column::make('Categoría', 'category.name')->sortable()->searchable(),
             Column::make('Acciones')
-                ->label(fn($row) => view('admin.products.actions', ['product' => $row]))
+                ->label(fn($row) => view('admin.subcategories.actions', ['subcategory' => $row]))
                 ->html(),
         ];
     }
 
-    public function deleteProduct($id)
+    public function deleteSubcategory($id)
     {
-        $product = Product::findOrFail($id);
-
-        if ($product->image_path && Storage::disk('public')->exists($product->image_path)) {
-            Storage::disk('public')->delete($product->image_path);
-        }
-
-        $product->delete();
+        $subcategory = Subcategory::findOrFail($id);
+        $subcategory->delete();
 
         $this->pruneSelection([$id]);
 
         $this->dispatch('swal', [
             'icon'  => 'success',
-            'title' => 'Producto eliminado',
-            'text'  => 'El producto se eliminó correctamente.',
+            'title' => 'Subcategoría eliminada',
+            'text'  => 'La subcategoría se eliminó correctamente.',
         ]);
     }
 
-    public function deleteSelected()
+    public function deleteSelected(): void
     {
         $selectedIds = collect($this->selected ?? [])->filter()->all();
 
@@ -73,21 +60,13 @@ class ProductTable extends DataTableComponent
             return;
         }
 
-        $products = Product::whereIn('id', $selectedIds)->get();
-
-        foreach ($products as $product) {
-            if ($product->image_path && Storage::disk('public')->exists($product->image_path)) {
-                Storage::disk('public')->delete($product->image_path);
-            }
-
-            $product->delete();
-        }
+        Subcategory::whereIn('id', $selectedIds)->delete();
 
         $this->clearSelection();
 
         $this->dispatch('swal', [
             'icon'  => 'success',
-            'title' => 'Productos eliminados',
+            'title' => 'Subcategorías eliminadas',
             'text'  => 'Los elementos seleccionados se eliminaron correctamente.',
         ]);
     }
