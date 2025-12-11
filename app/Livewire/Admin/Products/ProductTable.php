@@ -31,7 +31,7 @@ class ProductTable extends DataTableComponent
     public function columns(): array
     {
         return [
-            CheckboxColumn::make(),
+            CheckboxColumn::make('Seleccionar'),
             Column::make('ID', 'id')->sortable()->searchable(),
             Column::make('SKU', 'sku')->sortable()->searchable(),
             Column::make('Nombre', 'name')->sortable()->searchable(),

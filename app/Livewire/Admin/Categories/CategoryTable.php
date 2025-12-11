@@ -11,6 +11,8 @@ class CategoryTable extends DataTableComponent
 {
     protected $model = Category::class;
 
+    public array $selected = [];
+
     protected $listeners = ['deleteCategory', 'deleteSelected'];
 
     public function configure(): void
@@ -28,7 +30,7 @@ class CategoryTable extends DataTableComponent
     public function columns(): array
     {
         return [
-            CheckboxColumn::make(),
+            CheckboxColumn::make('Seleccionar'),
             Column::make('ID', 'id')->sortable()->searchable(),
             Column::make('Nombre', 'name')->sortable()->searchable(),
             Column::make('Familia', 'family.name')->sortable()->searchable(),
