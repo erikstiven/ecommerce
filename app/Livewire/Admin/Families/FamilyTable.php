@@ -2,14 +2,14 @@
 
 namespace App\Livewire\Admin\Families;
 
-use App\Livewire\Admin\Concerns\ProvidesCheckboxColumn;
 use App\Models\Family;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
+use Rappasoft\LaravelLivewireTables\Views\Columns\CheckboxColumn;
 use Rappasoft\LaravelLivewireTables\Views\Columns\Column;
+use Rappasoft\LaravelLivewireTables\Views\Columns\TextColumn;
 
 class FamilyTable extends DataTableComponent
 {
-    use ProvidesCheckboxColumn;
 
     protected $model = Family::class;
 
@@ -31,9 +31,9 @@ class FamilyTable extends DataTableComponent
     public function columns(): array
     {
         return [
-            $this->selectionColumn(),
-            Column::make('ID', 'id')->sortable()->searchable(),
-            Column::make('Nombre', 'name')->sortable()->searchable(),
+            CheckboxColumn::make('Seleccionar'),
+            TextColumn::make('ID', 'id')->sortable()->searchable(),
+            TextColumn::make('Nombre', 'name')->sortable()->searchable(),
             Column::make('Acciones')
                 ->label(fn($row) => view('admin.families.actions', ['family' => $row]))
                 ->html(),
@@ -56,7 +56,7 @@ class FamilyTable extends DataTableComponent
 
     public function deleteSelected(): void
     {
-        $selectedIds = collect($this->selected ?? [])->filter()->all();
+        $selectedIds = $this->getSelected();
 
         if (empty($selectedIds)) {
             return;
@@ -64,7 +64,7 @@ class FamilyTable extends DataTableComponent
 
         Family::whereIn('id', $selectedIds)->delete();
 
-        $this->clearSelection();
+        $this->clearSelected();
 
         $this->dispatch('swal', [
             'icon'  => 'success',
@@ -78,7 +78,12 @@ class FamilyTable extends DataTableComponent
         $this->dispatch('selection-updated', count: count($this->selected ?? []));
     }
 
-    protected function clearSelection(): void
+    public function getSelected(): array
+    {
+        return array_values(collect($this->selected ?? [])->filter()->all());
+    }
+
+    public function clearSelected(): void
     {
         $this->selected = [];
         $this->dispatchSelectionCount();
@@ -86,11 +91,7 @@ class FamilyTable extends DataTableComponent
 
     protected function pruneSelection(array $ids): void
     {
-        if (!isset($this->selected)) {
-            return;
-        }
-
-        $this->selected = array_values(array_diff($this->selected, $ids));
+        $this->selected = array_values(array_diff($this->getSelected(), $ids));
         $this->dispatchSelectionCount();
     }
 }

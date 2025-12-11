@@ -3,9 +3,9 @@
 namespace App\Livewire\Admin\Drivers;
 
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
-use Rappasoft\LaravelLivewireTables\Views\Column;
 use App\Models\Driver;
 use Rappasoft\LaravelLivewireTables\Views\Columns\LinkColumn;
+use Rappasoft\LaravelLivewireTables\Views\Columns\TextColumn;
 
 class DriverTable extends DataTableComponent
 {
@@ -20,9 +20,9 @@ class DriverTable extends DataTableComponent
     public function columns(): array
     {
         return [
-            Column::make("Id", "id")
+            TextColumn::make("Id", "id")
                 ->sortable(),
-            Column::make("Type", "type")
+            TextColumn::make("Type", "type")
                 ->format(function ($value) {
                     $type = match ($value) {
                         1 => 'Moto',
@@ -35,7 +35,7 @@ class DriverTable extends DataTableComponent
 
             // Column::make("Type", "type")
             //     ->sortable(),
-            Column::make("Nombre", "user.name")
+            TextColumn::make("Nombre", "user.name")
                 ->sortable(),
             
                 LinkColumn::make('Action')

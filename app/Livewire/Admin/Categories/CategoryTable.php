@@ -2,14 +2,14 @@
 
 namespace App\Livewire\Admin\Categories;
 
-use App\Livewire\Admin\Concerns\ProvidesCheckboxColumn;
 use App\Models\Category;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
+use Rappasoft\LaravelLivewireTables\Views\Columns\CheckboxColumn;
 use Rappasoft\LaravelLivewireTables\Views\Columns\Column;
+use Rappasoft\LaravelLivewireTables\Views\Columns\TextColumn;
 
 class CategoryTable extends DataTableComponent
 {
-    use ProvidesCheckboxColumn;
 
     protected $model = Category::class;
 
@@ -32,10 +32,10 @@ class CategoryTable extends DataTableComponent
     public function columns(): array
     {
         return [
-            $this->selectionColumn(),
-            Column::make('ID', 'id')->sortable()->searchable(),
-            Column::make('Nombre', 'name')->sortable()->searchable(),
-            Column::make('Familia', 'family.name')->sortable()->searchable(),
+            CheckboxColumn::make('Seleccionar'),
+            TextColumn::make('ID', 'id')->sortable()->searchable(),
+            TextColumn::make('Nombre', 'name')->sortable()->searchable(),
+            TextColumn::make('Familia', 'family.name')->sortable()->searchable(),
             Column::make('Acciones')
                 ->label(fn($row) => view('admin.categories.actions', ['category' => $row]))
                 ->html(),
@@ -58,7 +58,7 @@ class CategoryTable extends DataTableComponent
 
     public function deleteSelected(): void
     {
-        $selectedIds = collect($this->selected ?? [])->filter()->all();
+        $selectedIds = $this->getSelected();
 
         if (empty($selectedIds)) {
             return;
@@ -66,7 +66,7 @@ class CategoryTable extends DataTableComponent
 
         Category::whereIn('id', $selectedIds)->delete();
 
-        $this->clearSelection();
+        $this->clearSelected();
 
         $this->dispatch('swal', [
             'icon'  => 'success',
@@ -80,7 +80,12 @@ class CategoryTable extends DataTableComponent
         $this->dispatch('selection-updated', count: count($this->selected ?? []));
     }
 
-    protected function clearSelection(): void
+    public function getSelected(): array
+    {
+        return array_values(collect($this->selected ?? [])->filter()->all());
+    }
+
+    public function clearSelected(): void
     {
         $this->selected = [];
         $this->dispatchSelectionCount();
@@ -88,11 +93,7 @@ class CategoryTable extends DataTableComponent
 
     protected function pruneSelection(array $ids): void
     {
-        if (!isset($this->selected)) {
-            return;
-        }
-
-        $this->selected = array_values(array_diff($this->selected, $ids));
+        $this->selected = array_values(array_diff($this->getSelected(), $ids));
         $this->dispatchSelectionCount();
     }
 }

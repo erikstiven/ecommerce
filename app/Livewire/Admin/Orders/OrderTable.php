@@ -6,10 +6,11 @@ use App\Enums\OrderStatus;
 use App\Enums\ShipmentStatus;
 use App\Models\Driver;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
-use Rappasoft\LaravelLivewireTables\Views\Column;
 use App\Models\Order;
 use App\Models\Shipment;
 use Illuminate\Support\Facades\Storage;
+use Rappasoft\LaravelLivewireTables\Views\Columns\Column;
+use Rappasoft\LaravelLivewireTables\Views\Columns\TextColumn;
 
 class OrderTable extends DataTableComponent
 {
@@ -37,7 +38,7 @@ class OrderTable extends DataTableComponent
     public function columns(): array
     {
         return [
-            Column::make("No. Orden", "id")
+            TextColumn::make("No. Orden", "id")
                 ->sortable()->searchable(),
 
             Column::make("Ticket")
@@ -45,25 +46,25 @@ class OrderTable extends DataTableComponent
                     return view('admin.orders.ticket', ['order' => $row]);
                 }),
 
-            Column::make("F. Orden", "created_at")
+            TextColumn::make("F. Orden", "created_at")
                 ->format(function ($value) {
                     return $value->format('d/m/Y');
                 })
                 ->sortable()->searchable(),
 
-            Column::make("total")
+            TextColumn::make("total")
                 ->format(function ($value) {
                     return '$' . number_format($value, 2);
                 })
                 ->sortable()->searchable(),
 
-            Column::make("Cantidad", "content")
+            TextColumn::make("Cantidad", "content")
                 ->format(function ($value) {
                     return count($value);
                 })
                 ->sortable()->searchable(),
 
-            Column::make("Estado", "status")
+            TextColumn::make("Estado", "status")
                 ->format(function ($value) {
                     return $value->name;
                 })

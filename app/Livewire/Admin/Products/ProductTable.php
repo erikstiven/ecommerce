@@ -2,15 +2,15 @@
 
 namespace App\Livewire\Admin\Products;
 
-use App\Livewire\Admin\Concerns\ProvidesCheckboxColumn;
 use App\Models\Product;
 use Illuminate\Support\Facades\Storage;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
+use Rappasoft\LaravelLivewireTables\Views\Columns\CheckboxColumn;
 use Rappasoft\LaravelLivewireTables\Views\Columns\Column;
+use Rappasoft\LaravelLivewireTables\Views\Columns\TextColumn;
 
 class ProductTable extends DataTableComponent
 {
-    use ProvidesCheckboxColumn;
 
     protected $model = Product::class;
 
@@ -33,12 +33,12 @@ class ProductTable extends DataTableComponent
     public function columns(): array
     {
         return [
-            $this->selectionColumn(),
-            Column::make('ID', 'id')->sortable()->searchable(),
-            Column::make('SKU', 'sku')->sortable()->searchable(),
-            Column::make('Nombre', 'name')->sortable()->searchable(),
+            CheckboxColumn::make('Seleccionar'),
+            TextColumn::make('ID', 'id')->sortable()->searchable(),
+            TextColumn::make('SKU', 'sku')->sortable()->searchable(),
+            TextColumn::make('Nombre', 'name')->sortable()->searchable(),
 
-            Column::make('Precio', 'price')
+            TextColumn::make('Precio', 'price')
                 ->format(fn($value) => '$' . number_format($value, 2))
                 ->sortable()
                 ->searchable(),
@@ -70,7 +70,7 @@ class ProductTable extends DataTableComponent
 
     public function deleteSelected()
     {
-        $selectedIds = collect($this->selected ?? [])->filter()->all();
+        $selectedIds = $this->getSelected();
 
         if (empty($selectedIds)) {
             return;
@@ -86,7 +86,7 @@ class ProductTable extends DataTableComponent
             $product->delete();
         }
 
-        $this->clearSelection();
+        $this->clearSelected();
 
         $this->dispatch('swal', [
             'icon'  => 'success',
@@ -100,7 +100,12 @@ class ProductTable extends DataTableComponent
         $this->dispatch('selection-updated', count: count($this->selected ?? []));
     }
 
-    protected function clearSelection(): void
+    public function getSelected(): array
+    {
+        return array_values(collect($this->selected ?? [])->filter()->all());
+    }
+
+    public function clearSelected(): void
     {
         $this->selected = [];
         $this->dispatchSelectionCount();
@@ -108,11 +113,7 @@ class ProductTable extends DataTableComponent
 
     protected function pruneSelection(array $ids): void
     {
-        if (!isset($this->selected)) {
-            return;
-        }
-
-        $this->selected = array_values(array_diff($this->selected, $ids));
+        $this->selected = array_values(array_diff($this->getSelected(), $ids));
         $this->dispatchSelectionCount();
     }
 }

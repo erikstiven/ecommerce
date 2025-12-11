@@ -2,14 +2,14 @@
 
 namespace App\Livewire\Admin\Subcategories;
 
-use App\Livewire\Admin\Concerns\ProvidesCheckboxColumn;
 use App\Models\Subcategory;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
+use Rappasoft\LaravelLivewireTables\Views\Columns\CheckboxColumn;
 use Rappasoft\LaravelLivewireTables\Views\Columns\Column;
+use Rappasoft\LaravelLivewireTables\Views\Columns\TextColumn;
 
 class SubcategoryTable extends DataTableComponent
 {
-    use ProvidesCheckboxColumn;
 
     protected $model = Subcategory::class;
 
@@ -32,11 +32,11 @@ class SubcategoryTable extends DataTableComponent
     public function columns(): array
     {
         return [
-            $this->selectionColumn(),
-            Column::make('ID', 'id')->sortable()->searchable(),
-            Column::make('Nombre', 'name')->sortable()->searchable(),
-            Column::make('Familia', 'family.name')->sortable()->searchable(),
-            Column::make('Categoría', 'category.name')->sortable()->searchable(),
+            CheckboxColumn::make('Seleccionar'),
+            TextColumn::make('ID', 'id')->sortable()->searchable(),
+            TextColumn::make('Nombre', 'name')->sortable()->searchable(),
+            TextColumn::make('Familia', 'family.name')->sortable()->searchable(),
+            TextColumn::make('Categoría', 'category.name')->sortable()->searchable(),
             Column::make('Acciones')
                 ->label(fn($row) => view('admin.subcategories.actions', ['subcategory' => $row]))
                 ->html(),
@@ -59,7 +59,7 @@ class SubcategoryTable extends DataTableComponent
 
     public function deleteSelected(): void
     {
-        $selectedIds = collect($this->selected ?? [])->filter()->all();
+        $selectedIds = $this->getSelected();
 
         if (empty($selectedIds)) {
             return;
@@ -67,7 +67,7 @@ class SubcategoryTable extends DataTableComponent
 
         Subcategory::whereIn('id', $selectedIds)->delete();
 
-        $this->clearSelection();
+        $this->clearSelected();
 
         $this->dispatch('swal', [
             'icon'  => 'success',
@@ -81,7 +81,12 @@ class SubcategoryTable extends DataTableComponent
         $this->dispatch('selection-updated', count: count($this->selected ?? []));
     }
 
-    protected function clearSelection(): void
+    public function getSelected(): array
+    {
+        return array_values(collect($this->selected ?? [])->filter()->all());
+    }
+
+    public function clearSelected(): void
     {
         $this->selected = [];
         $this->dispatchSelectionCount();
@@ -89,11 +94,7 @@ class SubcategoryTable extends DataTableComponent
 
     protected function pruneSelection(array $ids): void
     {
-        if (!isset($this->selected)) {
-            return;
-        }
-
-        $this->selected = array_values(array_diff($this->selected, $ids));
+        $this->selected = array_values(array_diff($this->getSelected(), $ids));
         $this->dispatchSelectionCount();
     }
 }
