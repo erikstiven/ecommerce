@@ -34,10 +34,8 @@ class SubcategoryTable extends DataTableComponent
 
     public function columns(): array
     {
-        $headerCheckbox = view('admin.categories.checkbox-header')->render();
-
         return [
-            Column::make($headerCheckbox)
+            Column::make(view('admin.categories.checkbox-header')->render())
                 ->label(fn($row) => view('admin.categories.checkbox', ['row' => $row]))
                 ->html()
                 ->excludeFromColumnSelect(),

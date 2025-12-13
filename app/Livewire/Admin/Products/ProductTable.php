@@ -16,7 +16,7 @@ class ProductTable extends DataTableComponent
     // IDs seleccionados
     public array $selected = [];
 
-    protected $listeners = ['deleteProduct', 'toggleSelectAll', 'deleteSelected'];
+    protected $listeners = ['deleteProduct', 'deleteSelected'];
 
     public function configure(): void
     {
@@ -35,10 +35,8 @@ class ProductTable extends DataTableComponent
 
     public function columns(): array
     {
-        $headerCheckbox = view('admin.categories.checkbox-header')->render();
-
         return [
-            Column::make($headerCheckbox)
+            Column::make(view('admin.categories.checkbox-header')->render())
                 ->label(fn($row) => view('admin.categories.checkbox', ['row' => $row]))
                 ->html()
                 ->excludeFromColumnSelect(),
