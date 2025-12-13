@@ -7,8 +7,7 @@ use App\Enums\ShipmentStatus;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use App\Models\Shipment;
 use Rappasoft\LaravelLivewireTables\Views\Filters\SelectFilter;
-use Rappasoft\LaravelLivewireTables\Views\Columns\Column;
-use Rappasoft\LaravelLivewireTables\Views\Columns\TextColumn;
+use Rappasoft\LaravelLivewireTables\Views\Column;
 
 class ShipmentTable extends DataTableComponent
 {
@@ -23,17 +22,17 @@ class ShipmentTable extends DataTableComponent
     public function columns(): array
     {
         return [
-            TextColumn::make("Id", "id")
+            Column::make("Id", "id")
                 ->sortable(),
-            TextColumn::make("No. Orden", "order_id")
+            Column::make("No. Orden", "order_id")
                 ->sortable(),
-            TextColumn::make("Conductor", "driver.user.name")
-                ->sortable(),
-
-            TextColumn::make("Placa", "driver.plate_number")
+            Column::make("Conductor", "driver.user.name")
                 ->sortable(),
 
-            TextColumn::make("Status", "status")
+            Column::make("Placa", "driver.plate_number")
+                ->sortable(),
+
+            Column::make("Status", "status")
                 ->format(function ($value) {
                     return $value->name;
                 })

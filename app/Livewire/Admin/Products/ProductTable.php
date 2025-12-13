@@ -6,7 +6,6 @@ use App\Models\Product;
 use Illuminate\Support\Facades\Storage;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
-use Rappasoft\LaravelLivewireTables\Views\Columns\TextColumn;
 
 class ProductTable extends DataTableComponent
 {
@@ -40,11 +39,11 @@ class ProductTable extends DataTableComponent
                 ->label(fn($row) => view('admin.categories.checkbox', ['row' => $row]))
                 ->html()
                 ->excludeFromColumnSelect(),
-            TextColumn::make('ID', 'id')->sortable()->searchable(),
-            TextColumn::make('SKU', 'sku')->sortable()->searchable(),
-            TextColumn::make('Nombre', 'name')->sortable()->searchable(),
+            Column::make('ID', 'id')->sortable()->searchable(),
+            Column::make('SKU', 'sku')->sortable()->searchable(),
+            Column::make('Nombre', 'name')->sortable()->searchable(),
 
-            TextColumn::make('Precio', 'price')
+            Column::make('Precio', 'price')
                 ->format(fn($value) => '$' . number_format($value, 2))
                 ->sortable()
                 ->searchable(),

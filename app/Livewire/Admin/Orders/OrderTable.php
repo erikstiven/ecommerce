@@ -9,8 +9,7 @@ use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use App\Models\Order;
 use App\Models\Shipment;
 use Illuminate\Support\Facades\Storage;
-use Rappasoft\LaravelLivewireTables\Views\Columns\Column;
-use Rappasoft\LaravelLivewireTables\Views\Columns\TextColumn;
+use Rappasoft\LaravelLivewireTables\Views\Column;
 
 class OrderTable extends DataTableComponent
 {
@@ -38,7 +37,7 @@ class OrderTable extends DataTableComponent
     public function columns(): array
     {
         return [
-            TextColumn::make("No. Orden", "id")
+            Column::make("No. Orden", "id")
                 ->sortable()->searchable(),
 
             Column::make("Ticket")
@@ -46,25 +45,25 @@ class OrderTable extends DataTableComponent
                     return view('admin.orders.ticket', ['order' => $row]);
                 }),
 
-            TextColumn::make("F. Orden", "created_at")
+            Column::make("F. Orden", "created_at")
                 ->format(function ($value) {
                     return $value->format('d/m/Y');
                 })
                 ->sortable()->searchable(),
 
-            TextColumn::make("total")
+            Column::make("total")
                 ->format(function ($value) {
                     return '$' . number_format($value, 2);
                 })
                 ->sortable()->searchable(),
 
-            TextColumn::make("Cantidad", "content")
+            Column::make("Cantidad", "content")
                 ->format(function ($value) {
                     return count($value);
                 })
                 ->sortable()->searchable(),
 
-            TextColumn::make("Estado", "status")
+            Column::make("Estado", "status")
                 ->format(function ($value) {
                     return $value->name;
                 })

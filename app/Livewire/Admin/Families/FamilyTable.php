@@ -5,7 +5,6 @@ namespace App\Livewire\Admin\Families;
 use App\Models\Family;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
-use Rappasoft\LaravelLivewireTables\Views\Columns\TextColumn;
 
 class FamilyTable extends DataTableComponent
 {
@@ -38,8 +37,8 @@ class FamilyTable extends DataTableComponent
                 ->label(fn($row) => view('admin.categories.checkbox', ['row' => $row]))
                 ->html()
                 ->excludeFromColumnSelect(),
-            TextColumn::make('ID', 'id')->sortable()->searchable(),
-            TextColumn::make('Nombre', 'name')->sortable()->searchable(),
+            Column::make('ID', 'id')->sortable()->searchable(),
+            Column::make('Nombre', 'name')->sortable()->searchable(),
             Column::make('Acciones')
                 ->label(fn($row) => view('admin.families.actions', ['family' => $row]))
                 ->html(),

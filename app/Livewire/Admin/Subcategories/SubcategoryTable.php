@@ -5,7 +5,6 @@ namespace App\Livewire\Admin\Subcategories;
 use App\Models\Subcategory;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
-use Rappasoft\LaravelLivewireTables\Views\Columns\TextColumn;
 
 class SubcategoryTable extends DataTableComponent
 {
@@ -39,10 +38,10 @@ class SubcategoryTable extends DataTableComponent
                 ->label(fn($row) => view('admin.categories.checkbox', ['row' => $row]))
                 ->html()
                 ->excludeFromColumnSelect(),
-            TextColumn::make('ID', 'id')->sortable()->searchable(),
-            TextColumn::make('Nombre', 'name')->sortable()->searchable(),
-            TextColumn::make('Familia', 'family.name')->sortable()->searchable(),
-            TextColumn::make('Categoría', 'category.name')->sortable()->searchable(),
+            Column::make('ID', 'id')->sortable()->searchable(),
+            Column::make('Nombre', 'name')->sortable()->searchable(),
+            Column::make('Familia', 'family.name')->sortable()->searchable(),
+            Column::make('Categoría', 'category.name')->sortable()->searchable(),
             Column::make('Acciones')
                 ->label(fn($row) => view('admin.subcategories.actions', ['subcategory' => $row]))
                 ->html(),

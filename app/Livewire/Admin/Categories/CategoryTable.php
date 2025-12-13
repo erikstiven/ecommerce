@@ -5,7 +5,6 @@ namespace App\Livewire\Admin\Categories;
 use App\Models\Category;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
-use Rappasoft\LaravelLivewireTables\Views\Columns\TextColumn;
 
 class CategoryTable extends DataTableComponent
 {
@@ -39,9 +38,9 @@ class CategoryTable extends DataTableComponent
                 ->label(fn($row) => view('admin.categories.checkbox', ['row' => $row]))
                 ->html()
                 ->excludeFromColumnSelect(),
-            TextColumn::make('ID', 'id')->sortable()->searchable(),
-            TextColumn::make('Nombre', 'name')->sortable()->searchable(),
-            TextColumn::make('Familia', 'family.name')->sortable()->searchable(),
+            Column::make('ID', 'id')->sortable()->searchable(),
+            Column::make('Nombre', 'name')->sortable()->searchable(),
+            Column::make('Familia', 'family.name')->sortable()->searchable(),
             Column::make('Acciones')
                 ->label(fn($row) => view('admin.categories.actions', ['category' => $row]))
                 ->html(),
