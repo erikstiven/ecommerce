@@ -4,57 +4,121 @@ namespace App\Livewire\Admin\Products;
 
 use App\Models\Product;
 use Illuminate\Support\Facades\Storage;
-use Rappasoft\LaravelLivewireTables\DataTableComponent;
-use Rappasoft\LaravelLivewireTables\Views\Column;
+use Illuminate\Database\Eloquent\Builder;
+use Livewire\Component;
+use Livewire\WithPagination;
 
-class ProductTable extends DataTableComponent
+class ProductTable extends Component
 {
+    use WithPagination;
 
-    protected $model = Product::class;
+    public string $search = '';
 
-    // IDs seleccionados
+    public int $perPage = 10;
+
+    public string $sortField = 'id';
+
+    public string $sortDirection = 'desc';
+
+    /**
+     * Selected product IDs.
+     *
+     * @var array<int>
+     */
     public array $selected = [];
 
-    protected $listeners = ['deleteProduct', 'deleteSelected'];
+    public bool $selectAll = false;
 
-    public function configure(): void
+    public array $visibleColumns = [
+        'id' => true,
+        'sku' => true,
+        'name' => true,
+        'price' => true,
+    ];
+
+    protected $listeners = [
+        'deleteProduct' => 'deleteProduct',
+        'deleteSelected' => 'deleteSelected',
+    ];
+
+    protected $queryString = [
+        'search' => ['except' => ''],
+        'sortField' => ['except' => 'id'],
+        'sortDirection' => ['except' => 'desc'],
+        'perPage' => ['except' => 10],
+    ];
+
+    protected string $paginationTheme = 'tailwind';
+
+    public function render()
     {
-        $this->setPrimaryKey('id');
-        $this->setTheme('tailwind');
+        $products = $this->query()->paginate($this->perPage);
 
-        $this->setConfigurableAreas([
-            'toolbar-left-start' => 'admin.products.toolbar',
+        return view('livewire.admin.products.product-table', [
+            'products' => $products,
         ]);
+    }
+
+    public function updatingSearch(): void
+    {
+        $this->resetPage();
+        $this->clearSelection();
+    }
+
+    public function updatingPerPage(): void
+    {
+        $this->resetPage();
+        $this->clearSelection();
+    }
+
+    public function sortBy(string $field): void
+    {
+        if ($this->sortField === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortField = $field;
+            $this->sortDirection = 'asc';
+        }
+
+        $this->resetPage();
+    }
+
+    public function updatedPage(): void
+    {
+        $this->updatedSelected();
+    }
+
+    public function updatedSelectAll(bool $value): void
+    {
+        $pageIds = $this->pageProductIds();
+
+        if ($value) {
+            $this->selected = array_values(array_unique(array_merge($this->selected, $pageIds)));
+        } else {
+            $this->selected = array_values(array_diff($this->selected, $pageIds));
+        }
+
+        $this->normalizeSelected();
     }
 
     public function updatedSelected(): void
     {
-        $this->dispatchSelectionCount();
+        $this->normalizeSelected();
+
+        $pageIds = $this->pageProductIds();
+        $this->selectAll = !empty($pageIds) && count(array_intersect($pageIds, $this->selected)) === count($pageIds);
     }
 
-    public function columns(): array
+    public function toggleColumn(string $key): void
     {
-        return [
-            Column::make(view('admin.categories.checkbox-header')->render())
-                ->label(fn($row) => view('admin.categories.checkbox', ['row' => $row]))
-                ->html()
-                ->excludeFromColumnSelect(),
-            Column::make('ID', 'id')->sortable()->searchable(),
-            Column::make('SKU', 'sku')->sortable()->searchable(),
-            Column::make('Nombre', 'name')->sortable()->searchable(),
+        if (! array_key_exists($key, $this->visibleColumns)) {
+            return;
+        }
 
-            Column::make('Precio', 'price')
-                ->format(fn($value) => '$' . number_format($value, 2))
-                ->sortable()
-                ->searchable(),
-
-            Column::make('Acciones')
-                ->label(fn($row) => view('admin.products.actions', ['product' => $row]))
-                ->html(),
-        ];
+        $this->visibleColumns[$key] = ! $this->visibleColumns[$key];
     }
 
-    public function deleteProduct($id)
+    public function deleteProduct(int $id): void
     {
         $product = Product::findOrFail($id);
 
@@ -64,25 +128,23 @@ class ProductTable extends DataTableComponent
 
         $product->delete();
 
-        $this->selected = array_values(array_diff($this->getSelected(), [$id]));
-        $this->dispatchSelectionCount();
+        $this->selected = array_values(array_diff($this->selected, [$id]));
+        $this->updatedSelected();
 
         $this->dispatch('swal', [
-            'icon'  => 'success',
+            'icon' => 'success',
             'title' => 'Producto eliminado',
-            'text'  => 'El producto se eliminó correctamente.',
+            'text' => 'El producto se eliminó correctamente.',
         ]);
     }
 
-    public function deleteSelected()
+    public function deleteSelected(): void
     {
-        $selectedIds = $this->getSelected();
-
-        if (empty($selectedIds)) {
+        if (empty($this->selected)) {
             return;
         }
 
-        $products = Product::whereIn('id', $selectedIds)->get();
+        $products = Product::whereIn('id', $this->selected)->get();
 
         foreach ($products as $product) {
             if ($product->image_path && Storage::disk('public')->exists($product->image_path)) {
@@ -92,29 +154,60 @@ class ProductTable extends DataTableComponent
             $product->delete();
         }
 
-        $this->clearSelected();
+        $this->clearSelection();
 
         $this->dispatch('swal', [
-            'icon'  => 'success',
+            'icon' => 'success',
             'title' => 'Productos eliminados',
-            'text'  => 'Los elementos seleccionados se eliminaron correctamente.',
+            'text' => 'Los elementos seleccionados se eliminaron correctamente.',
         ]);
     }
 
-    protected function dispatchSelectionCount(): void
-    {
-        $this->dispatch('selection-updated', count: count($this->selected ?? []));
-    }
-
-    public function getSelected(): array
-    {
-        return array_values(collect($this->selected ?? [])->filter()->all());
-    }
-
-    public function clearSelected(): void
+    public function clearSelection(): void
     {
         $this->selected = [];
-        $this->dispatchSelectionCount();
+        $this->selectAll = false;
     }
 
+    protected function normalizeSelected(): void
+    {
+        $this->selected = array_values(array_unique(array_map('intval', $this->selected)));
+    }
+
+    protected function query(): Builder
+    {
+        $term = $this->search;
+        $likeTerm = "%{$term}%";
+
+        return Product::query()
+            ->when($term, function (Builder $query) use ($likeTerm, $term) {
+                $query->where(function (Builder $subQuery) use ($likeTerm, $term) {
+                    $subQuery
+                        ->where('name', 'like', $likeTerm)
+                        ->orWhere('sku', 'like', $likeTerm);
+
+                    if (is_numeric($term)) {
+                        $subQuery->orWhere('id', (int) $term);
+                    }
+                });
+            })
+            ->orderBy($this->sortField, $this->sortDirection);
+    }
+
+    /**
+     * IDs for the current page, respecting filters and sorting.
+     *
+     * @return array<int>
+     */
+    protected function pageProductIds(): array
+    {
+        $query = $this->query();
+
+        return (clone $query)
+            ->select('id')
+            ->forPage($this->page ?? 1, $this->perPage)
+            ->pluck('id')
+            ->map(fn ($id) => (int) $id)
+            ->all();
+    }
 }
