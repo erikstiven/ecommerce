@@ -35,7 +35,7 @@ class ProductTable extends DataTableComponent
     public function columns(): array
     {
         return [
-            Column::make('')
+            Column::make(view('admin.categories.checkbox-header')->render())
                 ->label(fn($row) => view('admin.categories.checkbox', ['row' => $row]))
                 ->html()
                 ->excludeFromColumnSelect(),
