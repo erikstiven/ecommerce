@@ -1,9 +1,9 @@
 <div class="space-y-4">
-    <div class="flex flex-wrap items-center justify-between gap-3">
-        <div class="flex flex-wrap items-center gap-3">
+    <div class="flex flex-wrap items-center gap-3">
+        <div class="flex items-center gap-2">
             <button
                 type="button"
-                class="inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:cursor-not-allowed disabled:opacity-60"
+                class="inline-flex items-center gap-2 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
                 x-data
                 x-on:click="
                     const runDelete = () => $wire.deleteSelected();
@@ -28,19 +28,21 @@
                 "
                 @disabled(empty($selected))
             >
-                <span class="hidden sm:inline">Eliminar seleccionados</span>
-                <span class="sm:hidden">Eliminar</span>
-                <span class="rounded bg-white/20 px-2 py-0.5 text-xs">{{ count($selected) }}</span>
+                <span>Eliminar seleccionados</span>
             </button>
+            <div class="flex items-center gap-2 rounded-md bg-gray-100 px-3 py-2 text-xs text-gray-700">
+                <span class="font-medium">Seleccionados:</span>
+                <span class="rounded bg-white px-2 py-0.5 text-gray-900">{{ count($selected) }}</span>
+            </div>
         </div>
 
-        <div class="flex flex-wrap items-center gap-3">
+        <div class="flex flex-1 flex-wrap items-center justify-end gap-2 md:gap-3">
             <div class="relative">
                 <input
                     type="search"
                     wire:model.debounce.300ms="search"
                     placeholder="Buscar..."
-                    class="w-48 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    class="w-48 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                 <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-400">
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -52,7 +54,7 @@
             <div class="relative" x-data="{ open: false }" x-on:click.outside="open = false">
                 <button
                     type="button"
-                    class="inline-flex items-center rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    class="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     x-on:click="open = !open"
                 >
                     Columnas
@@ -63,7 +65,7 @@
                 <div
                     x-cloak
                     x-show="open"
-                    class="absolute right-0 z-20 mt-2 w-48 rounded-lg border border-gray-200 bg-white p-3 shadow-lg"
+                    class="absolute right-0 z-20 mt-2 w-48 rounded-md border border-gray-200 bg-white p-3 shadow-lg"
                 >
                     @foreach($visibleColumns as $key => $enabled)
                         <label class="flex items-center gap-2 py-1 text-sm text-gray-700">
@@ -78,7 +80,7 @@
                 <span>Filas por página</span>
                 <select
                     wire:model="perPage"
-                    class="rounded-lg border border-gray-300 bg-white px-2 py-2 text-sm text-gray-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    class="rounded-md border border-gray-300 bg-white px-2 py-2 text-sm text-gray-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                     <option value="10">10</option>
                     <option value="25">25</option>
@@ -89,8 +91,11 @@
 
             <a
                 href="{{ route('admin.products.create') }}"
-                class="inline-flex items-center rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-2 text-sm font-semibold text-white shadow hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="ml-auto inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                </svg>
                 Nuevo
             </a>
         </div>

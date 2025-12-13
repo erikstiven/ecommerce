@@ -81,6 +81,7 @@ class ProductTable extends Component
         }
 
         $this->resetPage();
+        $this->clearSelection();
     }
 
     public function updatedPage(): void
