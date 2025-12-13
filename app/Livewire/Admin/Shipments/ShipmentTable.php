@@ -5,9 +5,9 @@ namespace App\Livewire\Admin\Shipments;
 use App\Enums\OrderStatus;
 use App\Enums\ShipmentStatus;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
-use Rappasoft\LaravelLivewireTables\Views\Column;
 use App\Models\Shipment;
 use Rappasoft\LaravelLivewireTables\Views\Filters\SelectFilter;
+use Rappasoft\LaravelLivewireTables\Views\Column;
 
 class ShipmentTable extends DataTableComponent
 {
