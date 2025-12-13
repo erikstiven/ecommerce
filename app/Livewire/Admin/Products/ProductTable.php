@@ -23,7 +23,7 @@ class ProductTable extends DataTableComponent
         $this->setTheme('tailwind');
 
         $this->setConfigurableAreas([
-            'toolbar-left-start' => 'admin.categories.toolbar',
+            'toolbar-left-start' => 'admin.products.toolbar',
         ]);
     }
 
@@ -35,7 +35,7 @@ class ProductTable extends DataTableComponent
     public function columns(): array
     {
         return [
-            Column::make(view('admin.categories.checkbox-header')->render())
+            Column::make('')
                 ->label(fn($row) => view('admin.categories.checkbox', ['row' => $row]))
                 ->html()
                 ->excludeFromColumnSelect(),
