@@ -1,9 +1,16 @@
-<div class="flex items-center space-x-2" x-data>
-    <a href="{{ route('admin.products.edit', $product) }}">
-        <img src="{{ asset('img/icons/boligrafo.png') }}" class="w-6 h-6" alt="Editar">
+<div class="flex items-center justify-center space-x-2" x-data>
+    <a
+        href="{{ route('admin.products.edit', $product) }}"
+        class="p-1 text-gray-600 transition rounded hover:bg-blue-50 hover:text-blue-700"
+        title="Editar producto"
+    >
+        <img src="{{ asset('img/icons/boligrafo.png') }}" class="w-5 h-5" alt="Editar producto">
     </a>
 
-    <button type="button"
+    <button
+        type="button"
+        class="p-1 text-gray-600 transition rounded hover:bg-red-50 hover:text-red-700"
+        title="Eliminar producto"
         x-on:click="
             const confirmDelete = () => $wire.deleteProduct({{ $product->id }});
             if (typeof Swal === 'undefined') {
@@ -26,6 +33,6 @@
             });
         "
     >
-        <img src="{{ asset('img/icons/eliminar.png') }}" class="w-6 h-6" alt="Eliminar">
+        <img src="{{ asset('img/icons/eliminar.png') }}" class="w-5 h-5" alt="Eliminar producto">
     </button>
 </div>
