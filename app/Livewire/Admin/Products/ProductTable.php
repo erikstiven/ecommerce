@@ -20,6 +20,14 @@ class ProductTable extends DataTableComponent
     {
         $this->setPrimaryKey('id');
         $this->setTheme('tailwind');
+
+        $this->setPerPageAccepted([10, 25, 50, 100]);
+        $this->setPerPageVisibilityEnabled();
+
+        $this->setConfigurableAreas([
+            'toolbar-left-start'  => 'admin.products.table-toolbar-left',
+            'toolbar-right-start' => 'admin.products.table-toolbar-right',
+        ]);
     }
 
     public function updatedSelected(): void
