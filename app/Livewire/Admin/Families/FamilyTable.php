@@ -8,7 +8,7 @@ use Rappasoft\LaravelLivewireTables\Views\Column;
 
 class FamilyTable extends BaseAdminTable
 {
-    protected $model = Family::class;
+    protected string $model = Family::class;
 
     protected $listeners = ['deleteFamily', 'deleteSelected'];
 

@@ -8,7 +8,7 @@ use Rappasoft\LaravelLivewireTables\Views\Column;
 
 class CategoryTable extends BaseAdminTable
 {
-    protected $model = Category::class;
+    protected string $model = Category::class;
 
     protected $listeners = ['deleteCategory', 'deleteSelected'];
 

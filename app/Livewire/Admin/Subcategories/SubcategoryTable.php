@@ -8,7 +8,7 @@ use Rappasoft\LaravelLivewireTables\Views\Column;
 
 class SubcategoryTable extends BaseAdminTable
 {
-    protected $model = Subcategory::class;
+    protected string $model = Subcategory::class;
 
     protected $listeners = ['deleteSubcategory', 'deleteSelected'];
 

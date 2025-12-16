@@ -9,7 +9,7 @@ use Rappasoft\LaravelLivewireTables\Views\Column;
 
 class ProductTable extends BaseAdminTable
 {
-    protected $model = Product::class;
+    protected string $model = Product::class;
 
     public function bulkActions(): array
     {
