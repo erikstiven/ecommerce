@@ -2,12 +2,20 @@
 
 namespace App\Livewire\Admin\Tables;
 
+use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 
 abstract class BaseAdminTable extends DataTableComponent
 {
     /** @var array<int, int|string> */
     public array $selected = [];
+
+    /**
+     * Child classes must provide the model FQCN to build the base query.
+     *
+     * @var class-string<\Illuminate\Database\Eloquent\Model>
+     */
+    protected string $model;
 
     /**
      * Shared pagination sizes for all admin tables.
@@ -22,6 +30,11 @@ abstract class BaseAdminTable extends DataTableComponent
         $this->setPerPageAccepted($this->perPageAccepted);
         $this->setPerPageVisibilityEnabled();
         $this->setColumnSelectEnabled();
+    }
+
+    public function builder(): Builder
+    {
+        return $this->model::query();
     }
 
     public function updatedSelected(): void
