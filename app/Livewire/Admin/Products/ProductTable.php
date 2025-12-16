@@ -11,10 +11,7 @@ class ProductTable extends DataTableComponent
 {
     protected $model = Product::class;
 
-    // IDs seleccionados
     public array $selected = [];
-
-    protected $listeners = ['deleteProduct', 'toggleSelectAll', 'deleteSelected'];
 
     public function configure(): void
     {
@@ -23,11 +20,6 @@ class ProductTable extends DataTableComponent
 
         $this->setPerPageAccepted([10, 25, 50, 100]);
         $this->setPerPageVisibilityEnabled();
-
-        $this->setConfigurableAreas([
-            'toolbar-left-start'  => 'admin.products.table-toolbar-left',
-            'toolbar-right-start' => 'admin.products.table-toolbar-right',
-        ]);
     }
 
     public function bulkActions(): array
@@ -35,11 +27,6 @@ class ProductTable extends DataTableComponent
         return [
             'deleteSelected' => 'Eliminar seleccionados',
         ];
-    }
-
-    public function updatedSelected(): void
-    {
-        $this->dispatchSelectionCount();
     }
 
     public function columns(): array
@@ -106,24 +93,17 @@ class ProductTable extends DataTableComponent
         ]);
     }
 
-    protected function dispatchSelectionCount(): void
-    {
-        $this->dispatch('selection-updated', count: count($this->selected ?? []));
-    }
-
     protected function clearSelection(): void
     {
         $this->selected = [];
-        $this->dispatchSelectionCount();
     }
 
     protected function pruneSelection(array $ids): void
     {
-        if (!isset($this->selected)) {
+        if (empty($this->selected)) {
             return;
         }
 
         $this->selected = array_values(array_diff($this->selected, $ids));
-        $this->dispatchSelectionCount();
     }
 }
