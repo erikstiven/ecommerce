@@ -2,11 +2,11 @@
 
 namespace App\Livewire\Admin\Families;
 
+use App\Livewire\Admin\Tables\BaseAdminTable;
 use App\Models\Family;
-use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 
-class FamilyTable extends DataTableComponent
+class FamilyTable extends BaseAdminTable
 {
     protected $model = Family::class;
 
@@ -14,20 +14,7 @@ class FamilyTable extends DataTableComponent
 
     public function configure(): void
     {
-        $this->setPrimaryKey('id');
-        $this->setTheme('tailwind');
-    }
-
-    public function bulkActions(): array
-    {
-        return [
-            'deleteSelected' => 'Eliminar seleccionados',
-        ];
-    }
-
-    public function updatedSelected(): void
-    {
-        $this->dispatchSelectionCount();
+        parent::configure();
     }
 
     public function columns(): array
@@ -38,6 +25,13 @@ class FamilyTable extends DataTableComponent
             Column::make('Acciones')
                 ->label(fn($row) => view('admin.families.actions', ['family' => $row]))
                 ->html(),
+        ];
+    }
+
+    public function bulkActions(): array
+    {
+        return [
+            'deleteSelected' => 'Eliminar seleccionados',
         ];
     }
 
@@ -72,26 +66,5 @@ class FamilyTable extends DataTableComponent
             'title' => 'Familias eliminadas',
             'text'  => 'Los elementos seleccionados se eliminaron correctamente.',
         ]);
-    }
-
-    protected function dispatchSelectionCount(): void
-    {
-        $this->dispatch('selection-updated', count: count($this->selected ?? []));
-    }
-
-    protected function clearSelection(): void
-    {
-        $this->selected = [];
-        $this->dispatchSelectionCount();
-    }
-
-    protected function pruneSelection(array $ids): void
-    {
-        if (!isset($this->selected)) {
-            return;
-        }
-
-        $this->selected = array_values(array_diff($this->selected, $ids));
-        $this->dispatchSelectionCount();
     }
 }

@@ -2,11 +2,11 @@
 
 namespace App\Livewire\Admin\Categories;
 
+use App\Livewire\Admin\Tables\BaseAdminTable;
 use App\Models\Category;
-use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 
-class CategoryTable extends DataTableComponent
+class CategoryTable extends BaseAdminTable
 {
     protected $model = Category::class;
 
@@ -14,21 +14,8 @@ class CategoryTable extends DataTableComponent
 
     public function configure(): void
     {
-        $this->setPrimaryKey('id');
-        $this->setTheme('tailwind');
+        parent::configure();
         $this->setAdditionalSelects(['categories.id as id']);
-    }
-
-    public function bulkActions(): array
-    {
-        return [
-            'deleteSelected' => 'Eliminar seleccionados',
-        ];
-    }
-
-    public function updatedSelected(): void
-    {
-        $this->dispatchSelectionCount();
     }
 
     public function columns(): array
@@ -40,6 +27,13 @@ class CategoryTable extends DataTableComponent
             Column::make('Acciones')
                 ->label(fn($row) => view('admin.categories.actions', ['category' => $row]))
                 ->html(),
+        ];
+    }
+
+    public function bulkActions(): array
+    {
+        return [
+            'deleteSelected' => 'Eliminar seleccionados',
         ];
     }
 
@@ -74,26 +68,5 @@ class CategoryTable extends DataTableComponent
             'title' => 'Categorías eliminadas',
             'text'  => 'Los elementos seleccionados se eliminaron correctamente.',
         ]);
-    }
-
-    protected function dispatchSelectionCount(): void
-    {
-        $this->dispatch('selection-updated', count: count($this->selected ?? []));
-    }
-
-    protected function clearSelection(): void
-    {
-        $this->selected = [];
-        $this->dispatchSelectionCount();
-    }
-
-    protected function pruneSelection(array $ids): void
-    {
-        if (!isset($this->selected)) {
-            return;
-        }
-
-        $this->selected = array_values(array_diff($this->selected, $ids));
-        $this->dispatchSelectionCount();
     }
 }

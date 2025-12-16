@@ -2,25 +2,14 @@
 
 namespace App\Livewire\Admin\Products;
 
+use App\Livewire\Admin\Tables\BaseAdminTable;
 use App\Models\Product;
 use Illuminate\Support\Facades\Storage;
-use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 
-class ProductTable extends DataTableComponent
+class ProductTable extends BaseAdminTable
 {
     protected $model = Product::class;
-
-    public array $selected = [];
-
-    public function configure(): void
-    {
-        $this->setPrimaryKey('id');
-        $this->setTheme('tailwind');
-
-        $this->setPerPageAccepted([10, 25, 50, 100]);
-        $this->setPerPageVisibilityEnabled();
-    }
 
     public function bulkActions(): array
     {
@@ -91,19 +80,5 @@ class ProductTable extends DataTableComponent
             'title' => 'Productos eliminados',
             'text'  => 'Los elementos seleccionados se eliminaron correctamente.',
         ]);
-    }
-
-    protected function clearSelection(): void
-    {
-        $this->selected = [];
-    }
-
-    protected function pruneSelection(array $ids): void
-    {
-        if (empty($this->selected)) {
-            return;
-        }
-
-        $this->selected = array_values(array_diff($this->selected, $ids));
     }
 }
