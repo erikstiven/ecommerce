@@ -2,4 +2,25 @@
   @apply bg-white p-6 rounded-lg shadow border border-gray-200;
 }
 
+.btn-admin {
+  @apply inline-flex items-center gap-2 rounded-md border text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed;
+}
+
+.btn-admin--primary {
+  @apply bg-indigo-600 text-white border-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500;
+}
+
+.btn-admin--ghost {
+  @apply bg-white text-gray-700 border-gray-300 hover:bg-gray-50 focus:ring-indigo-500;
+}
+
+.btn-admin--danger {
+  @apply bg-red-600 text-white border-red-600 hover:bg-red-700 focus:ring-red-500;
+}
+
+.btn-admin--secondary {
+  @apply bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-200 focus:ring-indigo-500;
+}
+
+
 

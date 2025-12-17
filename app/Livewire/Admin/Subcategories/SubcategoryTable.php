@@ -2,32 +2,25 @@
 
 namespace App\Livewire\Admin\Subcategories;
 
+use App\Livewire\Admin\Tables\BaseAdminTable;
 use App\Models\Subcategory;
-use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 
-class SubcategoryTable extends DataTableComponent
+class SubcategoryTable extends BaseAdminTable
 {
-    protected $model = Subcategory::class;
+    protected string $model = Subcategory::class;
 
     protected $listeners = ['deleteSubcategory', 'deleteSelected'];
 
     public function configure(): void
     {
-        $this->setPrimaryKey('id');
-        $this->setTheme('tailwind');
+        parent::configure();
         $this->setAdditionalSelects(['subcategories.id as id']);
-    }
-
-    public function updatedSelected(): void
-    {
-        $this->dispatchSelectionCount();
     }
 
     public function columns(): array
     {
         return [
-            Column::checkbox(),
             Column::make('ID', 'id')->sortable()->searchable(),
             Column::make('Nombre', 'name')->sortable()->searchable(),
             Column::make('Familia', 'family.name')->sortable()->searchable(),
@@ -35,6 +28,13 @@ class SubcategoryTable extends DataTableComponent
             Column::make('Acciones')
                 ->label(fn($row) => view('admin.subcategories.actions', ['subcategory' => $row]))
                 ->html(),
+        ];
+    }
+
+    public function bulkActions(): array
+    {
+        return [
+            'deleteSelected' => 'Eliminar seleccionados',
         ];
     }
 
@@ -69,26 +69,5 @@ class SubcategoryTable extends DataTableComponent
             'title' => 'Subcategorías eliminadas',
             'text'  => 'Los elementos seleccionados se eliminaron correctamente.',
         ]);
-    }
-
-    protected function dispatchSelectionCount(): void
-    {
-        $this->dispatch('selection-updated', count: count($this->selected ?? []));
-    }
-
-    protected function clearSelection(): void
-    {
-        $this->selected = [];
-        $this->dispatchSelectionCount();
-    }
-
-    protected function pruneSelection(array $ids): void
-    {
-        if (!isset($this->selected)) {
-            return;
-        }
-
-        $this->selected = array_values(array_diff($this->selected, $ids));
-        $this->dispatchSelectionCount();
     }
 }

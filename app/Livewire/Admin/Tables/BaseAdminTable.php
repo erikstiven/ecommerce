@@ -1,0 +1,76 @@
+<?php
+
+namespace App\Livewire\Admin\Tables;
+
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use RuntimeException;
+use Rappasoft\LaravelLivewireTables\DataTableComponent;
+
+abstract class BaseAdminTable extends DataTableComponent
+{
+    /** @var array<int, int|string> */
+    public array $selected = [];
+
+    /**
+     * Child classes must provide the model FQCN to build the base query.
+     *
+     * @var class-string<\Illuminate\Database\Eloquent\Model>
+     */
+    protected string $model = '';
+
+    /**
+     * Shared pagination sizes for all admin tables.
+     */
+    protected array $perPageAccepted = [10, 25, 50, 100];
+
+    public function configure(): void
+    {
+        $this->setPrimaryKey('id');
+        $this->setTheme('tailwind');
+
+        $this->setPerPageAccepted($this->perPageAccepted);
+        $this->setPerPageVisibilityEnabled();
+        $this->setColumnSelectEnabled();
+    }
+
+    public function builder(): Builder
+    {
+        if (empty($this->model) || ! class_exists($this->model)) {
+            throw new RuntimeException('The admin table model is not defined or is invalid.');
+        }
+
+        return $this->makeModel()->newQuery();
+    }
+
+    protected function makeModel(): Model
+    {
+        return new $this->model();
+    }
+
+    public function updatedSelected(): void
+    {
+        $this->dispatchSelectionCount();
+    }
+
+    protected function dispatchSelectionCount(): void
+    {
+        $this->dispatch('selection-updated', count: count($this->selected ?? []));
+    }
+
+    protected function clearSelection(): void
+    {
+        $this->selected = [];
+        $this->dispatchSelectionCount();
+    }
+
+    protected function pruneSelection(array $ids): void
+    {
+        if (empty($this->selected)) {
+            return;
+        }
+
+        $this->selected = array_values(array_diff($this->selected, $ids));
+        $this->dispatchSelectionCount();
+    }
+}
