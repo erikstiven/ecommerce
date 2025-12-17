@@ -3,6 +3,8 @@
 namespace App\Livewire\Admin\Tables;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use RuntimeException;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 
 abstract class BaseAdminTable extends DataTableComponent
@@ -15,7 +17,7 @@ abstract class BaseAdminTable extends DataTableComponent
      *
      * @var class-string<\Illuminate\Database\Eloquent\Model>
      */
-    protected string $model;
+    protected string $model = '';
 
     /**
      * Shared pagination sizes for all admin tables.
@@ -34,7 +36,16 @@ abstract class BaseAdminTable extends DataTableComponent
 
     public function builder(): Builder
     {
-        return $this->model::query();
+        if (empty($this->model) || ! class_exists($this->model)) {
+            throw new RuntimeException('The admin table model is not defined or is invalid.');
+        }
+
+        return $this->makeModel()->newQuery();
+    }
+
+    protected function makeModel(): Model
+    {
+        return new $this->model();
     }
 
     public function updatedSelected(): void
