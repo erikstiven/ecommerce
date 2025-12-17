@@ -2,35 +2,25 @@
 
 namespace App\Livewire\Admin\Products;
 
+use App\Livewire\Admin\Tables\BaseAdminTable;
 use App\Models\Product;
 use Illuminate\Support\Facades\Storage;
-use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 
-class ProductTable extends DataTableComponent
+class ProductTable extends BaseAdminTable
 {
-    protected $model = Product::class;
+    protected string $model = Product::class;
 
-    // IDs seleccionados
-    public array $selected = [];
-
-    protected $listeners = ['deleteProduct', 'toggleSelectAll', 'deleteSelected'];
-
-    public function configure(): void
+    public function bulkActions(): array
     {
-        $this->setPrimaryKey('id');
-        $this->setTheme('tailwind');
-    }
-
-    public function updatedSelected(): void
-    {
-        $this->dispatchSelectionCount();
+        return [
+            'deleteSelected' => 'Eliminar seleccionados',
+        ];
     }
 
     public function columns(): array
     {
         return [
-            Column::checkbox(),
             Column::make('ID', 'id')->sortable()->searchable(),
             Column::make('SKU', 'sku')->sortable()->searchable(),
             Column::make('Nombre', 'name')->sortable()->searchable(),
@@ -90,26 +80,5 @@ class ProductTable extends DataTableComponent
             'title' => 'Productos eliminados',
             'text'  => 'Los elementos seleccionados se eliminaron correctamente.',
         ]);
-    }
-
-    protected function dispatchSelectionCount(): void
-    {
-        $this->dispatch('selection-updated', count: count($this->selected ?? []));
-    }
-
-    protected function clearSelection(): void
-    {
-        $this->selected = [];
-        $this->dispatchSelectionCount();
-    }
-
-    protected function pruneSelection(array $ids): void
-    {
-        if (!isset($this->selected)) {
-            return;
-        }
-
-        $this->selected = array_values(array_diff($this->selected, $ids));
-        $this->dispatchSelectionCount();
     }
 }
