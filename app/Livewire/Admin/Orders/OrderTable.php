@@ -6,10 +6,10 @@ use App\Enums\OrderStatus;
 use App\Enums\ShipmentStatus;
 use App\Models\Driver;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
-use Rappasoft\LaravelLivewireTables\Views\Column;
 use App\Models\Order;
 use App\Models\Shipment;
 use Illuminate\Support\Facades\Storage;
+use Rappasoft\LaravelLivewireTables\Views\Column;
 
 class OrderTable extends DataTableComponent
 {

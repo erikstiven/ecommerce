@@ -1,0 +1,251 @@
+ (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
+diff --git a/app/Livewire/Admin/Categories/CategoryTable.php b/app/Livewire/Admin/Categories/CategoryTable.php
+index d75dde97e534e3367d865b654f1ce55e937b06be..1855ba937994310906afad535aafca3b2fd44c19 100644
+--- a/app/Livewire/Admin/Categories/CategoryTable.php
++++ b/app/Livewire/Admin/Categories/CategoryTable.php
+@@ -1,55 +1,56 @@
+ <?php
+ 
+ namespace App\Livewire\Admin\Categories;
+ 
+ use App\Models\Category;
+ use Rappasoft\LaravelLivewireTables\DataTableComponent;
++use Rappasoft\LaravelLivewireTables\Views\Columns\CheckboxColumn;
+ use Rappasoft\LaravelLivewireTables\Views\Column;
+ 
+ class CategoryTable extends DataTableComponent
+ {
+     protected $model = Category::class;
+ 
+     protected $listeners = ['deleteCategory', 'deleteSelected'];
+ 
+     public function configure(): void
+     {
+         $this->setPrimaryKey('id');
+         $this->setTheme('tailwind');
+         $this->setAdditionalSelects(['categories.id as id']);
+     }
+ 
+     public function updatedSelected(): void
+     {
+         $this->dispatchSelectionCount();
+     }
+ 
+     public function columns(): array
+     {
+         return [
+-            Column::checkbox(),
++            CheckboxColumn::make(),
+             Column::make('ID', 'id')->sortable()->searchable(),
+             Column::make('Nombre', 'name')->sortable()->searchable(),
+             Column::make('Familia', 'family.name')->sortable()->searchable(),
+             Column::make('Acciones')
+                 ->label(fn($row) => view('admin.categories.actions', ['category' => $row]))
+                 ->html(),
+         ];
+     }
+ 
+     public function deleteCategory($id)
+     {
+         $category = Category::findOrFail($id);
+         $category->delete();
+ 
+         $this->pruneSelection([$id]);
+ 
+         $this->dispatch('swal', [
+             'icon'  => 'success',
+             'title' => 'Categoría eliminada',
+             'text'  => 'La categoría se eliminó correctamente.',
+         ]);
+     }
+ 
+     public function deleteSelected(): void
+     {
+diff --git a/app/Livewire/Admin/Families/FamilyTable.php b/app/Livewire/Admin/Families/FamilyTable.php
+index ce5e305cf119408586c1a5e80da68e8c231f3376..ed515c87d2c8216c21bbfd4c1286681a65389b7c 100644
+--- a/app/Livewire/Admin/Families/FamilyTable.php
++++ b/app/Livewire/Admin/Families/FamilyTable.php
+@@ -1,54 +1,55 @@
+ <?php
+ 
+ namespace App\Livewire\Admin\Families;
+ 
+ use App\Models\Family;
+ use Rappasoft\LaravelLivewireTables\DataTableComponent;
++use Rappasoft\LaravelLivewireTables\Views\Columns\CheckboxColumn;
+ use Rappasoft\LaravelLivewireTables\Views\Column;
+ 
+ class FamilyTable extends DataTableComponent
+ {
+     protected $model = Family::class;
+ 
+     protected $listeners = ['deleteFamily', 'deleteSelected'];
+ 
+     public function configure(): void
+     {
+         $this->setPrimaryKey('id');
+         $this->setTheme('tailwind');
+     }
+ 
+     public function updatedSelected(): void
+     {
+         $this->dispatchSelectionCount();
+     }
+ 
+     public function columns(): array
+     {
+         return [
+-            Column::checkbox(),
++            CheckboxColumn::make(),
+             Column::make('ID', 'id')->sortable()->searchable(),
+             Column::make('Nombre', 'name')->sortable()->searchable(),
+             Column::make('Acciones')
+                 ->label(fn($row) => view('admin.families.actions', ['family' => $row]))
+                 ->html(),
+         ];
+     }
+ 
+     public function deleteFamily($id)
+     {
+         $family = Family::findOrFail($id);
+         $family->delete();
+ 
+         $this->pruneSelection([$id]);
+ 
+         $this->dispatch('swal', [
+             'icon'  => 'success',
+             'title' => 'Familia eliminada',
+             'text'  => 'La familia se eliminó correctamente.',
+         ]);
+     }
+ 
+     public function deleteSelected(): void
+     {
+         $selectedIds = collect($this->selected ?? [])->filter()->all();
+diff --git a/app/Livewire/Admin/Products/ProductTable.php b/app/Livewire/Admin/Products/ProductTable.php
+index 62622a63785229582424c33a478d53fba6b7f726..fc533e738cd87a1578d2891f7af02e4708699277 100644
+--- a/app/Livewire/Admin/Products/ProductTable.php
++++ b/app/Livewire/Admin/Products/ProductTable.php
+@@ -1,55 +1,56 @@
+ <?php
+ 
+ namespace App\Livewire\Admin\Products;
+ 
+ use App\Models\Product;
+ use Illuminate\Support\Facades\Storage;
+ use Rappasoft\LaravelLivewireTables\DataTableComponent;
++use Rappasoft\LaravelLivewireTables\Views\Columns\CheckboxColumn;
+ use Rappasoft\LaravelLivewireTables\Views\Column;
+ 
+ class ProductTable extends DataTableComponent
+ {
+     protected $model = Product::class;
+ 
+     protected $listeners = ['deleteProduct', 'deleteSelected'];
+ 
+     public function configure(): void
+     {
+         $this->setPrimaryKey('id');
+         $this->setTheme('tailwind');
+     }
+ 
+     public function updatedSelected(): void
+     {
+         $this->dispatchSelectionCount();
+     }
+ 
+     public function columns(): array
+     {
+         return [
+-            Column::checkbox(),
++            CheckboxColumn::make(),
+             Column::make('ID', 'id')->sortable()->searchable(),
+             Column::make('SKU', 'sku')->sortable()->searchable(),
+             Column::make('Nombre', 'name')->sortable()->searchable(),
+ 
+             Column::make('Precio', 'price')
+                 ->format(fn($value) => '$' . number_format($value, 2))
+                 ->sortable()
+                 ->searchable(),
+ 
+             Column::make('Acciones')
+                 ->label(fn($row) => view('admin.products.actions', ['product' => $row]))
+                 ->html(),
+         ];
+     }
+ 
+     public function deleteProduct($id)
+     {
+         $product = Product::findOrFail($id);
+ 
+         if ($product->image_path && Storage::disk('public')->exists($product->image_path)) {
+             Storage::disk('public')->delete($product->image_path);
+         }
+ 
+         $product->delete();
+ 
+diff --git a/app/Livewire/Admin/Subcategories/SubcategoryTable.php b/app/Livewire/Admin/Subcategories/SubcategoryTable.php
+index 15e0b81d570c1ff1462102adbcc9b591ed3f3397..055af7fd2ac6f3e5fcd43151f7ce1bad464cc7e2 100644
+--- a/app/Livewire/Admin/Subcategories/SubcategoryTable.php
++++ b/app/Livewire/Admin/Subcategories/SubcategoryTable.php
+@@ -1,55 +1,56 @@
+ <?php
+ 
+ namespace App\Livewire\Admin\Subcategories;
+ 
+ use App\Models\Subcategory;
+ use Rappasoft\LaravelLivewireTables\DataTableComponent;
++use Rappasoft\LaravelLivewireTables\Views\Columns\CheckboxColumn;
+ use Rappasoft\LaravelLivewireTables\Views\Column;
+ 
+ class SubcategoryTable extends DataTableComponent
+ {
+     protected $model = Subcategory::class;
+ 
+     protected $listeners = ['deleteSubcategory', 'deleteSelected'];
+ 
+     public function configure(): void
+     {
+         $this->setPrimaryKey('id');
+         $this->setTheme('tailwind');
+         $this->setAdditionalSelects(['subcategories.id as id']);
+     }
+ 
+     public function updatedSelected(): void
+     {
+         $this->dispatchSelectionCount();
+     }
+ 
+     public function columns(): array
+     {
+         return [
+-            Column::checkbox(),
++            CheckboxColumn::make(),
+             Column::make('ID', 'id')->sortable()->searchable(),
+             Column::make('Nombre', 'name')->sortable()->searchable(),
+             Column::make('Familia', 'family.name')->sortable()->searchable(),
+             Column::make('Categoría', 'category.name')->sortable()->searchable(),
+             Column::make('Acciones')
+                 ->label(fn($row) => view('admin.subcategories.actions', ['subcategory' => $row]))
+                 ->html(),
+         ];
+     }
+ 
+     public function deleteSubcategory($id)
+     {
+         $subcategory = Subcategory::findOrFail($id);
+         $subcategory->delete();
+ 
+         $this->pruneSelection([$id]);
+ 
+         $this->dispatch('swal', [
+             'icon'  => 'success',
+             'title' => 'Subcategoría eliminada',
+             'text'  => 'La subcategoría se eliminó correctamente.',
+         ]);
+     }
+ 
+     public function deleteSelected(): void
+ 
+EOF
+)

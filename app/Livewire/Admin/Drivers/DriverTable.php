@@ -3,8 +3,8 @@
 namespace App\Livewire\Admin\Drivers;
 
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
-use Rappasoft\LaravelLivewireTables\Views\Column;
 use App\Models\Driver;
+use Rappasoft\LaravelLivewireTables\Views\Column;
 use Rappasoft\LaravelLivewireTables\Views\Columns\LinkColumn;
 
 class DriverTable extends DataTableComponent
@@ -33,16 +33,12 @@ class DriverTable extends DataTableComponent
                 })
                 ->sortable(),
 
-            // Column::make("Type", "type")
-            //     ->sortable(),
             Column::make("Nombre", "user.name")
                 ->sortable(),
-            
-                LinkColumn::make('Action')
+
+            LinkColumn::make('Action')
                 ->title(fn ($row) => 'Edit')
-                ->location(fn ($row) => route('admin.drivers.edit', $row))
-
-
+                ->location(fn ($row) => route('admin.drivers.edit', $row)),
         ];
     }
 }

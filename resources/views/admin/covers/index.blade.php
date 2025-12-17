@@ -61,10 +61,20 @@
                         </p>
                     </div>
 
-                    <div>
+                    <div class="flex items-center gap-2">
                         <a class="btn-gradient-blue" href="{{ route('admin.covers.edit', $cover) }}">
                             Editar
                         </a>
+
+                        <form action="{{ route('admin.covers.destroy', $cover) }}" method="POST"
+                            onsubmit="return confirm('¿Deseas eliminar esta portada?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit"
+                                class="inline-flex items-center gap-2 px-4 py-1.5 rounded-md bg-red-500 text-white text-xs font-medium shadow hover:bg-red-600 hover:scale-105 transition-all duration-200">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i> Eliminar
+                            </button>
+                        </form>
                     </div>
                 </div>
             </li>

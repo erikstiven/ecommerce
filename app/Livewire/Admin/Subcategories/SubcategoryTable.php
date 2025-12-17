@@ -1,0 +1,101 @@
+<?php
+
+namespace App\Livewire\Admin\Subcategories;
+
+use App\Models\Subcategory;
+use Rappasoft\LaravelLivewireTables\DataTableComponent;
+use Rappasoft\LaravelLivewireTables\Views\Column;
+
+class SubcategoryTable extends DataTableComponent
+{
+
+    protected $model = Subcategory::class;
+
+    public array $selected = [];
+
+    protected $listeners = ['deleteSubcategory', 'deleteSelected'];
+
+    public function configure(): void
+    {
+        $this->setPrimaryKey('id');
+        $this->setTheme('tailwind');
+        $this->setAdditionalSelects(['subcategories.id as id']);
+
+        $this->setConfigurableAreas([
+            'toolbar-left-start' => 'admin.categories.toolbar',
+        ]);
+    }
+
+    public function updatedSelected(): void
+    {
+        $this->dispatchSelectionCount();
+    }
+
+    public function columns(): array
+    {
+        return [
+            Column::make(view('admin.categories.checkbox-header')->render())
+                ->label(fn($row) => view('admin.categories.checkbox', ['row' => $row]))
+                ->html()
+                ->excludeFromColumnSelect(),
+            Column::make('ID', 'id')->sortable()->searchable(),
+            Column::make('Nombre', 'name')->sortable()->searchable(),
+            Column::make('Familia', 'family.name')->sortable()->searchable(),
+            Column::make('Categoría', 'category.name')->sortable()->searchable(),
+            Column::make('Acciones')
+                ->label(fn($row) => view('admin.subcategories.actions', ['subcategory' => $row]))
+                ->html(),
+        ];
+    }
+
+    public function deleteSubcategory($id)
+    {
+        $subcategory = Subcategory::findOrFail($id);
+        $subcategory->delete();
+
+        $this->selected = array_values(array_diff($this->getSelected(), [$id]));
+        $this->dispatchSelectionCount();
+
+        $this->dispatch('swal', [
+            'icon'  => 'success',
+            'title' => 'Subcategoría eliminada',
+            'text'  => 'La subcategoría se eliminó correctamente.',
+        ]);
+    }
+
+    public function deleteSelected(): void
+    {
+        $selectedIds = $this->getSelected();
+
+        if (empty($selectedIds)) {
+            return;
+        }
+
+        Subcategory::whereIn('id', $selectedIds)->delete();
+
+        $this->clearSelected();
+
+        $this->dispatch('swal', [
+            'icon'  => 'success',
+            'title' => 'Subcategorías eliminadas',
+            'text'  => 'Los elementos seleccionados se eliminaron correctamente.',
+        ]);
+    }
+
+    protected function dispatchSelectionCount(): void
+    {
+        $this->dispatch('selection-updated', count: count($this->selected ?? []));
+    }
+
+    public function getSelected(): array
+    {
+        return array_values(collect($this->selected ?? [])->filter()->all());
+    }
+
+    public function clearSelected(): void
+    {
+        $this->selected = [];
+        $this->dispatchSelectionCount();
+    }
+
+}
