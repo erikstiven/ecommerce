@@ -44,7 +44,7 @@ class ProductTable extends DataTableComponent
         ];
     }
 
-    public function deleteProduct($id)
+    public function deleteProduct($id): void
     {
         $product = Product::findOrFail($id);
 

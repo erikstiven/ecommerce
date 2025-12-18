@@ -3,7 +3,7 @@
         <img src="{{ asset('img/icons/boligrafo.png') }}" class="w-6 h-6" alt="Editar">
     </a>
 
-    <button wire:click="$dispatch('deleteCategory', { id: {{ $category->id }} })">
+    <button wire:click="confirm('¿Eliminar la categoría seleccionada? Esta acción no se puede deshacer.') && $dispatch('deleteCategory', { id: {{ $category->id }} })">
         <img src="{{ asset('img/icons/eliminar.png') }}" class="w-6 h-6" alt="Eliminar">
     </button>
 </div>
