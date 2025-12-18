@@ -26,12 +26,12 @@ class ProductTable extends DataTableComponent
         ]);
     }
 
-    public function updatedSelectAll($checked)
+    public function updatedSelectAll($checked): void
     {
         $this->selected = $checked ? Product::pluck('id')->toArray() : [];
     }
 
-    public function updatedSelected()
+    public function updatedSelected(): void
     {
         $all = Product::pluck('id')->toArray();
         $this->selectAll = count($all) > 0 && count($this->selected) === count($all);
@@ -76,7 +76,7 @@ class ProductTable extends DataTableComponent
         ]);
     }
 
-    public function getHasSelectedProperty()
+    public function getHasSelectedProperty(): bool
     {
         return count($this->selected) > 0;
     }
