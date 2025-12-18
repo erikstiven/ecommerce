@@ -2,48 +2,30 @@
 
 namespace App\Livewire\Admin\Products;
 
+use App\Livewire\Admin\Tables\BaseAdminTable;
 use App\Models\Product;
 use Illuminate\Support\Facades\Storage;
-use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 
-class ProductTable extends DataTableComponent
+class ProductTable extends BaseAdminTable
 {
-    protected $model = Product::class;
+    protected string $model = Product::class;
 
-    // IDs seleccionados
-    public array $selected = [];
-    public bool $selectAll = false;
-
-    protected $listeners = ['deleteProduct'];
-
-    public function configure(): void
+    public function updatedSelected(): void
     {
-        $this->setPrimaryKey('id');
-        $this->setTheme('tailwind');
-        $this->setConfigurableAreas([
-            'toolbar-left-start' => 'admin.products.bulk-actions',
-        ]);
+        parent::updatedSelected();
     }
 
-    public function updatedSelectAll($checked)
+    public function bulkActions(): array
     {
-        $this->selected = $checked ? Product::pluck('id')->toArray() : [];
-    }
-
-    public function updatedSelected()
-    {
-        $all = Product::pluck('id')->toArray();
-        $this->selectAll = count($all) > 0 && count($this->selected) === count($all);
+        return [
+            'deleteSelected' => 'Eliminar seleccionados',
+        ];
     }
 
     public function columns(): array
     {
         return [
-            Column::make(view('admin.products.checkbox-header')->render())
-                ->label(fn($row) => view('admin.products.checkbox', ['row' => $row]))
-                ->html(),
-
             Column::make('ID', 'id')->sortable()->searchable(),
             Column::make('SKU', 'sku')->sortable()->searchable(),
             Column::make('Nombre', 'name')->sortable()->searchable(),
@@ -69,6 +51,8 @@ class ProductTable extends DataTableComponent
 
         $product->delete();
 
+        $this->pruneSelection([$id]);
+
         $this->dispatch('swal', [
             'icon'  => 'success',
             'title' => 'Producto eliminado',
@@ -76,22 +60,17 @@ class ProductTable extends DataTableComponent
         ]);
     }
 
-    public function getHasSelectedProperty()
-    {
-        return count($this->selected) > 0;
-    }
-
-
     public function deleteSelected()
     {
-        if (empty($this->selected)) {
+        $selectedIds = collect($this->selected ?? [])->filter()->all();
+
+        if (empty($selectedIds)) {
             return;
         }
 
-        $products = Product::whereIn('id', $this->selected)->get();
+        $products = Product::whereIn('id', $selectedIds)->get();
 
         foreach ($products as $product) {
-
             if ($product->image_path && Storage::disk('public')->exists($product->image_path)) {
                 Storage::disk('public')->delete($product->image_path);
             }
@@ -99,8 +78,7 @@ class ProductTable extends DataTableComponent
             $product->delete();
         }
 
-        $this->selected = []; // limpiar selección
-        $this->selectAll = false;
+        $this->clearSelection();
 
         $this->dispatch('swal', [
             'icon'  => 'success',

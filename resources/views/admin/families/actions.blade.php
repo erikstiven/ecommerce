@@ -1,6 +1,6 @@
 <div class="flex items-center gap-2">
     <a
-        href="{{ route('admin.products.edit', $product) }}"
+        href="{{ route('admin.families.edit', $family) }}"
         class="btn-admin btn-admin--ghost"
         title="Editar"
     >
@@ -11,8 +11,8 @@
     <button
         type="button"
         class="btn-admin btn-admin--danger"
-        onclick="if(!confirm('¿Eliminar producto?')) { event.stopImmediatePropagation(); return false; }"
-        wire:click="deleteProduct({{ $product->id }})"
+        x-data
+        x-on:click="$dispatch('confirm-family-delete', { id: {{ $family->id }} })"
     >
         <img src="{{ asset('img/icons/eliminar.png') }}" class="w-4 h-4" alt="Eliminar">
         <span class="sr-only">Eliminar</span>
