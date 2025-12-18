@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin\Subcategories;
 
 use App\Models\Subcategory;
+use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 
@@ -18,7 +19,7 @@ class SubcategoryTable extends DataTableComponent
         $this->setTheme('tailwind');
     }
 
-    public function builder()
+    public function builder(): Builder
     {
         return Subcategory::query()->with('category.family');
     }

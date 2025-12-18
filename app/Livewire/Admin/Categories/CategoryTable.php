@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin\Categories;
 
 use App\Models\Category;
+use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 
@@ -18,7 +19,7 @@ class CategoryTable extends DataTableComponent
         $this->setTheme('tailwind');
     }
 
-    public function builder()
+    public function builder(): Builder
     {
         return Category::query()->with('family');
     }

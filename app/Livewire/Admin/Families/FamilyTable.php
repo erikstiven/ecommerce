@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin\Families;
 
 use App\Models\Family;
+use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 
@@ -18,7 +19,7 @@ class FamilyTable extends DataTableComponent
         $this->setTheme('tailwind');
     }
 
-    public function builder()
+    public function builder(): Builder
     {
         return Family::query();
     }
