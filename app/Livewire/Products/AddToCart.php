@@ -5,7 +5,6 @@ namespace App\Livewire\Products;
 use App\Models\Feature;
 use App\Models\Product;
 use Gloudemans\Shoppingcart\Facades\Cart;
-use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 
@@ -30,9 +29,20 @@ class AddToCart extends Component
      */
     public function mount()
     {
-        // Selecciona las características de la primera variante por defecto
-        $this->selectedFeatures = $this->product->variants->first()->features->pluck('id', 'option_id')->toArray();
-        $this->getvariant();
+        if ($this->product->variants->isNotEmpty()) {
+            // Selecciona las características de la primera variante por defecto
+            $this->selectedFeatures = $this->product->variants
+                ->first()
+                ->features
+                ->pluck('id', 'option_id')
+                ->toArray();
+
+            $this->getvariant();
+        } else {
+            $this->variant = null;
+            $this->stock   = 0;
+            $this->qty     = 1;
+        }
     }
 
     /**
@@ -63,7 +73,13 @@ class AddToCart extends Component
             })
             ->first();
 
-        $this->stock = $this->variant->stock;
+        if (!$this->variant) {
+            $this->stock = 0;
+            $this->qty   = 1;
+            return;
+        }
+
+        $this->stock = $this->variant->stock ?? 0;
         $this->qty   = 1;
     }
 

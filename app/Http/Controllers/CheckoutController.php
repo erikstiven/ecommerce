@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Gloudemans\Shoppingcart\Facades\Cart;
 use Illuminate\Support\Str;
 use App\Models\Address;
-use App\Models\Product;
+use App\Models\Variant;
 use Illuminate\Support\Facades\Log;
 
 
@@ -37,8 +37,14 @@ class CheckoutController extends Controller
     {
         Cart::instance('shopping');
         foreach (Cart::content() as $item) {
-            // Se intenta tomar el stock del item; si no existe en las opciones, se consulta al modelo Product
-            $available = $item->options['stock'] ?? Product::find($item->id)?->stock;
+            // Se intenta tomar el stock del item; si no existe en las opciones, se consulta a la variante por SKU
+            $available = $item->options['stock'] ?? null;
+            $variantSku = $item->options['sku'] ?? null;
+
+            if ($available === null && $variantSku) {
+                $available = Variant::where('sku', $variantSku)->value('stock');
+            }
+
             if ($available !== null && $item->qty > $available) {
                 return false;
             }
@@ -234,9 +240,8 @@ class CheckoutController extends Controller
 
                 // Descontar stock de los productos del pedido
                 foreach ($order->items as $item) {
-                    $product = $item->product;
-                    if ($product && !is_null($product->stock)) {
-                        $product->decrement('stock', $item->qty);
+                    if ($item->sku) {
+                        Variant::where('sku', $item->sku)->decrement('stock', $item->qty);
                     }
                 }
 
@@ -297,9 +302,8 @@ class CheckoutController extends Controller
 
         // Reservar stock para cada producto
         foreach ($order->items as $item) {
-            $product = $item->product;
-            if ($product && !is_null($product->stock)) {
-                $product->decrement('stock', $item->qty);
+            if ($item->sku) {
+                Variant::where('sku', $item->sku)->decrement('stock', $item->qty);
             }
         }
 

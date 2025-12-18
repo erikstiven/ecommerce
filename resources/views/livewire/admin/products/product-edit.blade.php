@@ -104,12 +104,10 @@
 
             @if ($product->variants->count() == 0)
                 <div class="mb-4">
-                    <x-label class="mb-1">
-                        Stock
-                    </x-label>
-                    <x-input type="number" wire:model="productEdit.stock" class="w-full" step="0.01"
-                        placeholder="Ingrese el stock del producto">
-                    </x-input>
+                    <p class="text-sm text-gray-600">
+                        Este producto no tiene variantes. Gestiona el stock desde el módulo de variantes para
+                        mantener el inventario actualizado.
+                    </p>
                 </div>
             @endif
 
