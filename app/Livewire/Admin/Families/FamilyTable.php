@@ -1,22 +1,27 @@
 <?php
 
-namespace App\Livewire\Admin\Products;
+namespace App\Livewire\Admin\Families;
 
-use App\Models\Product;
-use Illuminate\Support\Facades\Storage;
+use App\Models\Family;
+use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 
-class ProductTable extends DataTableComponent
+class FamilyTable extends DataTableComponent
 {
-    protected $model = Product::class;
+    protected $model = Family::class;
 
-    protected $listeners = ['deleteProduct'];
+    protected $listeners = ['deleteFamily'];
 
     public function configure(): void
     {
         $this->setPrimaryKey('id');
         $this->setTheme('tailwind');
+    }
+
+    public function builder(): Builder
+    {
+        return Family::query();
     }
 
     public function bulkActions(): array
@@ -30,34 +35,33 @@ class ProductTable extends DataTableComponent
     {
         return [
             Column::make('ID', 'id')->sortable()->searchable(),
-            Column::make('SKU', 'sku')->sortable()->searchable(),
             Column::make('Nombre', 'name')->sortable()->searchable(),
-
-            Column::make('Precio', 'price')
-                ->format(fn($value) => '$' . number_format($value, 2))
-                ->sortable()
-                ->searchable(),
-
             Column::make('Acciones')
-                ->label(fn($row) => view('admin.products.actions', ['product' => $row]))
+                ->label(fn($row) => view('admin.families.actions', ['family' => $row]))
                 ->html(),
         ];
     }
 
-    public function deleteProduct($id): void
+    public function deleteFamily($id): void
     {
-        $product = Product::findOrFail($id);
+        $family = Family::findOrFail($id);
 
-        if ($product->image_path && Storage::disk('public')->exists($product->image_path)) {
-            Storage::disk('public')->delete($product->image_path);
+        if ($family->categories()->exists()) {
+            $this->dispatch('swal', [
+                'icon'  => 'error',
+                'title' => 'No se puede eliminar',
+                'text'  => 'La familia tiene categorías asociadas.',
+            ]);
+
+            return;
         }
 
-        $product->delete();
+        $family->delete();
 
         $this->dispatch('swal', [
             'icon'  => 'success',
-            'title' => 'Producto eliminado',
-            'text'  => 'El producto se eliminó correctamente.',
+            'title' => 'Familia eliminada',
+            'text'  => 'La familia se eliminó correctamente.',
         ]);
     }
 
@@ -68,7 +72,7 @@ class ProductTable extends DataTableComponent
         }
 
         $this->js(<<<'JS'
-            if (confirm('¿Eliminar los productos seleccionados? Esta acción no se puede deshacer.')) {
+            if (confirm('¿Eliminar las familias seleccionadas? Esta acción no se puede deshacer.')) {
                 $wire.call('performBulkDeletion');
             }
         JS);
@@ -80,21 +84,30 @@ class ProductTable extends DataTableComponent
             return;
         }
 
-        $products = Product::whereIn('id', $this->selected)->get();
+        $families = Family::withCount('categories')->whereIn('id', $this->selected)->get();
 
-        foreach ($products as $product) {
-            if ($product->image_path && Storage::disk('public')->exists($product->image_path)) {
-                Storage::disk('public')->delete($product->image_path);
-            }
+        $blocked = $families->filter(fn($family) => $family->categories_count > 0);
+        $deletable = $families->where('categories_count', 0);
 
-            $product->delete();
+        foreach ($deletable as $family) {
+            $family->delete();
         }
 
         $this->clearBulkSelection();
 
+        if ($blocked->isNotEmpty()) {
+            $this->dispatch('swal', [
+                'icon'  => 'error',
+                'title' => 'Algunas familias no se pudieron eliminar',
+                'text'  => 'Hay familias con categorías asociadas.',
+            ]);
+
+            return;
+        }
+
         $this->dispatch('swal', [
             'icon'  => 'success',
-            'title' => 'Productos eliminados',
+            'title' => 'Familias eliminadas',
             'text'  => 'Los elementos seleccionados se eliminaron correctamente.',
         ]);
     }
