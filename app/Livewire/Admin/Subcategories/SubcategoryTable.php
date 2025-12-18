@@ -21,7 +21,7 @@ class SubcategoryTable extends DataTableComponent
 
     public function builder(): Builder
     {
-        return Subcategory::query()->with('category.family');
+        return Subcategory::query()->with(['category', 'category.family']);
     }
 
     public function bulkActions(): array
@@ -39,11 +39,11 @@ class SubcategoryTable extends DataTableComponent
             Column::make('Categoría', 'category.name')
                 ->sortable()
                 ->searchable()
-                ->label(fn($row) => $row->category->name ?? '-'),
+                ->label(fn($row) => $row->category?->name ?? '-'),
             Column::make('Familia', 'category.family.name')
                 ->sortable()
                 ->searchable()
-                ->label(fn($row) => $row->category->family->name ?? '-'),
+                ->label(fn($row) => $row->category?->family?->name ?? '-'),
             Column::make('Acciones')
                 ->label(fn($row) => view('admin.subcategories.actions', ['subcategory' => $row]))
                 ->html(),

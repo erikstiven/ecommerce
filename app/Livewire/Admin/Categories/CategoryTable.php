@@ -39,7 +39,7 @@ class CategoryTable extends DataTableComponent
             Column::make('Familia', 'family.name')
                 ->sortable()
                 ->searchable()
-                ->label(fn($row) => $row->family->name ?? '-'),
+                ->label(fn($row) => $row->family?->name ?? '-'),
             Column::make('Acciones')
                 ->label(fn($row) => view('admin.categories.actions', ['category' => $row]))
                 ->html(),
