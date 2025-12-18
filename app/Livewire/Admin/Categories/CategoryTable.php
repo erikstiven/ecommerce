@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin\Categories;
 
 use App\Models\Category;
+use App\Models\Family;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
@@ -36,10 +37,20 @@ class CategoryTable extends DataTableComponent
         return [
             Column::make('ID', 'id')->sortable()->searchable(),
             Column::make('Nombre', 'name')->sortable()->searchable(),
-            Column::make('Familia', 'family.name')
-                ->sortable()
-                ->searchable()
-                ->label(fn($row) => $row->family?->name ?? '-'),
+            Column::make('Familia')
+                ->label(fn($row) => $row->family?->name ?? '-')
+                ->sortable(function (Builder $query, string $direction) {
+                    $query->orderBy(
+                        Family::select('name')
+                            ->whereColumn('families.id', 'categories.family_id'),
+                        $direction
+                    );
+                })
+                ->searchable(function (Builder $query, string $term) {
+                    $query->whereHas('family', fn(Builder $familyQuery) =>
+                        $familyQuery->where('name', 'like', "%{$term}%")
+                    );
+                }),
             Column::make('Acciones')
                 ->label(fn($row) => view('admin.categories.actions', ['category' => $row]))
                 ->html(),

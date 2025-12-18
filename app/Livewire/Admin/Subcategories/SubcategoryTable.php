@@ -3,6 +3,8 @@
 namespace App\Livewire\Admin\Subcategories;
 
 use App\Models\Subcategory;
+use App\Models\Category;
+use App\Models\Family;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
@@ -36,14 +38,39 @@ class SubcategoryTable extends DataTableComponent
         return [
             Column::make('ID', 'id')->sortable()->searchable(),
             Column::make('Nombre', 'name')->sortable()->searchable(),
-            Column::make('Categoría', 'category.name')
-                ->sortable()
-                ->searchable()
-                ->label(fn($row) => $row->category?->name ?? '-'),
-            Column::make('Familia', 'category.family.name')
-                ->sortable()
-                ->searchable()
-                ->label(fn($row) => $row->category?->family?->name ?? '-'),
+            Column::make('Categoría')
+                ->label(fn($row) => $row->category?->name ?? '-')
+                ->sortable(function (Builder $query, string $direction) {
+                    $query->orderBy(
+                        Category::select('name')
+                            ->whereColumn('categories.id', 'subcategories.category_id'),
+                        $direction
+                    );
+                })
+                ->searchable(function (Builder $query, string $term) {
+                    $query->whereHas('category', fn(Builder $categoryQuery) =>
+                        $categoryQuery->where('name', 'like', "%{$term}%")
+                    );
+                }),
+            Column::make('Familia')
+                ->label(fn($row) => $row->category?->family?->name ?? '-')
+                ->sortable(function (Builder $query, string $direction) {
+                    $query->orderBy(
+                        Family::select('name')
+                            ->whereColumn('families.id', function (Builder $subQuery) {
+                                $subQuery->select('family_id')
+                                    ->from('categories')
+                                    ->whereColumn('categories.id', 'subcategories.category_id')
+                                    ->limit(1);
+                            }),
+                        $direction
+                    );
+                })
+                ->searchable(function (Builder $query, string $term) {
+                    $query->whereHas('category.family', fn(Builder $familyQuery) =>
+                        $familyQuery->where('name', 'like', "%{$term}%")
+                    );
+                }),
             Column::make('Acciones')
                 ->label(fn($row) => view('admin.subcategories.actions', ['subcategory' => $row]))
                 ->html(),
