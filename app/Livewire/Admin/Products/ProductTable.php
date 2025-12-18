@@ -11,6 +11,11 @@ class ProductTable extends BaseAdminTable
 {
     protected string $model = Product::class;
 
+    public function updatedSelected(): void
+    {
+        parent::updatedSelected();
+    }
+
     public function bulkActions(): array
     {
         return [
