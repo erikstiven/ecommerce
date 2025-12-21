@@ -25,7 +25,7 @@
             $/ {{ $product->price }}
         </p>
         <p class="text-sm text-gray-700 dark:text-white">
-            Stock: {{ $stock ?? $product->stock }}
+            Stock: {{ $stock ?? 0 }}
         </p>
     </div>
 
