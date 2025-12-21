@@ -93,7 +93,7 @@
                             <td class="px-4 py-2">{{ $order->status?->name ?? 'Sin estado' }}</td>
                             <td class="px-4 py-2">{{ $order->created_at?->format('d/m/Y') }}</td>
                             <td class="px-4 py-2">
-                                <a href="{{ route('orders.index') }}"
+                                <a href="{{ route('admin.orders.index') }}"
                                     class="text-indigo-600 hover:text-indigo-800 font-semibold">
                                     Ver pedido
                                 </a>
