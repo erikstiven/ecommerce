@@ -2,6 +2,8 @@
 
 namespace App\Livewire;
 
+use App\Models\Category;
+use App\Models\Family;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
@@ -13,14 +15,18 @@ class Navegation extends Component
     public $family_id;
     public function mount()
     {
-        $this->families = \App\Models\Family::all();
-        $this->family_id = $this->families->first()->id;
+        $this->families = Family::all();
+        $this->family_id = $this->families->first()?->id;
     }
 
     #[Computed()]
     public function categories()
     {
-        return \App\Models\Category::where('family_id', $this->family_id)
+        if (! $this->family_id) {
+            return collect();
+        }
+
+        return Category::where('family_id', $this->family_id)
             ->with('subcategories')
             ->get();
     }
@@ -29,7 +35,11 @@ class Navegation extends Component
 
     public function familyName()
     {
-        return \App\Models\Family::find($this->family_id)->name;
+        if (! $this->family_id) {
+            return '';
+        }
+
+        return Family::find($this->family_id)?->name ?? '';
     }
 
 
