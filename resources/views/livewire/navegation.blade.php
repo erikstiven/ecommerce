@@ -162,11 +162,18 @@
                         @forelse ($families as $family)
                             <li wire:mouseover="set('family_id', {{ $family->id }})"
                                 class="border-b border-gray-100">
-                                <a href="{{ route('families.show', $family) }}"
-                                    class="flex items-center justify-between px-4 py-4 text-gray-700 hover:bg-gray-100">
-                                    <span>{{ $family->name }}</span>
-                                    <i class="fa-solid fa-angle-right text-sm text-gray-400"></i>
-                                </a>
+                                @if ($family?->getKey())
+                                    <a href="{{ route('families.show', $family) }}"
+                                        class="flex items-center justify-between px-4 py-4 text-gray-700 hover:bg-gray-100">
+                                        <span>{{ $family->name }}</span>
+                                        <i class="fa-solid fa-angle-right text-sm text-gray-400"></i>
+                                    </a>
+                                @else
+                                    <div class="flex items-center justify-between px-4 py-4 text-gray-700">
+                                        <span>{{ $family->name ?? 'Familia' }}</span>
+                                        <i class="fa-solid fa-angle-right text-sm text-gray-400"></i>
+                                    </div>
+                                @endif
                             </li>
                         @empty
                             <li class="px-4 py-6 text-sm text-gray-500">
