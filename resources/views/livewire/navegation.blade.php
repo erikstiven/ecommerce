@@ -159,7 +159,7 @@
                 </div>
                 <div class="h-[calc(100vh-52px)] overflow-auto">
                     <ul>
-                        @foreach ($families as $family)
+                        @forelse ($families as $family)
                             <li wire:mouseover="set('family_id', {{ $family->id }})"
                                 class="border-b border-gray-100">
                                 <a href="{{ route('families.show', $family) }}"
@@ -168,7 +168,11 @@
                                     <i class="fa-solid fa-angle-right text-sm text-gray-400"></i>
                                 </a>
                             </li>
-                        @endforeach
+                        @empty
+                            <li class="px-4 py-6 text-sm text-gray-500">
+                                No hay familias disponibles.
+                            </li>
+                        @endforelse
                     </ul>
                 </div>
             </div>
@@ -181,7 +185,9 @@
                         <p class="border-b-[3px] border-purple-600 uppercase text-xl font-semibold pb-1">
                             {{ $this->familyName }}
                         </p>
-                        <a href="{{ route('families.show', $family_id) }}" class="btn btn-gradient-purple">Ver todo</a>
+                        @if ($family_id)
+                            <a href="{{ route('families.show', $family_id) }}" class="btn btn-gradient-purple">Ver todo</a>
+                        @endif
                     </div>
 
                     <ul class="grid w-full grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
