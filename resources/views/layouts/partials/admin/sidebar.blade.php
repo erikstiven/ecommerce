@@ -78,38 +78,30 @@
 
 @endphp
 <aside id="logo-sidebar"
-    class="absolute top-0 left-0 z-40 h-screen transition-all duration-300 -translate-x-full bg-slate-900 border-r border-slate-800 sm:translate-x-0 sm:sticky sm:top-0 sm:self-start"
-    :class="{
-        'translate-x-0 ease-out': sidebarOpen,
-        '-translate-x-full ease-in': !sidebarOpen,
-        'w-16': sidebarCollapsed,
-        'w-64': !sidebarCollapsed
-    }"
+    class="relative h-screen bg-slate-900 border-r border-slate-800 transition-all duration-300 overflow-x-hidden"
+    :class="sidebarCollapsed ? 'w-16' : 'w-64'"
     aria-label="Sidebar">
     <div class="h-full pb-4 pt-6 overflow-y-auto bg-slate-900"
         :class="sidebarCollapsed ? 'px-2' : 'px-3'">
+        {{-- Navegación principal --}}
         <ul class="space-y-2 font-medium">
             @foreach ($links as $link)
                 <li>
                     @isset($link['header'])
                         <div class="px-3 py-2 text-xs font-semibold text-slate-400 uppercase"
-                            :class="sidebarCollapsed ? 'hidden' : ''">
+                            x-show="!sidebarCollapsed" x-cloak>
                             {{ $link['header'] }}
                         </div>
                     @else
                         <a href="{{ $link['route'] }}"
-                            class="flex items-center p-2 text-slate-200 rounded-lg hover:bg-slate-800 transition-colors {{ $link['active'] ? 'bg-slate-800' : '' }}"
+                            class="flex items-center rounded-lg px-3 py-2 text-slate-200 hover:bg-slate-800 transition-colors {{ $link['active'] ? 'bg-slate-800' : '' }}"
+                            :class="sidebarCollapsed ? 'justify-center' : 'gap-3'"
                             title="{{ $link['name'] }}">
-                            {{-- <span class="inline-flex w-6 h-6 justify-center items-center">
-                            <i class="fa-solid {{ $link['icon'] }}"></i>
-                        {{-- <span class="inline-flex w-6 h-6 justify-center items-center">
-                            <i class="{{ $link['icon'] }}"></i>
-                        </span> --}}
+                            {{-- Icono siempre visible --}}
                             <span class="inline-flex w-6 h-6 justify-center items-center">
                                 <i data-lucide="{{ $link['icon'] }}" class="w-5 h-5"></i>
                             </span>
-                            <span class="ms-2"
-                                :class="sidebarCollapsed ? 'hidden' : ''">
+                            <span x-show="!sidebarCollapsed" x-cloak>
                                 {{ $link['name'] }}
                             </span>
                         </a>
