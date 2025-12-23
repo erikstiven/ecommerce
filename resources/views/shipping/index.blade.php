@@ -56,7 +56,7 @@
                                 Total
                             </p>
                             <p class="text-lg font-semibold">
-                                $/. {{ Cart::subtotal() }}
+                                $/. {{ Cart::instance('shopping')->subtotal() }}
                             </p>
 
 

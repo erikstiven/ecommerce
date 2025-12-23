@@ -53,16 +53,16 @@
                          <x-slot name="content">
                              <!-- Account Management -->
                              <div class="block px-4 py-2 text-xs text-gray-400">
-                                 {{ __('Manage Account') }}
+                                {{ __('navigation.manage_account') }}
                              </div>
 
                              <x-dropdown-link href="{{ route('profile.show') }}">
-                                 {{ __('Profile') }}
+                                {{ __('navigation.profile') }}
                              </x-dropdown-link>
 
                              @if (Laravel\Jetstream\Jetstream::hasApiFeatures())
                                  <x-dropdown-link href="{{ route('api-tokens.index') }}">
-                                     {{ __('API Tokens') }}
+                                    {{ __('navigation.api_tokens') }}
                                  </x-dropdown-link>
                              @endif
 
@@ -73,7 +73,7 @@
                                  @csrf
 
                                  <x-dropdown-link href="{{ route('logout') }}" @click.prevent="$root.submit();">
-                                     {{ __('Log Out') }}
+                                    {{ __('navigation.log_out') }}
                                  </x-dropdown-link>
                              </form>
                          </x-slot>

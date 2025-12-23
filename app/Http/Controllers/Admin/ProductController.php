@@ -144,11 +144,19 @@ class ProductController extends Controller
     // Variants
     public function variants(Product $product, Variant $variant)
     {
+        if ($variant->product_id !== $product->id) {
+            abort(404);
+        }
+
         return view('admin.products.variants', compact('product', 'variant'));
     }
 
     public function variantsUpdate(Request $request, Product $product, Variant $variant)
     {
+        if ($variant->product_id !== $product->id) {
+            abort(404);
+        }
+
         $rules = [
             'image' => 'nullable|image|max:1024',
             'sku'   => 'required',
