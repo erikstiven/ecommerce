@@ -144,7 +144,7 @@ class AddToCart extends Component
         }
 
         // Actualizar contador del carrito y notificar éxito
-        $this->dispatch('cartUpdated', Cart::count());
+        $this->dispatch('cartUpdated', Cart::instance('shopping')->count());
 
         $this->dispatch('swal', [
             'icon'  => 'success',

@@ -24,7 +24,7 @@
 
                     <div class="p-4 text-gray-600">
                         <ul>
-                            @foreach (Cart::content() as $item)
+                            @foreach (Cart::instance('shopping')->content() as $item)
                                 <li class="flex items-center space-x-4">
                                     <figure class="shrink-0">
                                         <img src="{{ $item->options->image }}"

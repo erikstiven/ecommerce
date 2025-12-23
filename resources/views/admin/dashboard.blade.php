@@ -1,4 +1,4 @@
-<x-admin-layout :breadcrumbs="[['name' => 'Dashboard']]">
+<x-admin-layout :breadcrumbs="[['name' => __('Dashboard')]]">
 
     {{-- KPIs --}}
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -95,7 +95,7 @@
                             <td class="px-4 py-2">
                                 <a href="{{ route('admin.orders.index') }}"
                                     class="text-indigo-600 hover:text-indigo-800 font-semibold">
-                                    Ver pedido
+                                    Ver pedidos
                                 </a>
                             </td>
                         </tr>

@@ -35,11 +35,11 @@ class CheckoutController extends Controller
      */
     private function validateCartStock(): bool
     {
-        Cart::instance('shopping');
-        foreach (Cart::content() as $item) {
+        $cart = Cart::instance('shopping');
+        foreach ($cart->content() as $item) {
             // Se intenta tomar el stock del item; si no existe en las opciones, se consulta a la variante por SKU
-            $available = $item->options['stock'] ?? null;
-            $variantSku = $item->options['sku'] ?? null;
+            $available = data_get($item, 'options.stock');
+            $variantSku = data_get($item, 'options.sku');
 
             if ($available === null && $variantSku) {
                 $available = Variant::where('sku', $variantSku)->value('stock');
