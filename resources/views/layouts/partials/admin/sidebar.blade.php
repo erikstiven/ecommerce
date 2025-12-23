@@ -78,7 +78,7 @@
 
 @endphp
 <aside id="logo-sidebar"
-    class="fixed top-0 left-0 z-40 h-[100dvh] pt-20 transition-all duration-300 -translate-x-full bg-slate-900 border-r border-slate-800 sm:translate-x-0"
+    class="absolute top-0 left-0 z-40 h-screen transition-all duration-300 -translate-x-full bg-slate-900 border-r border-slate-800 sm:translate-x-0 sm:sticky sm:top-0 sm:self-start"
     :class="{
         'translate-x-0 ease-out': sidebarOpen,
         '-translate-x-full ease-in': !sidebarOpen,
@@ -86,7 +86,7 @@
         'w-64': !sidebarCollapsed
     }"
     aria-label="Sidebar">
-    <div class="h-full pb-4 overflow-y-auto bg-slate-900"
+    <div class="h-full pb-4 pt-6 overflow-y-auto bg-slate-900"
         :class="sidebarCollapsed ? 'px-2' : 'px-3'">
         <ul class="space-y-2 font-medium">
             @foreach ($links as $link)

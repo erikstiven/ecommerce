@@ -32,31 +32,33 @@
         $watch('sidebarCollapsed', value => localStorage.setItem('sidebar-collapsed', value));
     ">
 
-    {{-- Overlay responsive --}}
-    <div class="fixed inset-0 bg-gray-900 bg-opacity-50 z-20 sm:hidden"
-        x-show="sidebarOpen"
-        x-on:click="sidebarOpen = false">
-    </div>
+    <div class="min-h-screen bg-gray-50">
+        {{-- Overlay responsive --}}
+        <div class="fixed inset-0 bg-gray-900 bg-opacity-50 z-20 sm:hidden"
+            x-show="sidebarOpen"
+            x-on:click="sidebarOpen = false">
+        </div>
 
-    @include('layouts.partials.admin.navegation')
-    @include('layouts.partials.admin.sidebar')
+        <div class="flex min-h-screen relative">
+            @include('layouts.partials.admin.sidebar')
 
-    <div class="p-4 transition-all duration-300"
-        :class="sidebarCollapsed ? 'sm:ml-16' : 'sm:ml-64'">
-        <div class="mt-14">
+            <div class="flex-1 min-w-0">
+                @include('layouts.partials.admin.navegation')
 
-            <div class="flex justify-between items-center">
-                @include('layouts.partials.admin.breadcrumb')
+                <div class="p-4">
+                    <div class="flex justify-between items-center">
+                        @include('layouts.partials.admin.breadcrumb')
 
-                @isset($action)
-                    <div>{{ $action }}</div>
-                @endisset
+                        @isset($action)
+                            <div>{{ $action }}</div>
+                        @endisset
+                    </div>
+
+                    <div class="p-4 border-2 border-gray-200 border-dashed rounded-lg">
+                        {{ $slot }}
+                    </div>
+                </div>
             </div>
-
-            <div class="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700">
-                {{ $slot }}
-            </div>
-
         </div>
     </div>
 
