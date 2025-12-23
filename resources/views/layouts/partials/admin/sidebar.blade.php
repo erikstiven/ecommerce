@@ -78,25 +78,28 @@
 
 @endphp
 <aside id="logo-sidebar"
-    class="fixed top-0 left-0 z-40 w-64 h-[100dvh] pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700"
+    class="fixed top-0 left-0 z-40 h-[100dvh] pt-20 transition-all duration-300 -translate-x-full bg-slate-900 border-r border-slate-800 sm:translate-x-0"
     :class="{
-    
         'translate-x-0 ease-out': sidebarOpen,
-        '-translate-x-full ease-in': !sidebarOpen
+        '-translate-x-full ease-in': !sidebarOpen,
+        'w-16': sidebarCollapsed,
+        'w-64': !sidebarCollapsed
     }"
     aria-label="Sidebar">
-    <div class="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
+    <div class="h-full pb-4 overflow-y-auto bg-slate-900"
+        :class="sidebarCollapsed ? 'px-2' : 'px-3'">
         <ul class="space-y-2 font-medium">
             @foreach ($links as $link)
                 <li>
                     @isset($link['header'])
-                        <div class="px-3 py-2 text-xs font-semibold text-gray-500 uppercase">
+                        <div class="px-3 py-2 text-xs font-semibold text-slate-400 uppercase"
+                            :class="sidebarCollapsed ? 'hidden' : ''">
                             {{ $link['header'] }}
-
                         </div>
                     @else
                         <a href="{{ $link['route'] }}"
-                            class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group {{ $link['active'] ? 'bg-gray-100 dark:bg-gray-700' : '' }}">
+                            class="flex items-center p-2 text-slate-200 rounded-lg hover:bg-slate-800 transition-colors {{ $link['active'] ? 'bg-slate-800' : '' }}"
+                            title="{{ $link['name'] }}">
                             {{-- <span class="inline-flex w-6 h-6 justify-center items-center">
                             <i class="fa-solid {{ $link['icon'] }}"></i>
                         {{-- <span class="inline-flex w-6 h-6 justify-center items-center">
@@ -105,7 +108,8 @@
                             <span class="inline-flex w-6 h-6 justify-center items-center">
                                 <i data-lucide="{{ $link['icon'] }}" class="w-5 h-5"></i>
                             </span>
-                            <span class="ms-2">
+                            <span class="ms-2"
+                                :class="sidebarCollapsed ? 'hidden' : ''">
                                 {{ $link['name'] }}
                             </span>
                         </a>

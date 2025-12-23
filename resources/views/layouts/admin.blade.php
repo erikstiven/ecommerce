@@ -25,7 +25,12 @@
     @livewireStyles
 </head>
 
-<body class="font-sans antialiased" x-data="{ sidebarOpen: false }">
+<body class="font-sans antialiased"
+    x-data="{ sidebarOpen: false, sidebarCollapsed: false }"
+    x-init="
+        sidebarCollapsed = localStorage.getItem('sidebar-collapsed') === 'true';
+        $watch('sidebarCollapsed', value => localStorage.setItem('sidebar-collapsed', value));
+    ">
 
     {{-- Overlay responsive --}}
     <div class="fixed inset-0 bg-gray-900 bg-opacity-50 z-20 sm:hidden"
@@ -36,7 +41,8 @@
     @include('layouts.partials.admin.navegation')
     @include('layouts.partials.admin.sidebar')
 
-    <div class="p-4 sm:ml-64">
+    <div class="p-4 transition-all duration-300"
+        :class="sidebarCollapsed ? 'sm:ml-16' : 'sm:ml-64'">
         <div class="mt-14">
 
             <div class="flex justify-between items-center">
