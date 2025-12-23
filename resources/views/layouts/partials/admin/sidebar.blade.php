@@ -78,9 +78,20 @@
 
 @endphp
 <aside id="logo-sidebar"
-    class="relative h-screen bg-slate-900 border-r border-slate-800 transition-all duration-300 overflow-x-hidden"
+    class="relative h-screen bg-slate-900 border-r border-slate-800 transition-all duration-300 ease-in-out overflow-x-hidden"
     :class="sidebarCollapsed ? 'w-16' : 'w-64'"
     aria-label="Sidebar">
+    <button type="button"
+        class="absolute top-4 -right-3 z-10 inline-flex h-7 w-7 items-center justify-center rounded-full bg-white text-slate-600 shadow-md ring-1 ring-slate-200 hover:text-slate-800"
+        @click="sidebarCollapsed = !sidebarCollapsed">
+        <span class="sr-only">Toggle sidebar</span>
+        <svg class="h-4 w-4 transition-transform duration-300"
+            :class="sidebarCollapsed ? 'rotate-180' : ''"
+            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+        </svg>
+    </button>
     <div class="h-full pb-4 pt-6 overflow-y-auto bg-slate-900"
         :class="sidebarCollapsed ? 'px-2' : 'px-3'">
         {{-- Navegación principal --}}
@@ -101,7 +112,7 @@
                             <span class="inline-flex w-6 h-6 justify-center items-center">
                                 <i data-lucide="{{ $link['icon'] }}" class="w-5 h-5"></i>
                             </span>
-                            <span x-show="!sidebarCollapsed" x-cloak>
+                            <span x-show="!sidebarCollapsed" x-cloak x-transition>
                                 {{ $link['name'] }}
                             </span>
                         </a>
