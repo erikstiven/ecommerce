@@ -37,46 +37,76 @@
     </div>
 
     {{-- Sección de gráficas --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 auto-rows-fr">
-        {{-- Gráfico: Pedidos por estado --}}
-        <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col min-h-[320px] overflow-hidden">
-            <h2 class="text-lg font-semibold mb-0">Pedidos por estado</h2>
-            <div class="relative flex-1 min-h-[220px] overflow-hidden">
-                <canvas id="ordersStatusChart" class="w-full h-full"></canvas>
-            </div>
+    <div class="mt-6" x-data="{ chartTab: 'resumen' }">
+        <div class="flex flex-wrap gap-2">
+            <button type="button"
+                class="px-4 py-2 rounded-full text-sm font-semibold border transition"
+                :class="chartTab === 'resumen' ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'"
+                @click="chartTab = 'resumen'; $nextTick(() => window.dispatchEvent(new Event('resize')))"
+            >
+                Resumen
+            </button>
+            <button type="button"
+                class="px-4 py-2 rounded-full text-sm font-semibold border transition"
+                :class="chartTab === 'ventas' ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'"
+                @click="chartTab = 'ventas'; $nextTick(() => window.dispatchEvent(new Event('resize')))"
+            >
+                Ventas
+            </button>
+            <button type="button"
+                class="px-4 py-2 rounded-full text-sm font-semibold border transition"
+                :class="chartTab === 'envios' ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'"
+                @click="chartTab = 'envios'; $nextTick(() => window.dispatchEvent(new Event('resize')))"
+            >
+                Envíos
+            </button>
         </div>
 
-        {{-- Gráfico: Pedidos por mes --}}
-        <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col min-h-[320px] overflow-hidden">
-            <h2 class="text-lg font-semibold mb-0">Pedidos por mes ({{ date('Y') }})</h2>
-            <div class="relative flex-1 min-h-[220px] overflow-hidden">
-                <canvas id="ordersMonthChart" class="w-full h-full"></canvas>
-            </div>
-        </div>
-    </div>
+        <div class="mt-4 space-y-6" x-cloak>
+            <div x-show="chartTab === 'resumen'" class="grid grid-cols-1 md:grid-cols-2 gap-6 auto-rows-fr">
+                {{-- Gráfico: Pedidos por estado --}}
+                <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col min-h-[320px] overflow-hidden">
+                    <h2 class="text-lg font-semibold mb-0">Pedidos por estado</h2>
+                    <div class="relative flex-1 min-h-[220px] overflow-hidden">
+                        <canvas id="ordersStatusChart" class="w-full h-full"></canvas>
+                    </div>
+                </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6 auto-rows-fr">
-        {{-- Gráfico: Productos más vendidos --}}
-        <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col min-h-[320px] overflow-hidden">
-            <h2 class="text-lg font-semibold mb-0">Productos más vendidos (Top 5)</h2>
-            <div class="relative flex-1 min-h-[220px] overflow-hidden">
-                <canvas id="topProductsChart" class="w-full h-full"></canvas>
+                {{-- Gráfico: Pedidos por mes --}}
+                <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col min-h-[320px] overflow-hidden">
+                    <h2 class="text-lg font-semibold mb-0">Pedidos por mes ({{ date('Y') }})</h2>
+                    <div class="relative flex-1 min-h-[220px] overflow-hidden">
+                        <canvas id="ordersMonthChart" class="w-full h-full"></canvas>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        {{-- Gráfico: Pedidos por familia --}}
-        <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col min-h-[320px] overflow-hidden">
-            <h2 class="text-lg font-semibold mb-0">Pedidos por familia</h2>
-            <div class="relative flex-1 min-h-[220px] overflow-hidden">
-                <canvas id="ordersFamilyChart" class="w-full h-full"></canvas>
+            <div x-show="chartTab === 'ventas'" class="grid grid-cols-1 lg:grid-cols-2 gap-6 auto-rows-fr">
+                {{-- Gráfico: Productos más vendidos --}}
+                <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col min-h-[320px] overflow-hidden">
+                    <h2 class="text-lg font-semibold mb-0">Productos más vendidos (Top 5)</h2>
+                    <div class="relative flex-1 min-h-[220px] overflow-hidden">
+                        <canvas id="topProductsChart" class="w-full h-full"></canvas>
+                    </div>
+                </div>
+
+                {{-- Gráfico: Pedidos por familia --}}
+                <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col min-h-[320px] overflow-hidden">
+                    <h2 class="text-lg font-semibold mb-0">Pedidos por familia</h2>
+                    <div class="relative flex-1 min-h-[220px] overflow-hidden">
+                        <canvas id="ordersFamilyChart" class="w-full h-full"></canvas>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        {{-- Gráfico: Estado de envíos --}}
-        <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col min-h-[320px] overflow-hidden">
-            <h2 class="text-lg font-semibold mb-0">Estado de envíos</h2>
-            <div class="relative flex-1 min-h-[220px] overflow-hidden">
-                <canvas id="shipmentsStatusChart" class="w-full h-full"></canvas>
+            <div x-show="chartTab === 'envios'" class="grid grid-cols-1 lg:grid-cols-2 gap-6 auto-rows-fr">
+                {{-- Gráfico: Estado de envíos --}}
+                <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col min-h-[320px] overflow-hidden">
+                    <h2 class="text-lg font-semibold mb-0">Estado de envíos</h2>
+                    <div class="relative flex-1 min-h-[220px] overflow-hidden">
+                        <canvas id="shipmentsStatusChart" class="w-full h-full"></canvas>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

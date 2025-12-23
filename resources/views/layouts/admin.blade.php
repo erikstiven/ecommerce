@@ -36,23 +36,19 @@
         {{-- Sidebar en flujo (no fixed/absolute) --}}
         @include('layouts.partials.admin.sidebar')
 
-        <div class="flex-1 min-w-0">
-            @include('layouts.partials.admin.navegation')
+        <main class="flex-1 min-w-0 p-4">
+            <div class="flex justify-between items-center">
+                @include('layouts.partials.admin.breadcrumb')
 
-            <div class="p-4">
-                <div class="flex justify-between items-center">
-                    @include('layouts.partials.admin.breadcrumb')
-
-                    @isset($action)
-                        <div>{{ $action }}</div>
-                    @endisset
-                </div>
-
-                <div class="p-4 border-2 border-gray-200 border-dashed rounded-lg">
-                    {{ $slot }}
-                </div>
+                @isset($action)
+                    <div>{{ $action }}</div>
+                @endisset
             </div>
-        </div>
+
+            <div class="mt-4 p-4 border-2 border-gray-200 border-dashed rounded-lg">
+                {{ $slot }}
+            </div>
+        </main>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
