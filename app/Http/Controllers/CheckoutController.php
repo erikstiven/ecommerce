@@ -35,11 +35,11 @@ class CheckoutController extends Controller
      */
     private function validateCartStock(): bool
     {
-        Cart::instance('shopping');
-        foreach (Cart::content() as $item) {
+        $cart = Cart::instance('shopping');
+        foreach ($cart->content() as $item) {
             // Se intenta tomar el stock del item; si no existe en las opciones, se consulta a la variante por SKU
-            $available = $item->options['stock'] ?? null;
-            $variantSku = $item->options['sku'] ?? null;
+            $available = data_get($item, 'options.stock');
+            $variantSku = data_get($item, 'options.sku');
 
             if ($available === null && $variantSku) {
                 $available = Variant::where('sku', $variantSku)->value('stock');
@@ -57,14 +57,13 @@ class CheckoutController extends Controller
      */
     public function checkout()
     {
-        Cart::instance('shopping');
+        $cart = Cart::instance('shopping');
         if (!$this->validateCartStock()) {
             return redirect()->route('cart.index')
                 ->with('error', 'Algunos productos en tu carrito no tienen suficiente stock.');
         }
 
         // Obtener contenido del carrito y totales
-        $cart     = Cart::instance('shopping');
         $content  = $cart->content();
         $subtotal = (float) preg_replace('/[^\d\.]/', '', (string) $cart->subtotal(2, '.', ''));
         $shipping = 5.00;

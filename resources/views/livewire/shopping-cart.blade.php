@@ -5,7 +5,7 @@
         <div class="lg:col-span-5">
             <div class="flex justify-between mb-2">
                 <h1 class="text-lg">
-                    Carrito de compras ({{ Cart::count() }} productos)
+                    Carrito de compras ({{ Cart::instance('shopping')->count() }} productos)
                 </h1>
 
                 <button class="font-semibold text-gray-600 hover:text-purple-400 underline hover:no-under"
@@ -21,14 +21,17 @@
 
                 <ul class="space-y-4">
 
-                    @forelse (Cart::content() as $item)
-                        <li class="lg:flex lg:items-center space-y-2 lg:space-y-0 {{ $item->qty > $item->options['stock'] ? 'text-red-600' : '' }}">
+                    @forelse (Cart::instance('shopping')->content() as $item)
+                        @php
+                            $stock = data_get($item, 'options.stock', 0);
+                        @endphp
+                        <li class="lg:flex lg:items-center space-y-2 lg:space-y-0 {{ $item->qty > $stock ? 'text-red-600' : '' }}">
 
                             <img class="w-full lg:w-36 aspect-[4/3] object-cover object-center mr-2"
                                 src="{{ $item->options->image }}" alt="">
                             <div class="lg:w-64 xl:w-80">
 
-                                @if($item->qty > $item->options['stock'])
+                                @if($item->qty > $stock)
                                     <p class="font-semibold text-red-600">
                                         Sin stock
                                     </p>
@@ -80,7 +83,7 @@
                                 wire:click="increase('{{ $item->rowId }}')"
                                 wire:loading.attr="disabled"
                                 wire:target="increase('{{ $item->rowId }}')"
-                                @disabled($item->qty >= $item->options['stock'])>
+                                @disabled($item->qty >= $stock)>
                                     +
                                 </button>
                             </div>

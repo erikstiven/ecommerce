@@ -2,7 +2,7 @@
     $links = [
         [
             'icon' => 'home',
-            'name' => 'Dashboard',
+            'name' => __('ui.dashboard'),
             'route' => route('admin.dashboard'),
             'active' => request()->routeIs('admin.dashboard'),
         ],

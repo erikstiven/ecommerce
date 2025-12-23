@@ -69,7 +69,9 @@ class ProductVariants extends Component
         ]);
 
         // Buscar la variante a editar por su ID
-        $variant = Variant::find($this->variantEdit['id']);
+        $variant = $this->product->variants()
+            ->whereKey($this->variantEdit['id'])
+            ->first();
 
         // Verificar que la variante exista antes de actualizarla
         if ($variant) {
@@ -87,7 +89,7 @@ class ProductVariants extends Component
             $this->dispatch('swal', [
                 'icon'  => 'error',
                 'title' => 'Variante no encontrada',
-                'text'  => 'No se pudo actualizar porque la variante no existe.',
+                'text'  => 'No se pudo actualizar porque la variante no existe para este producto.',
             ]);
         }
     }
@@ -122,6 +124,10 @@ class ProductVariants extends Component
     #[Computed()]
     public function features()
     {
+        if (empty($this->variant['option_id'])) {
+            return collect();
+        }
+
         return Feature::where('option_id', $this->variant['option_id'])->get();
     }
 
@@ -162,15 +168,36 @@ class ProductVariants extends Component
 
     public function addNewFeature($option_id, $feature_id)
     {
-
         $this->validate([
             'new_features.' . $option_id => 'required',
         ]);
 
-        $feature = Feature::find($this->new_features[$option_id]);
+        $featureId = $this->new_features[$option_id] ?? null;
+        $feature = $featureId ? Feature::find($featureId) : null;
+        if (!$feature) {
+            $this->dispatch('swal', [
+                'icon'  => 'error',
+                'title' => 'Característica no encontrada',
+                'text'  => 'No se pudo agregar la característica seleccionada.',
+            ]);
+            return;
+        }
+
+        $option = $this->product->options()->whereKey($option_id)->first();
+        if (!$option) {
+            $this->dispatch('swal', [
+                'icon'  => 'error',
+                'title' => 'Opción no encontrada',
+                'text'  => 'La opción seleccionada no está asociada a este producto.',
+            ]);
+            return;
+        }
+
+        $currentFeatures = data_get($option->pivot, 'features', []);
+        $currentFeatures = is_array($currentFeatures) ? $currentFeatures : [];
 
         $this->product->options()->updateExistingPivot($option_id, [
-            'features' => array_merge($this->product->options->find($option_id)->pivot->features, [
+            'features' => array_merge($currentFeatures, [
                 [
                     'id' => $feature->id,
                     'value' => $feature->value,
@@ -216,8 +243,21 @@ class ProductVariants extends Component
     //delete feature
     public function deleteFeature($option_id, $feature_id)
     {
+        $option = $this->product->options()->whereKey($option_id)->first();
+        if (!$option) {
+            $this->dispatch('swal', [
+                'icon'  => 'error',
+                'title' => 'Opción no encontrada',
+                'text'  => 'No se pudo eliminar la característica porque la opción ya no existe.',
+            ]);
+            return;
+        }
+
+        $currentFeatures = data_get($option->pivot, 'features', []);
+        $currentFeatures = is_array($currentFeatures) ? $currentFeatures : [];
+
         $this->product->options()->updateExistingPivot($option_id, [
-            'features' => array_filter($this->product->options->find($option_id)->pivot->features, function ($feature) use ($feature_id) {
+            'features' => array_filter($currentFeatures, function ($feature) use ($feature_id) {
                 return $feature['id'] != $feature_id;
             })
         ]);
@@ -236,6 +276,16 @@ class ProductVariants extends Component
     //deleteOption
     public function deleteOption($option_id)
     {
+        $option = $this->product->options()->whereKey($option_id)->first();
+        if (!$option) {
+            $this->dispatch('swal', [
+                'icon'  => 'error',
+                'title' => 'Opción no encontrada',
+                'text'  => 'No se pudo eliminar porque la opción no está asociada al producto.',
+            ]);
+            return;
+        }
+
         $this->product->options()->detach($option_id);
         $this->product = $this->product->fresh();
 
@@ -295,10 +345,36 @@ class ProductVariants extends Component
             ->all();
 
         // Registrar la nueva opción asociada al producto (si no existía)
-        $this->product->options()->attach(
-            $this->variant['option_id'],
-            ['features' => $features]
-        );
+        $optionId = $this->variant['option_id'];
+        $option = Option::find($optionId);
+        if (!$option) {
+            $this->dispatch('swal', [
+                'icon'  => 'error',
+                'title' => 'Opción no encontrada',
+                'text'  => 'La opción seleccionada no existe.',
+            ]);
+            return;
+        }
+
+        $existingOption = $this->product->options->firstWhere('id', $optionId);
+        if ($existingOption) {
+            $currentFeatures = data_get($existingOption->pivot, 'features', []);
+            $currentFeatures = is_array($currentFeatures) ? $currentFeatures : [];
+            $mergedFeatures = collect($currentFeatures)
+                ->merge($features)
+                ->unique('id')
+                ->values()
+                ->all();
+
+            $this->product->options()->updateExistingPivot($optionId, [
+                'features' => $mergedFeatures,
+            ]);
+        } else {
+            $this->product->options()->attach(
+                $optionId,
+                ['features' => $features]
+            );
+        }
 
         // Refrescar la relación para obtener features actualizadas
         $this->product = $this->product->fresh();
@@ -343,9 +419,16 @@ class ProductVariants extends Component
 
     public function generarVariantes()
     {
-        $features = $this->product->options->pluck('pivot.features');
+        $features = $this->product->options->pluck('pivot.features')
+            ->map(function ($items) {
+                return is_array($items) ? $items : [];
+            });
 
-        $combinaciones = $this->generarCombinaciones($features);
+        if ($features->isEmpty() || $features->contains(fn($items) => empty($items))) {
+            return;
+        }
+
+        $combinaciones = $this->generarCombinaciones($features->toArray());
 
 
         foreach ($combinaciones as $combinacion) {
@@ -373,11 +456,21 @@ class ProductVariants extends Component
 
     function generarCombinaciones($arrays, $indice = 0, $combinacion = [])
     {
+        $arrays = is_array($arrays) ? $arrays : $arrays->toArray();
+
+        if (empty($arrays)) {
+            return [];
+        }
+
         if ($indice == count($arrays)) {
             return [$combinacion];
         }
 
         $resultado = [];
+
+        if (empty($arrays[$indice])) {
+            return [];
+        }
 
         foreach ($arrays[$indice] as $item) {
             $combinacionTemporal = $combinacion;

@@ -1,4 +1,4 @@
-<x-admin-layout :breadcrumbs="[['name' => 'Dashboard']]">
+<x-admin-layout :breadcrumbs="[['name' => __('ui.dashboard')]]">
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         {{-- Tarjeta de bienvenida --}}

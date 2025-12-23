@@ -23,6 +23,15 @@ class AddNewFeature extends Component
 
         ]);
 
+        if (!$this->option || !$this->option->exists) {
+            $this->dispatch('swal', [
+                'icon'  => 'error',
+                'title' => 'Opción no encontrada',
+                'text'  => 'No se pudo agregar la característica porque la opción no existe.',
+            ]);
+            return;
+        }
+
         $this->option->features()->create( $this->newFeature);
 
         $this->dispatch('featureAdded');

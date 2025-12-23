@@ -50,7 +50,7 @@
                 {{-- Email --}}
 
                 <div>
-                    <x-label for="email" value="{{ __('Email') }}" class="text-white/90 font-medium" />
+                    <x-label for="email" value="{{ __('ui.email') }}" class="text-white/90 font-medium" />
                     <x-input id="email" class="block mt-1 w-full text-black" type="email" name="email"
                         :value="old('email')" required autocomplete="username" />
                 </div>
@@ -62,13 +62,13 @@
                 </div>
 
                 {{-- <div>
-                    <x-label for="password" value="{{ __('Password') }}" class="text-white/90 font-medium" />
+                    <x-label for="password" value="{{ __('ui.password') }}" class="text-white/90 font-medium" />
                     <x-input id="password" class="block mt-1 w-full text-black" type="password" name="password"
                         required autocomplete="new-password" />
                 </div>
 
                 <div>
-                    <x-label for="password_confirmation" value="{{ __('Confirm Password') }}"
+                    <x-label for="password_confirmation" value="{{ __('ui.confirm_password') }}"
                         class="text-white/90 font-medium" />
                     <x-input id="password_confirmation" class="block mt-1 w-full text-black" type="password"
                         name="password_confirmation" required autocomplete="new-password" />
@@ -76,7 +76,7 @@
 
                 {{-- Contraseña --}}
                 <div class="relative">
-                    <x-label for="password" value="{{ __('Password') }}" class="text-white/90 font-medium" />
+                    <x-label for="password" value="{{ __('ui.password') }}" class="text-white/90 font-medium" />
                     <div class="relative">
                         <x-input id="password" class="block mt-1 w-full text-black pr-10" type="password"
                             name="password" required autocomplete="new-password" />
@@ -93,7 +93,7 @@
 
                 {{-- Confirmar contraseña --}}
                 <div class="relative">
-                    <x-label for="password_confirmation" value="{{ __('Confirm Password') }}"
+                    <x-label for="password_confirmation" value="{{ __('ui.confirm_password') }}"
                         class="text-white/90 font-medium" />
                     <div class="relative">
                         <x-input id="password_confirmation" class="block mt-1 w-full text-black pr-10" type="password"
@@ -146,7 +146,7 @@
                 </a>
 
                 <x-button class="ms-4 btn-login-f">
-                    {{ __('Register') }}
+                    {{ __('ui.register') }}
                 </x-button>
             </div>
         </form>

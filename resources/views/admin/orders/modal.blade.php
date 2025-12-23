@@ -1,6 +1,6 @@
 <x-dialog-modal wire:model="new_shipment.openModal">
     <x-slot name="title">
-        {{ __('Order Details') }}
+        {{ __('ui.order_details') }}
     </x-slot>
 
     <x-slot name="content">
