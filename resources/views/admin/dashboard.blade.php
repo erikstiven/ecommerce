@@ -1,20 +1,20 @@
 <x-admin-layout :breadcrumbs="[['name' => __('Dashboard')]]">
 
     {{-- KPIs --}}
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div class="bg-white rounded-lg shadow-lg p-6">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 auto-rows-fr">
+        <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col justify-between">
             <p class="text-sm text-gray-500">Pedidos del mes</p>
             <p class="text-3xl font-semibold text-gray-900">{{ $kpis['totalMonth'] }}</p>
         </div>
-        <div class="bg-white rounded-lg shadow-lg p-6">
+        <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col justify-between">
             <p class="text-sm text-gray-500">Pedidos pendientes</p>
             <p class="text-3xl font-semibold text-amber-600">{{ $kpis['pending'] }}</p>
         </div>
-        <div class="bg-white rounded-lg shadow-lg p-6">
+        <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col justify-between">
             <p class="text-sm text-gray-500">Pedidos entregados</p>
             <p class="text-3xl font-semibold text-emerald-600">{{ $kpis['delivered'] }}</p>
         </div>
-        <div class="bg-white rounded-lg shadow-lg p-6">
+        <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col justify-between">
             <p class="text-sm text-gray-500">Pedidos cancelados</p>
             <p class="text-3xl font-semibold text-rose-600">{{ $kpis['canceled'] }}</p>
         </div>
@@ -37,37 +37,47 @@
     </div>
 
     {{-- Sección de gráficas --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 auto-rows-fr">
         {{-- Gráfico: Pedidos por estado --}}
-        <div class="bg-white rounded-lg shadow-lg p-6 relative" style="height: 300px;">
+        <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col min-h-[320px] overflow-hidden">
             <h2 class="text-lg font-semibold mb-0">Pedidos por estado</h2>
-            <canvas id="ordersStatusChart"></canvas>
+            <div class="relative flex-1 min-h-[220px] overflow-hidden">
+                <canvas id="ordersStatusChart" class="w-full h-full"></canvas>
+            </div>
         </div>
 
         {{-- Gráfico: Pedidos por mes --}}
-        <div class="bg-white rounded-lg shadow-lg p-6 relative" style="height: 300px;">
+        <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col min-h-[320px] overflow-hidden">
             <h2 class="text-lg font-semibold mb-0">Pedidos por mes ({{ date('Y') }})</h2>
-            <canvas id="ordersMonthChart"></canvas>
+            <div class="relative flex-1 min-h-[220px] overflow-hidden">
+                <canvas id="ordersMonthChart" class="w-full h-full"></canvas>
+            </div>
         </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6 auto-rows-fr">
         {{-- Gráfico: Productos más vendidos --}}
-        <div class="bg-white rounded-lg shadow-lg p-6 relative" style="height: 300px;">
+        <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col min-h-[320px] overflow-hidden">
             <h2 class="text-lg font-semibold mb-0">Productos más vendidos (Top 5)</h2>
-            <canvas id="topProductsChart"></canvas>
+            <div class="relative flex-1 min-h-[220px] overflow-hidden">
+                <canvas id="topProductsChart" class="w-full h-full"></canvas>
+            </div>
         </div>
 
         {{-- Gráfico: Pedidos por familia --}}
-        <div class="bg-white rounded-lg shadow-lg p-6 relative" style="height: 300px;">
+        <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col min-h-[320px] overflow-hidden">
             <h2 class="text-lg font-semibold mb-0">Pedidos por familia</h2>
-            <canvas id="ordersFamilyChart"></canvas>
+            <div class="relative flex-1 min-h-[220px] overflow-hidden">
+                <canvas id="ordersFamilyChart" class="w-full h-full"></canvas>
+            </div>
         </div>
 
         {{-- Gráfico: Estado de envíos --}}
-        <div class="bg-white rounded-lg shadow-lg p-6 relative" style="height: 300px;">
+        <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col min-h-[320px] overflow-hidden">
             <h2 class="text-lg font-semibold mb-0">Estado de envíos</h2>
-            <canvas id="shipmentsStatusChart"></canvas>
+            <div class="relative flex-1 min-h-[220px] overflow-hidden">
+                <canvas id="shipmentsStatusChart" class="w-full h-full"></canvas>
+            </div>
         </div>
     </div>
 

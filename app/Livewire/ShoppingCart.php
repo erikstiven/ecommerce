@@ -38,7 +38,7 @@ class ShoppingCart extends Component
         }
 
         $item      = $cart->get($rowId);
-        $available = $item->options->stock ?? null;
+        $available = data_get($item, 'options.stock');
         if ($available !== null && ($item->qty + 1) > $available) {
             session()->flash('error', 'No hay suficiente stock para agregar otra unidad.');
             return;

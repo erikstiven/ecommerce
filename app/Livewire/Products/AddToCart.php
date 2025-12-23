@@ -88,7 +88,7 @@ class AddToCart extends Component
      */
     public function add_to_cart()
     {
-        Cart::instance('shopping');
+        $cart = Cart::instance('shopping');
 
         // Verificar que exista una variante y que tenga stock disponible
         if (!$this->variant || $this->stock <= 0) {
@@ -101,7 +101,7 @@ class AddToCart extends Component
         }
 
         // Buscar si ya hay un item con la misma SKU en el carrito
-        $cartItem = Cart::search(function ($cartItem) {
+        $cartItem = $cart->search(function ($cartItem) {
             return $cartItem->options->sku === $this->variant->sku;
         })->first();
 
@@ -122,7 +122,7 @@ class AddToCart extends Component
         }
 
         // Agregar al carrito con los datos y opciones necesarias
-        Cart::add([
+        $cart->add([
             'id'    => $this->product->id,
             'name'  => $this->product->name,
             'qty'   => $this->qty,
@@ -140,11 +140,11 @@ class AddToCart extends Component
 
         // Guardar el carrito para el usuario autenticado
         if (Auth::check()) {
-            Cart::store(Auth::id());
+            $cart->store(Auth::id());
         }
 
         // Actualizar contador del carrito y notificar éxito
-        $this->dispatch('cartUpdated', Cart::instance('shopping')->count());
+        $this->dispatch('cartUpdated', $cart->count());
 
         $this->dispatch('swal', [
             'icon'  => 'success',
