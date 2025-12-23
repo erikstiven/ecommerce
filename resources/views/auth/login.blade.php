@@ -16,13 +16,13 @@
             @csrf
 
             <div>
-                <x-label for="email" value="{{ __('Email') }}" class="text-white/90 font-medium" />
+                <x-label for="email" value="{{ __('ui.email') }}" class="text-white/90 font-medium" />
                 <x-input id="email" class="block mt-1 w-full text-black" type="email" name="email"
                     :value="old('email')" required autofocus autocomplete="username" />
             </div>
 
             <div class="mt-4 relative">
-                <x-label for="password" value="{{ __('Password') }}" class="text-white/90 font-medium" />
+                <x-label for="password" value="{{ __('ui.password') }}" class="text-white/90 font-medium" />
 
                 <div class="relative">
                     <x-input id="password" class="block mt-1 w-full text-black pr-10" type="password" name="password"

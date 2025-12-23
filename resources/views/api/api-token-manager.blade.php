@@ -2,7 +2,7 @@
     <!-- Generate API Token -->
     <x-form-section submit="createApiToken">
         <x-slot name="title">
-            {{ __('Create API Token') }}
+            {{ __('ui.create_api_token') }}
         </x-slot>
 
         <x-slot name="description">
@@ -12,7 +12,7 @@
         <x-slot name="form">
             <!-- Token Name -->
             <div class="col-span-6 sm:col-span-4">
-                <x-label for="name" value="{{ __('Token Name') }}" />
+                <x-label for="name" value="{{ __('ui.token_name') }}" />
                 <x-input id="name" type="text" class="mt-1 block w-full" wire:model="createApiTokenForm.name" autofocus />
                 <x-input-error for="name" class="mt-2" />
             </div>
@@ -36,11 +36,11 @@
 
         <x-slot name="actions">
             <x-action-message class="me-3" on="created">
-                {{ __('Created.') }}
+                {{ __('ui.created') }}
             </x-action-message>
 
             <x-button>
-                {{ __('Create') }}
+                {{ __('ui.create') }}
             </x-button>
         </x-slot>
     </x-form-section>
@@ -52,7 +52,7 @@
         <div class="mt-10 sm:mt-0">
             <x-action-section>
                 <x-slot name="title">
-                    {{ __('Manage API Tokens') }}
+                    {{ __('ui.manage_api_tokens') }}
                 </x-slot>
 
                 <x-slot name="description">
@@ -96,7 +96,7 @@
     <!-- Token Value Modal -->
     <x-dialog-modal wire:model.live="displayingToken">
         <x-slot name="title">
-            {{ __('API Token') }}
+            {{ __('ui.api_token') }}
         </x-slot>
 
         <x-slot name="content">
@@ -121,7 +121,7 @@
     <!-- API Token Permissions Modal -->
     <x-dialog-modal wire:model.live="managingApiTokenPermissions">
         <x-slot name="title">
-            {{ __('API Token Permissions') }}
+            {{ __('ui.api_token_permissions') }}
         </x-slot>
 
         <x-slot name="content">
@@ -149,7 +149,7 @@
     <!-- Delete Token Confirmation Modal -->
     <x-confirmation-modal wire:model.live="confirmingApiTokenDeletion">
         <x-slot name="title">
-            {{ __('Delete API Token') }}
+            {{ __('ui.delete_api_token') }}
         </x-slot>
 
         <x-slot name="content">

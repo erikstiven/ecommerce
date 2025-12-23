@@ -5,7 +5,7 @@
                  <button x-on:click="sidebarOpen = !sidebarOpen" data-drawer-target="logo-sidebar"
                      data-drawer-toggle="logo-sidebar" aria-controls="logo-sidebar" type="button"
                      class="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
-                     <span class="sr-only">Open sidebar</span>
+                     <span class="sr-only">{{ __('ui.open_sidebar') }}</span>
                      <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
                          xmlns="http://www.w3.org/2000/svg">
                          <path clip-rule="evenodd" fill-rule="evenodd"
@@ -53,16 +53,16 @@
                          <x-slot name="content">
                              <!-- Account Management -->
                              <div class="block px-4 py-2 text-xs text-gray-400">
-                                 {{ __('Manage Account') }}
+                                 {{ __('ui.manage_account') }}
                              </div>
 
                              <x-dropdown-link href="{{ route('profile.show') }}">
-                                 {{ __('Profile') }}
+                                 {{ __('ui.profile') }}
                              </x-dropdown-link>
 
                              @if (Laravel\Jetstream\Jetstream::hasApiFeatures())
                                  <x-dropdown-link href="{{ route('api-tokens.index') }}">
-                                     {{ __('API Tokens') }}
+                                     {{ __('ui.api_tokens') }}
                                  </x-dropdown-link>
                              @endif
 
@@ -73,7 +73,7 @@
                                  @csrf
 
                                  <x-dropdown-link href="{{ route('logout') }}" @click.prevent="$root.submit();">
-                                     {{ __('Log Out') }}
+                                     {{ __('ui.log_out') }}
                                  </x-dropdown-link>
                              </form>
                          </x-slot>
