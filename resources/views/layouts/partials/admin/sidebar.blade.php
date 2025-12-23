@@ -81,22 +81,24 @@
     class="relative h-screen bg-slate-900 border-r border-slate-800 transition-all duration-300 ease-in-out overflow-x-hidden flex flex-col"
     :class="sidebarCollapsed ? 'w-16' : 'w-64'"
     aria-label="Sidebar">
-    {{-- Zona superior: logo + toggle --}}
-    <div class="relative flex items-center justify-center px-3 py-4">
-        <button type="button"
-            class="absolute top-1/2 -right-3 z-10 inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-white text-slate-600 shadow-md ring-1 ring-slate-200 hover:text-slate-800"
-            @click="sidebarCollapsed = !sidebarCollapsed">
-            <span class="sr-only">Toggle sidebar</span>
-            <svg class="h-4 w-4 transition-transform duration-300"
-                :class="sidebarCollapsed ? 'rotate-180' : ''"
-                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-            </svg>
-        </button>
+    {{-- Botón de colapsar --}}
+    <button type="button"
+        class="absolute top-1/2 -right-4 z-20 inline-flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-indigo-500 text-white shadow-lg ring-2 ring-indigo-300 hover:bg-indigo-400 focus:outline-none focus:ring-2 focus:ring-white"
+        @click="sidebarCollapsed = !sidebarCollapsed">
+        <span class="sr-only">Toggle sidebar</span>
+        <svg class="h-5 w-5 transition-transform duration-300"
+            :class="sidebarCollapsed ? 'rotate-180' : ''"
+            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+        </svg>
+    </button>
+
+    {{-- Zona superior: logo --}}
+    <div class="flex items-center justify-center px-3 py-5">
         <a href="{{ route('admin.dashboard') }}" class="flex items-center justify-center gap-2">
-            <img src="{{ asset('img/logo.png') }}" alt="Logo" class="h-8 w-8 object-contain">
-            <span class="text-white font-semibold text-base" x-show="!sidebarCollapsed" x-cloak>
+            <img src="{{ asset('img/logo.png') }}" alt="Logo" class="h-9 w-9 object-contain">
+            <span class="text-white font-semibold text-base tracking-wide" x-show="!sidebarCollapsed" x-cloak>
                 Codecima
             </span>
         </a>
@@ -115,7 +117,7 @@
                         </div>
                     @else
                         <a href="{{ $link['route'] }}"
-                            class="flex items-center rounded-lg px-3 py-2 text-slate-200 hover:bg-slate-800 transition-colors {{ $link['active'] ? 'bg-slate-800' : '' }}"
+                            class="flex items-center rounded-lg px-3 py-2 text-slate-200 hover:bg-slate-800/80 transition-colors {{ $link['active'] ? 'bg-slate-800 ring-1 ring-slate-700' : '' }}"
                             :class="sidebarCollapsed ? 'justify-center' : 'gap-3'"
                             title="{{ $link['name'] }}">
                             {{-- Icono siempre visible --}}
@@ -137,7 +139,7 @@
         :class="sidebarCollapsed ? 'px-2' : 'px-3'">
         <div class="flex items-center"
             :class="sidebarCollapsed ? 'justify-center' : 'gap-3'">
-            <img class="h-8 w-8 rounded-full object-cover"
+            <img class="h-9 w-9 rounded-full object-cover ring-2 ring-slate-700"
                 src="{{ Auth::user()->profile_photo_url }}"
                 alt="{{ Auth::user()->name }}">
             <div x-show="!sidebarCollapsed" x-cloak>
@@ -147,7 +149,7 @@
         </div>
         <div class="mt-4 space-y-1">
             <a href="{{ route('profile.show') }}"
-                class="flex items-center rounded-lg px-3 py-2 text-slate-200 hover:bg-slate-800 transition-colors"
+                class="flex items-center rounded-lg px-3 py-2 text-slate-200 hover:bg-slate-800/80 transition-colors"
                 :class="sidebarCollapsed ? 'justify-center' : 'gap-3'"
                 title="{{ __('navigation.profile') }}">
                 <span class="inline-flex w-5 h-5 justify-center items-center">
@@ -160,7 +162,7 @@
             <form method="POST" action="{{ route('logout') }}" x-data>
                 @csrf
                 <button type="submit"
-                    class="w-full flex items-center rounded-lg px-3 py-2 text-slate-200 hover:bg-slate-800 transition-colors"
+                    class="w-full flex items-center rounded-lg px-3 py-2 text-slate-200 hover:bg-slate-800/80 transition-colors"
                     :class="sidebarCollapsed ? 'justify-center' : 'gap-3'">
                     <span class="inline-flex w-5 h-5 justify-center items-center">
                         <i data-lucide="log-out" class="w-4 h-4"></i>
