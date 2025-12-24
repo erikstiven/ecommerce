@@ -83,7 +83,7 @@
     aria-label="Sidebar">
     {{-- Botón de colapsar --}}
     <button type="button"
-        class="absolute top-1/2 -right-4 z-20 inline-flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-indigo-500 text-white shadow-lg ring-2 ring-indigo-300 hover:bg-indigo-400 focus:outline-none focus:ring-2 focus:ring-white"
+        class="absolute top-1/2 right-0 z-20 inline-flex h-10 w-10 -translate-y-1/2 translate-x-1/2 items-center justify-center rounded-full bg-indigo-500 text-white shadow-lg ring-2 ring-indigo-300 hover:bg-indigo-400 focus:outline-none focus:ring-2 focus:ring-white"
         @click="sidebarCollapsed = !sidebarCollapsed">
         <span class="sr-only">Toggle sidebar</span>
         <svg class="h-5 w-5 transition-transform duration-300"
@@ -135,11 +135,11 @@
     </div>
 
     {{-- Zona inferior: perfil --}}
-    <div class="border-t border-slate-800 px-3 py-4"
+    <div class="border-t border-slate-800 px-3 py-5"
         :class="sidebarCollapsed ? 'px-2' : 'px-3'">
-        <div class="flex items-center"
-            :class="sidebarCollapsed ? 'justify-center' : 'gap-3'">
-            <img class="h-9 w-9 rounded-full object-cover ring-2 ring-slate-700"
+        <div class="flex flex-col items-center text-center"
+            :class="sidebarCollapsed ? 'gap-0' : 'gap-2'">
+            <img class="h-10 w-10 rounded-full object-cover ring-2 ring-slate-700"
                 src="{{ Auth::user()->profile_photo_url }}"
                 alt="{{ Auth::user()->name }}">
             <div x-show="!sidebarCollapsed" x-cloak>
@@ -147,7 +147,7 @@
                 <p class="text-xs text-slate-400">Administrador</p>
             </div>
         </div>
-        <div class="mt-4 space-y-1">
+        <div class="mt-4 space-y-1" :class="sidebarCollapsed ? 'pt-2' : ''">
             <a href="{{ route('profile.show') }}"
                 class="flex items-center rounded-lg px-3 py-2 text-slate-200 hover:bg-slate-800/80 transition-colors"
                 :class="sidebarCollapsed ? 'justify-center' : 'gap-3'"
