@@ -83,7 +83,7 @@
     aria-label="Sidebar">
     {{-- Botón de colapsar --}}
     <button type="button"
-        class="absolute top-1/2 right-0 z-20 inline-flex h-10 w-10 -translate-y-1/2 translate-x-1/2 items-center justify-center rounded-full bg-indigo-500 text-white shadow-lg ring-2 ring-indigo-300 hover:bg-indigo-400 focus:outline-none focus:ring-2 focus:ring-white"
+        class="absolute top-1/2 right-2 z-20 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-indigo-500 text-white shadow-lg ring-2 ring-indigo-300 hover:bg-indigo-400 focus:outline-none focus:ring-2 focus:ring-white"
         @click="sidebarCollapsed = !sidebarCollapsed">
         <span class="sr-only">Toggle sidebar</span>
         <svg class="h-5 w-5 transition-transform duration-300"
@@ -95,7 +95,7 @@
     </button>
 
     {{-- Zona superior: logo --}}
-    <div class="flex items-center justify-center px-3 py-5">
+    <div class="flex items-center justify-center px-3 py-6 border-b border-slate-800/80">
         <a href="{{ route('admin.dashboard') }}" class="flex items-center justify-center gap-2">
             <img src="{{ asset('img/logo.png') }}" alt="Logo" class="h-9 w-9 object-contain">
             <span class="text-white font-semibold text-base tracking-wide" x-show="!sidebarCollapsed" x-cloak>
@@ -105,13 +105,13 @@
     </div>
 
     {{-- Zona central: menú --}}
-    <div class="flex-1 overflow-y-auto pb-4"
+    <div class="flex-1 overflow-y-auto pb-4 pt-4"
         :class="sidebarCollapsed ? 'px-2' : 'px-3'">
         <ul class="space-y-2 font-medium">
             @foreach ($links as $link)
                 <li>
                     @isset($link['header'])
-                        <div class="px-3 py-2 text-xs font-semibold text-slate-400 uppercase"
+                        <div class="px-3 py-2 text-[11px] font-semibold tracking-widest text-slate-400 uppercase"
                             x-show="!sidebarCollapsed" x-cloak>
                             {{ $link['header'] }}
                         </div>
@@ -139,51 +139,54 @@
     </div>
 
     {{-- Zona inferior: perfil --}}
-    <div class="border-t border-slate-800 px-3 py-5 bg-slate-900/40"
+    <div class="border-t border-slate-800 px-3 py-5 bg-slate-900/50"
         :class="sidebarCollapsed ? 'px-2' : 'px-3'">
-        <div class="flex flex-col items-center text-center"
-            :class="sidebarCollapsed ? 'gap-0' : 'gap-2'">
-            <img class="h-10 w-10 rounded-full object-cover ring-2 ring-slate-700"
-                src="{{ Auth::user()->profile_photo_url }}"
-                alt="{{ Auth::user()->name }}">
-            <div x-show="!sidebarCollapsed" x-cloak>
-                <p class="text-sm font-semibold text-white">{{ Auth::user()->name }}</p>
-                <p class="text-xs text-slate-400">Administrador</p>
+        <div class="rounded-xl bg-slate-900/60 px-3 py-3"
+            :class="sidebarCollapsed ? 'px-2' : 'px-3'">
+            <div class="flex flex-col items-center text-center"
+                :class="sidebarCollapsed ? 'gap-0' : 'gap-2'">
+                <img class="h-10 w-10 rounded-full object-cover ring-2 ring-slate-700"
+                    src="{{ Auth::user()->profile_photo_url }}"
+                    alt="{{ Auth::user()->name }}">
+                <div x-show="!sidebarCollapsed" x-cloak>
+                    <p class="text-sm font-semibold text-white">{{ Auth::user()->name }}</p>
+                    <p class="text-xs text-slate-400">Administrador</p>
+                </div>
             </div>
-        </div>
-        <div class="mt-4 space-y-1" :class="sidebarCollapsed ? 'pt-2' : ''">
-            <a href="{{ route('profile.show') }}"
-                class="group relative flex items-center rounded-lg px-3 py-2 text-slate-200 hover:bg-slate-800/80 transition-colors"
-                :class="sidebarCollapsed ? 'justify-center' : 'gap-3'"
-                title="{{ __('navigation.profile') }}">
-                <span class="inline-flex w-5 h-5 justify-center items-center">
-                    <i data-lucide="user" class="w-4 h-4"></i>
-                </span>
-                <span x-show="!sidebarCollapsed" x-cloak x-transition>
-                    {{ __('navigation.profile') }}
-                </span>
-                <span x-show="sidebarCollapsed" x-cloak
-                    class="pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-md bg-slate-800 px-3 py-1 text-xs text-white shadow-lg">
-                    {{ __('navigation.profile') }}
-                </span>
-            </a>
-            <form method="POST" action="{{ route('logout') }}" x-data>
-                @csrf
-                <button type="submit"
-                    class="group relative w-full flex items-center rounded-lg px-3 py-2 text-slate-200 hover:bg-slate-800/80 transition-colors"
-                    :class="sidebarCollapsed ? 'justify-center' : 'gap-3'">
+            <div class="mt-4 space-y-1" :class="sidebarCollapsed ? 'pt-2' : ''">
+                <a href="{{ route('profile.show') }}"
+                    class="group relative flex items-center rounded-lg px-3 py-2 text-slate-200 hover:bg-slate-800/80 transition-colors"
+                    :class="sidebarCollapsed ? 'justify-center' : 'gap-3'"
+                    title="{{ __('navigation.profile') }}">
                     <span class="inline-flex w-5 h-5 justify-center items-center">
-                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                        <i data-lucide="user" class="w-4 h-4"></i>
                     </span>
                     <span x-show="!sidebarCollapsed" x-cloak x-transition>
-                        {{ __('navigation.log_out') }}
+                        {{ __('navigation.profile') }}
                     </span>
                     <span x-show="sidebarCollapsed" x-cloak
                         class="pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-md bg-slate-800 px-3 py-1 text-xs text-white shadow-lg">
-                        {{ __('navigation.log_out') }}
+                        {{ __('navigation.profile') }}
                     </span>
-                </button>
-            </form>
+                </a>
+                <form method="POST" action="{{ route('logout') }}" x-data>
+                    @csrf
+                    <button type="submit"
+                        class="group relative w-full flex items-center rounded-lg px-3 py-2 text-slate-200 hover:bg-slate-800/80 transition-colors"
+                        :class="sidebarCollapsed ? 'justify-center' : 'gap-3'">
+                        <span class="inline-flex w-5 h-5 justify-center items-center">
+                            <i data-lucide="log-out" class="w-4 h-4"></i>
+                        </span>
+                        <span x-show="!sidebarCollapsed" x-cloak x-transition>
+                            {{ __('navigation.log_out') }}
+                        </span>
+                        <span x-show="sidebarCollapsed" x-cloak
+                            class="pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-md bg-slate-800 px-3 py-1 text-xs text-white shadow-lg">
+                            {{ __('navigation.log_out') }}
+                        </span>
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 </aside>
