@@ -25,20 +25,14 @@
     @livewireStyles
 </head>
 
-<body class="font-sans antialiased" x-data="{ sidebarOpen: false }">
+<body class="font-sans antialiased"
+    x-data="{ sidebarOpen: false, sidebarCollapsed: true }">
 
-    {{-- Overlay responsive --}}
-    <div class="fixed inset-0 bg-gray-900 bg-opacity-50 z-20 sm:hidden"
-        x-show="sidebarOpen"
-        x-on:click="sidebarOpen = false">
-    </div>
+    <div class="min-h-screen bg-gray-50 flex">
+        {{-- Sidebar en flujo (no fixed/absolute) --}}
+        @include('layouts.partials.admin.sidebar')
 
-    @include('layouts.partials.admin.navegation')
-    @include('layouts.partials.admin.sidebar')
-
-    <div class="p-4 sm:ml-64">
-        <div class="mt-14">
-
+        <main class="flex-1 min-w-0 p-4 overflow-y-auto">
             <div class="flex justify-between items-center">
                 @include('layouts.partials.admin.breadcrumb')
 
@@ -47,11 +41,10 @@
                 @endisset
             </div>
 
-            <div class="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700">
+            <div class="mt-4 p-4 border-2 border-gray-200 border-dashed rounded-lg">
                 {{ $slot }}
             </div>
-
-        </div>
+        </main>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

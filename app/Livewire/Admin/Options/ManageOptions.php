@@ -9,6 +9,7 @@ use App\Models\Option;
 
 use Livewire\Component;
 use Livewire\Attributes\On;
+use Illuminate\Support\Facades\DB;
 
 class ManageOptions extends Component
 {
@@ -45,6 +46,28 @@ class ManageOptions extends Component
             return;
         }
 
+        $optionId = $feature->option_id;
+        if ($optionId) {
+            $pivotRows = DB::table('option_product')
+                ->where('option_id', $optionId)
+                ->get();
+
+            foreach ($pivotRows as $row) {
+                $features = collect(json_decode($row->features, true) ?: [])
+                    ->filter(function ($item) use ($feature) {
+                        return data_get($item, 'id') !== $feature->id;
+                    })
+                    ->values()
+                    ->all();
+
+                DB::table('option_product')
+                    ->where('product_id', $row->product_id)
+                    ->where('option_id', $optionId)
+                    ->update(['features' => json_encode($features)]);
+            }
+        }
+
+        $feature->variants()->detach();
         $feature->delete();
         $this->options = Option::with('features')->get();
     }
@@ -55,6 +78,11 @@ class ManageOptions extends Component
             return;
         }
 
+        $option->features->each(function (Feature $feature) {
+            $feature->variants()->detach();
+        });
+        $option->features()->delete();
+        $option->products()->detach();
         $option->delete();
         $this->options = Option::with('features')->get();
     }

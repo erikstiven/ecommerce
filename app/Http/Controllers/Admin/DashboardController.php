@@ -20,6 +20,16 @@ class DashboardController extends Controller
 
     public function index()
     {
+        return view('admin.dashboard', $this->buildDashboardData());
+    }
+
+    public function statistics()
+    {
+        return view('admin.estadisticas', $this->buildDashboardData());
+    }
+
+    private function buildDashboardData(): array
+    {
         $year = now()->year;
 
         $orderStatusCounts = Order::query()
@@ -106,7 +116,7 @@ class DashboardController extends Controller
                 $status->name => (int) ($shipmentStatusCounts[$status->value] ?? 0),
             ]);
 
-        return view('admin.dashboard', [
+        return [
             'ordersByStatus' => $ordersByStatus,
             'statusColors' => $statusColors,
             'ordersByMonth' => $ordersByMonth,
@@ -116,6 +126,6 @@ class DashboardController extends Controller
             'topProducts' => $topProducts,
             'ordersByFamily' => $ordersByFamily,
             'shipmentsByStatus' => $shipmentsByStatus,
-        ]);
+        ];
     }
 }
