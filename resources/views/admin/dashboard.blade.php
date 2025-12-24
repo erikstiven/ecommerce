@@ -1,173 +1,128 @@
 <x-admin-layout :breadcrumbs="[['name' => __('Dashboard')]]">
 
-    {{-- Sección de vistas --}}
-    <div class="mt-2" x-data="{ chartTab: 'resumen' }">
-        <div class="flex flex-wrap gap-2">
-            <button type="button"
-                class="px-4 py-2 rounded-full text-sm font-semibold border transition"
-                :class="chartTab === 'resumen' ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'"
-                @click="chartTab = 'resumen'; $nextTick(() => window.dispatchEvent(new Event('resize')))"
-            >
-                Resumen
-            </button>
-            <button type="button"
-                class="px-4 py-2 rounded-full text-sm font-semibold border transition"
-                :class="chartTab === 'ventas' ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'"
-                @click="chartTab = 'ventas'; $nextTick(() => window.dispatchEvent(new Event('resize')))"
-            >
-                Ventas
-            </button>
-            <button type="button"
-                class="px-4 py-2 rounded-full text-sm font-semibold border transition"
-                :class="chartTab === 'envios' ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'"
-                @click="chartTab = 'envios'; $nextTick(() => window.dispatchEvent(new Event('resize')))"
-            >
-                Envíos
-            </button>
+    {{-- KPIs --}}
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 auto-rows-fr">
+        <div class="rounded-lg border border-slate-200/70 bg-slate-50 p-4">
+            <p class="text-xs uppercase tracking-wide text-slate-500">Pedidos del mes</p>
+            <p class="text-2xl font-semibold text-slate-900">{{ $kpis['totalMonth'] }}</p>
         </div>
-
-        <div class="mt-4 space-y-6" x-cloak>
-            {{-- Resumen --}}
-            <div x-show="chartTab === 'resumen'" class="space-y-6">
-                <div class="bg-white rounded-lg shadow-lg p-4" x-data="{ kpiIndex: 0 }">
-                    <div class="flex items-center justify-between mb-3">
-                        <p class="text-sm font-semibold text-gray-700">Indicadores clave</p>
-                        <div class="flex items-center gap-2">
-                            <button type="button"
-                                class="h-8 w-8 rounded-full border border-gray-200 text-gray-500 hover:bg-gray-50"
-                                @click="kpiIndex = (kpiIndex + 3) % 4">
-                                ‹
-                            </button>
-                            <button type="button"
-                                class="h-8 w-8 rounded-full border border-gray-200 text-gray-500 hover:bg-gray-50"
-                                @click="kpiIndex = (kpiIndex + 1) % 4">
-                                ›
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="relative h-24">
-                        <div class="absolute inset-0" x-show="kpiIndex === 0" x-cloak x-transition>
-                            <p class="text-xs uppercase tracking-wide text-gray-500">Pedidos del mes</p>
-                            <p class="text-3xl font-semibold text-gray-900">{{ $kpis['totalMonth'] }}</p>
-                        </div>
-                        <div class="absolute inset-0" x-show="kpiIndex === 1" x-cloak x-transition>
-                            <p class="text-xs uppercase tracking-wide text-gray-500">Pedidos pendientes</p>
-                            <p class="text-3xl font-semibold text-amber-600">{{ $kpis['pending'] }}</p>
-                        </div>
-                        <div class="absolute inset-0" x-show="kpiIndex === 2" x-cloak x-transition>
-                            <p class="text-xs uppercase tracking-wide text-gray-500">Pedidos entregados</p>
-                            <p class="text-3xl font-semibold text-emerald-600">{{ $kpis['delivered'] }}</p>
-                        </div>
-                        <div class="absolute inset-0" x-show="kpiIndex === 3" x-cloak x-transition>
-                            <p class="text-xs uppercase tracking-wide text-gray-500">Pedidos cancelados</p>
-                            <p class="text-3xl font-semibold text-rose-600">{{ $kpis['canceled'] }}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {{-- Tarjeta de bienvenida --}}
-                    <div class="bg-white rounded-lg shadow-lg p-6">
-                        <h2 class="text-lg font-semibold mb-2">Bienvenido, {{ Auth::user()->name }}</h2>
-                        <button onclick="window.location.href='{{ route('logout') }}'"
-                            class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
-                            Cerrar sesión
-                        </button>
-                    </div>
-
-                    {{-- Tarjeta con nombre de empresa --}}
-                    <div class="bg-white rounded-lg shadow-lg p-6 flex items-center justify-center">
-                        <h2 class="text-lg font-semibold text-gray-700">HMB Sports</h2>
-                    </div>
-                </div>
-
-                {{-- Últimos pedidos --}}
-                <div class="bg-white rounded-lg shadow-lg p-6">
-                    <h2 class="text-lg font-semibold mb-4">Últimos pedidos</h2>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full text-sm text-left text-gray-700">
-                            <thead class="text-xs uppercase text-gray-500 border-b">
-                                <tr>
-                                    <th class="px-4 py-2">ID</th>
-                                    <th class="px-4 py-2">Cliente</th>
-                                    <th class="px-4 py-2">Estado</th>
-                                    <th class="px-4 py-2">Fecha</th>
-                                    <th class="px-4 py-2">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y">
-                                @forelse ($latestOrders as $order)
-                                    <tr>
-                                        <td class="px-4 py-2 font-medium text-gray-900">#{{ $order->id }}</td>
-                                        <td class="px-4 py-2">{{ $order->user?->name ?? 'Invitado' }}</td>
-                                        <td class="px-4 py-2">{{ $order->status?->name ?? 'Sin estado' }}</td>
-                                        <td class="px-4 py-2">{{ $order->created_at?->format('d/m/Y') }}</td>
-                                        <td class="px-4 py-2">
-                                            <a href="{{ route('admin.orders.index') }}"
-                                                class="text-indigo-600 hover:text-indigo-800 font-semibold">
-                                                Ver pedidos
-                                            </a>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="5" class="px-4 py-6 text-center text-gray-500">
-                                            No hay pedidos recientes.
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div x-show="chartTab === 'ventas'" class="grid grid-cols-1 lg:grid-cols-2 gap-6 auto-rows-fr">
-                {{-- Gráfico: Pedidos por estado --}}
-                <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col min-h-[320px] overflow-hidden">
-                    <h2 class="text-lg font-semibold mb-0">Pedidos por estado</h2>
-                    <div class="relative flex-1 min-h-[220px] overflow-hidden">
-                        <canvas id="ordersStatusChart" class="w-full h-full"></canvas>
-                    </div>
-                </div>
-
-                {{-- Gráfico: Pedidos por mes --}}
-                <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col min-h-[320px] overflow-hidden">
-                    <h2 class="text-lg font-semibold mb-0">Pedidos por mes ({{ date('Y') }})</h2>
-                    <div class="relative flex-1 min-h-[220px] overflow-hidden">
-                        <canvas id="ordersMonthChart" class="w-full h-full"></canvas>
-                    </div>
-                </div>
-
-                {{-- Gráfico: Productos más vendidos --}}
-                <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col min-h-[320px] overflow-hidden">
-                    <h2 class="text-lg font-semibold mb-0">Productos más vendidos (Top 5)</h2>
-                    <div class="relative flex-1 min-h-[220px] overflow-hidden">
-                        <canvas id="topProductsChart" class="w-full h-full"></canvas>
-                    </div>
-                </div>
-
-                {{-- Gráfico: Pedidos por familia --}}
-                <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col min-h-[320px] overflow-hidden">
-                    <h2 class="text-lg font-semibold mb-0">Pedidos por familia</h2>
-                    <div class="relative flex-1 min-h-[220px] overflow-hidden">
-                        <canvas id="ordersFamilyChart" class="w-full h-full"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <div x-show="chartTab === 'envios'" class="grid grid-cols-1 lg:grid-cols-2 gap-6 auto-rows-fr">
-                {{-- Gráfico: Estado de envíos --}}
-                <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col min-h-[320px] overflow-hidden">
-                    <h2 class="text-lg font-semibold mb-0">Estado de envíos</h2>
-                    <div class="relative flex-1 min-h-[220px] overflow-hidden">
-                        <canvas id="shipmentsStatusChart" class="w-full h-full"></canvas>
-                    </div>
-                </div>
-            </div>
+        <div class="rounded-lg border border-amber-200/60 bg-amber-50/70 p-4">
+            <p class="text-xs uppercase tracking-wide text-amber-600">Pedidos pendientes</p>
+            <p class="text-2xl font-semibold text-amber-700">{{ $kpis['pending'] }}</p>
+        </div>
+        <div class="rounded-lg border border-emerald-200/60 bg-emerald-50/70 p-4">
+            <p class="text-xs uppercase tracking-wide text-emerald-600">Pedidos entregados</p>
+            <p class="text-2xl font-semibold text-emerald-700">{{ $kpis['delivered'] }}</p>
+        </div>
+        <div class="rounded-lg border border-rose-200/60 bg-rose-50/70 p-4">
+            <p class="text-xs uppercase tracking-wide text-rose-600">Pedidos cancelados</p>
+            <p class="text-2xl font-semibold text-rose-700">{{ $kpis['canceled'] }}</p>
         </div>
     </div>
+
+    {{-- Slider de gráficas --}}
+    <div class="mt-6" x-data="{ chartIndex: 0 }">
+        <div class="flex items-center justify-between mb-3">
+            <h2 class="text-lg font-semibold text-slate-800">Gráficas</h2>
+            <div class="flex items-center gap-2">
+                <button type="button"
+                    class="h-9 w-9 rounded-full border border-slate-200 text-slate-500 hover:bg-slate-50"
+                    @click="chartIndex = (chartIndex + 4) % 5">
+                    ‹
+                </button>
+                <button type="button"
+                    class="h-9 w-9 rounded-full border border-slate-200 text-slate-500 hover:bg-slate-50"
+                    @click="chartIndex = (chartIndex + 1) % 5">
+                    ›
+                </button>
+        </div>
+    </div>
+
+    {{-- Últimos pedidos --}}
+    <div class="bg-white rounded-lg shadow-lg p-6 mt-6">
+        <h2 class="text-lg font-semibold mb-4">Últimos pedidos</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full text-sm text-left text-gray-700">
+                <thead class="text-xs uppercase text-gray-500 border-b">
+                    <tr>
+                        <th class="px-4 py-2">ID</th>
+                        <th class="px-4 py-2">Cliente</th>
+                        <th class="px-4 py-2">Estado</th>
+                        <th class="px-4 py-2">Fecha</th>
+                        <th class="px-4 py-2">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y">
+                    @forelse ($latestOrders as $order)
+                        <tr>
+                            <td class="px-4 py-2 font-medium text-gray-900">#{{ $order->id }}</td>
+                            <td class="px-4 py-2">{{ $order->user?->name ?? 'Invitado' }}</td>
+                            <td class="px-4 py-2">{{ $order->status?->name ?? 'Sin estado' }}</td>
+                            <td class="px-4 py-2">{{ $order->created_at?->format('d/m/Y') }}</td>
+                            <td class="px-4 py-2">
+                                <a href="{{ route('admin.orders.index') }}"
+                                    class="text-indigo-600 hover:text-indigo-800 font-semibold">
+                                    Ver pedidos
+                                </a>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="px-4 py-6 text-center text-gray-500">
+                                No hay pedidos recientes.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+        <div class="relative overflow-hidden">
+            <div class="flex transition-transform duration-300 ease-in-out"
+                :style="`transform: translateX(-${chartIndex * 100}%)`">
+                <div class="w-full shrink-0 px-1">
+                    <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col min-h-[320px] overflow-hidden">
+                        <h2 class="text-lg font-semibold mb-0">Pedidos por estado</h2>
+                        <div class="relative flex-1 min-h-[220px] overflow-hidden">
+                            <canvas id="ordersStatusChart" class="w-full h-full"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full shrink-0 px-1">
+                    <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col min-h-[320px] overflow-hidden">
+                        <h2 class="text-lg font-semibold mb-0">Pedidos por mes ({{ date('Y') }})</h2>
+                        <div class="relative flex-1 min-h-[220px] overflow-hidden">
+                            <canvas id="ordersMonthChart" class="w-full h-full"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full shrink-0 px-1">
+                    <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col min-h-[320px] overflow-hidden">
+                        <h2 class="text-lg font-semibold mb-0">Productos más vendidos (Top 5)</h2>
+                        <div class="relative flex-1 min-h-[220px] overflow-hidden">
+                            <canvas id="topProductsChart" class="w-full h-full"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full shrink-0 px-1">
+                    <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col min-h-[320px] overflow-hidden">
+                        <h2 class="text-lg font-semibold mb-0">Pedidos por familia</h2>
+                        <div class="relative flex-1 min-h-[220px] overflow-hidden">
+                            <canvas id="ordersFamilyChart" class="w-full h-full"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full shrink-0 px-1">
+                    <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col min-h-[320px] overflow-hidden">
+                        <h2 class="text-lg font-semibold mb-0">Estado de envíos</h2>
+                        <div class="relative flex-1 min-h-[220px] overflow-hidden">
+                            <canvas id="shipmentsStatusChart" class="w-full h-full"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     @push('js')
         {{-- Chart.js + plugin etiquetas --}}
