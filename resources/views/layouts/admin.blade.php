@@ -26,11 +26,7 @@
 </head>
 
 <body class="font-sans antialiased"
-    x-data="{ sidebarOpen: false, sidebarCollapsed: false }"
-    x-init="
-        sidebarCollapsed = localStorage.getItem('sidebar-collapsed') === 'true';
-        $watch('sidebarCollapsed', value => localStorage.setItem('sidebar-collapsed', value));
-    ">
+    x-data="{ sidebarOpen: false, sidebarCollapsed: true }">
 
     <div class="min-h-screen bg-gray-50 flex">
         {{-- Sidebar en flujo (no fixed/absolute) --}}

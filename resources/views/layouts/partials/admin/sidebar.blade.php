@@ -80,19 +80,9 @@
 <aside id="logo-sidebar"
     class="relative h-screen bg-slate-950 border-r border-slate-800 transition-all duration-300 ease-in-out overflow-x-hidden flex flex-col"
     :class="sidebarCollapsed ? 'w-16' : 'w-64'"
+    @mouseenter="sidebarCollapsed = false"
+    @mouseleave="sidebarCollapsed = true"
     aria-label="Sidebar">
-    {{-- Botón de colapsar --}}
-    <button type="button"
-        class="absolute top-1/2 right-0 z-20 inline-flex h-10 w-10 -translate-y-1/2 translate-x-1/2 items-center justify-center rounded-full bg-indigo-500 text-white shadow-lg ring-2 ring-indigo-300 hover:bg-indigo-400 focus:outline-none focus:ring-2 focus:ring-white"
-        @click="sidebarCollapsed = !sidebarCollapsed">
-        <span class="sr-only">Toggle sidebar</span>
-        <svg class="h-5 w-5 transition-transform duration-300"
-            :class="sidebarCollapsed ? 'rotate-180' : ''"
-            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-            stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-        </svg>
-    </button>
 
     {{-- Header --}}
     <div class="border-b border-slate-800/80 px-4 py-4">
@@ -105,8 +95,8 @@
     </div>
 
     {{-- Menú --}}
-    <nav class="flex-1 px-2 py-4"
-        :class="sidebarCollapsed ? 'overflow-y-hidden' : 'overflow-y-auto'">
+    <nav class="flex-1 px-2 py-4 overflow-y-auto [&::-webkit-scrollbar]:hidden"
+        style="scrollbar-width: none;">
         <ul class="space-y-1">
             @foreach ($links as $link)
                 <li>

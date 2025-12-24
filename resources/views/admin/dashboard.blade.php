@@ -29,22 +29,22 @@
         <div class="mt-4 space-y-6" x-cloak>
             {{-- Resumen --}}
             <div x-show="chartTab === 'resumen'" class="space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 auto-rows-fr">
-                    <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col justify-between">
-                        <p class="text-sm text-gray-500">Pedidos del mes</p>
-                        <p class="text-3xl font-semibold text-gray-900">{{ $kpis['totalMonth'] }}</p>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 auto-rows-fr">
+                    <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col justify-between">
+                        <p class="text-xs uppercase tracking-wide text-gray-500">Pedidos del mes</p>
+                        <p class="text-2xl font-semibold text-gray-900">{{ $kpis['totalMonth'] }}</p>
                     </div>
-                    <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col justify-between">
-                        <p class="text-sm text-gray-500">Pedidos pendientes</p>
-                        <p class="text-3xl font-semibold text-amber-600">{{ $kpis['pending'] }}</p>
+                    <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col justify-between">
+                        <p class="text-xs uppercase tracking-wide text-gray-500">Pedidos pendientes</p>
+                        <p class="text-2xl font-semibold text-amber-600">{{ $kpis['pending'] }}</p>
                     </div>
-                    <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col justify-between">
-                        <p class="text-sm text-gray-500">Pedidos entregados</p>
-                        <p class="text-3xl font-semibold text-emerald-600">{{ $kpis['delivered'] }}</p>
+                    <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col justify-between">
+                        <p class="text-xs uppercase tracking-wide text-gray-500">Pedidos entregados</p>
+                        <p class="text-2xl font-semibold text-emerald-600">{{ $kpis['delivered'] }}</p>
                     </div>
-                    <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col justify-between">
-                        <p class="text-sm text-gray-500">Pedidos cancelados</p>
-                        <p class="text-3xl font-semibold text-rose-600">{{ $kpis['canceled'] }}</p>
+                    <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col justify-between">
+                        <p class="text-xs uppercase tracking-wide text-gray-500">Pedidos cancelados</p>
+                        <p class="text-2xl font-semibold text-rose-600">{{ $kpis['canceled'] }}</p>
                     </div>
                 </div>
 
