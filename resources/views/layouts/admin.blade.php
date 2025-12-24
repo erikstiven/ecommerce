@@ -32,7 +32,7 @@
         {{-- Sidebar en flujo (no fixed/absolute) --}}
         @include('layouts.partials.admin.sidebar')
 
-        <main class="flex-1 min-w-0 p-4">
+        <main class="flex-1 min-w-0 p-4 overflow-y-auto">
             <div class="flex justify-between items-center">
                 @include('layouts.partials.admin.breadcrumb')
 

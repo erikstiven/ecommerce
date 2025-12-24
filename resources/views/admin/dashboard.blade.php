@@ -29,22 +29,40 @@
         <div class="mt-4 space-y-6" x-cloak>
             {{-- Resumen --}}
             <div x-show="chartTab === 'resumen'" class="space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 auto-rows-fr">
-                    <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col justify-between">
-                        <p class="text-xs uppercase tracking-wide text-gray-500">Pedidos del mes</p>
-                        <p class="text-2xl font-semibold text-gray-900">{{ $kpis['totalMonth'] }}</p>
+                <div class="bg-white rounded-lg shadow-lg p-4" x-data="{ kpiIndex: 0 }">
+                    <div class="flex items-center justify-between mb-3">
+                        <p class="text-sm font-semibold text-gray-700">Indicadores clave</p>
+                        <div class="flex items-center gap-2">
+                            <button type="button"
+                                class="h-8 w-8 rounded-full border border-gray-200 text-gray-500 hover:bg-gray-50"
+                                @click="kpiIndex = (kpiIndex + 3) % 4">
+                                ‹
+                            </button>
+                            <button type="button"
+                                class="h-8 w-8 rounded-full border border-gray-200 text-gray-500 hover:bg-gray-50"
+                                @click="kpiIndex = (kpiIndex + 1) % 4">
+                                ›
+                            </button>
+                        </div>
                     </div>
-                    <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col justify-between">
-                        <p class="text-xs uppercase tracking-wide text-gray-500">Pedidos pendientes</p>
-                        <p class="text-2xl font-semibold text-amber-600">{{ $kpis['pending'] }}</p>
-                    </div>
-                    <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col justify-between">
-                        <p class="text-xs uppercase tracking-wide text-gray-500">Pedidos entregados</p>
-                        <p class="text-2xl font-semibold text-emerald-600">{{ $kpis['delivered'] }}</p>
-                    </div>
-                    <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col justify-between">
-                        <p class="text-xs uppercase tracking-wide text-gray-500">Pedidos cancelados</p>
-                        <p class="text-2xl font-semibold text-rose-600">{{ $kpis['canceled'] }}</p>
+
+                    <div class="relative h-24">
+                        <div class="absolute inset-0" x-show="kpiIndex === 0" x-cloak x-transition>
+                            <p class="text-xs uppercase tracking-wide text-gray-500">Pedidos del mes</p>
+                            <p class="text-3xl font-semibold text-gray-900">{{ $kpis['totalMonth'] }}</p>
+                        </div>
+                        <div class="absolute inset-0" x-show="kpiIndex === 1" x-cloak x-transition>
+                            <p class="text-xs uppercase tracking-wide text-gray-500">Pedidos pendientes</p>
+                            <p class="text-3xl font-semibold text-amber-600">{{ $kpis['pending'] }}</p>
+                        </div>
+                        <div class="absolute inset-0" x-show="kpiIndex === 2" x-cloak x-transition>
+                            <p class="text-xs uppercase tracking-wide text-gray-500">Pedidos entregados</p>
+                            <p class="text-3xl font-semibold text-emerald-600">{{ $kpis['delivered'] }}</p>
+                        </div>
+                        <div class="absolute inset-0" x-show="kpiIndex === 3" x-cloak x-transition>
+                            <p class="text-xs uppercase tracking-wide text-gray-500">Pedidos cancelados</p>
+                            <p class="text-3xl font-semibold text-rose-600">{{ $kpis['canceled'] }}</p>
+                        </div>
                     </div>
                 </div>
 
