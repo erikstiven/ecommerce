@@ -1,6 +1,6 @@
 {{-- <x-admin-layout :breadcrumbs="[
     [
-        'name' => 'Dashboard',
+        'name' => __('Dashboard'),
         'route' => route('admin.dashboard'),
     ],
     [
@@ -102,7 +102,7 @@
 
 <x-admin-layout 
     :breadcrumbs="[
-        ['name' => 'Dashboard', 'route' => route('admin.dashboard')],
+        ['name' => __('Dashboard'), 'route' => route('admin.dashboard')],
         ['name' => 'Productos', 'route' => route('admin.products.index')],
     ]"
 >

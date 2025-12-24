@@ -2,9 +2,15 @@
     $links = [
         [
             'icon' => 'home',
-            'name' => 'Dashboard',
+            'name' => __('Dashboard'),
             'route' => route('admin.dashboard'),
             'active' => request()->routeIs('admin.dashboard'),
+        ],
+        [
+            'icon' => 'bar-chart-2',
+            'name' => 'Estadísticas',
+            'route' => route('admin.estadisticas'),
+            'active' => request()->routeIs('admin.estadisticas'),
         ],
         [
             'header' => 'Administrar Pagina',
@@ -78,34 +84,46 @@
 
 @endphp
 <aside id="logo-sidebar"
-    class="fixed top-0 left-0 z-40 w-64 h-[100dvh] pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700"
-    :class="{
-    
-        'translate-x-0 ease-out': sidebarOpen,
-        '-translate-x-full ease-in': !sidebarOpen
-    }"
+    class="relative h-screen bg-slate-950 border-r border-slate-800 transition-all duration-300 ease-in-out overflow-hidden flex flex-col"
+    :class="sidebarCollapsed ? 'w-16' : 'w-64'"
+    @mouseenter="sidebarCollapsed = false"
+    @mouseleave="sidebarCollapsed = true"
     aria-label="Sidebar">
-    <div class="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
-        <ul class="space-y-2 font-medium">
+
+    {{-- Header --}}
+    <div class="border-b border-slate-800/80 px-4 py-4">
+        <div class="flex items-center justify-center gap-2">
+            <img src="{{ asset('img/logo.png') }}" alt="Logo" class="h-8 w-8 object-contain">
+            <span class="text-white font-semibold text-base tracking-wide" x-show="!sidebarCollapsed" x-cloak>
+                Codecima
+            </span>
+        </div>
+    </div>
+
+    {{-- Menú --}}
+    <nav class="flex-1 px-2 py-4 overflow-y-auto [&::-webkit-scrollbar]:hidden"
+        style="scrollbar-width: none; -ms-overflow-style: none;">
+        <ul class="space-y-1">
             @foreach ($links as $link)
                 <li>
                     @isset($link['header'])
-                        <div class="px-3 py-2 text-xs font-semibold text-gray-500 uppercase">
+                        <div class="px-3 py-2 text-[11px] font-semibold tracking-widest text-slate-400 uppercase"
+                            x-show="!sidebarCollapsed" x-cloak>
                             {{ $link['header'] }}
-
                         </div>
                     @else
                         <a href="{{ $link['route'] }}"
-                            class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group {{ $link['active'] ? 'bg-gray-100 dark:bg-gray-700' : '' }}">
-                            {{-- <span class="inline-flex w-6 h-6 justify-center items-center">
-                            <i class="fa-solid {{ $link['icon'] }}"></i>
-                        {{-- <span class="inline-flex w-6 h-6 justify-center items-center">
-                            <i class="{{ $link['icon'] }}"></i>
-                        </span> --}}
+                            class="group relative flex items-center rounded-lg px-3 py-2 text-slate-200 hover:bg-slate-800/80 transition-colors {{ $link['active'] ? 'bg-indigo-500/20 ring-1 ring-indigo-400/40 text-white' : '' }}"
+                            :class="sidebarCollapsed ? 'justify-center' : 'gap-3'"
+                            title="{{ $link['name'] }}">
                             <span class="inline-flex w-6 h-6 justify-center items-center">
                                 <i data-lucide="{{ $link['icon'] }}" class="w-5 h-5"></i>
                             </span>
-                            <span class="ms-2">
+                            <span x-show="!sidebarCollapsed" x-cloak x-transition>
+                                {{ $link['name'] }}
+                            </span>
+                            <span x-show="sidebarCollapsed" x-cloak
+                                class="pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-md bg-slate-800 px-3 py-1 text-xs text-white shadow-lg">
                                 {{ $link['name'] }}
                             </span>
                         </a>
@@ -113,5 +131,53 @@
                 </li>
             @endforeach
         </ul>
+    </nav>
+
+    {{-- Footer perfil --}}
+    <div class="mt-auto border-t border-slate-800/80 px-3 py-4 bg-slate-900/60">
+        <div class="flex flex-col items-center text-center"
+            :class="sidebarCollapsed ? 'gap-0' : 'gap-2'">
+            <img class="h-10 w-10 rounded-full object-cover ring-2 ring-slate-700"
+                src="{{ Auth::user()->profile_photo_url }}"
+                alt="{{ Auth::user()->name }}">
+            <div x-show="!sidebarCollapsed" x-cloak>
+                <p class="text-sm font-semibold text-white">{{ Auth::user()->name }}</p>
+                <p class="text-xs text-slate-400">Administrador</p>
+            </div>
+        </div>
+        <div class="mt-4 space-y-1" :class="sidebarCollapsed ? 'pt-2' : ''">
+            <a href="{{ route('profile.show') }}"
+                class="group relative flex items-center rounded-lg px-3 py-2 text-slate-200 hover:bg-slate-800/80 transition-colors"
+                :class="sidebarCollapsed ? 'justify-center' : 'gap-3'"
+                title="{{ __('navigation.profile') }}">
+                <span class="inline-flex w-5 h-5 justify-center items-center">
+                    <i data-lucide="user" class="w-4 h-4"></i>
+                </span>
+                <span x-show="!sidebarCollapsed" x-cloak x-transition>
+                    {{ __('navigation.profile') }}
+                </span>
+                <span x-show="sidebarCollapsed" x-cloak
+                    class="pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-md bg-slate-800 px-3 py-1 text-xs text-white shadow-lg">
+                    {{ __('navigation.profile') }}
+                </span>
+            </a>
+            <form method="POST" action="{{ route('logout') }}" x-data>
+                @csrf
+                <button type="submit"
+                    class="group relative w-full flex items-center rounded-lg px-3 py-2 text-slate-200 hover:bg-slate-800/80 transition-colors"
+                    :class="sidebarCollapsed ? 'justify-center' : 'gap-3'">
+                    <span class="inline-flex w-5 h-5 justify-center items-center">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                    </span>
+                    <span x-show="!sidebarCollapsed" x-cloak x-transition>
+                        {{ __('navigation.log_out') }}
+                    </span>
+                    <span x-show="sidebarCollapsed" x-cloak
+                        class="pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-md bg-slate-800 px-3 py-1 text-xs text-white shadow-lg">
+                        {{ __('navigation.log_out') }}
+                    </span>
+                </button>
+            </form>
+        </div>
     </div>
 </aside>

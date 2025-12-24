@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Models\Variant;
 use Closure;
 use Gloudemans\Shoppingcart\Facades\Cart;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -17,9 +18,10 @@ class VerifyStock
      */
     public function handle(Request $request, Closure $next): Response
     {
-        Cart::instance('shopping');
+        $cart = Cart::instance('shopping');
 
-        foreach (Cart::content() as $item) {
+        $cartChanged = false;
+        foreach ($cart->content() as $item) {
             $options = $item->options ?? [];
 
             // Intentar obtener el variant por SKU
@@ -27,16 +29,22 @@ class VerifyStock
 
             if (!$variant) {
                 // 🔧 Si no existe, eliminar el producto del carrito
-                Cart::remove($item->rowId);
+                $cart->remove($item->rowId);
+                $cartChanged = true;
                 continue; // Pasar al siguiente item
             }
 
             // Si existe, actualizar el stock actual
             $options['stock'] = $variant->stock;
 
-            Cart::update($item->rowId, [
+            $cart->update($item->rowId, [
                 'options' => $options,
             ]);
+            $cartChanged = true;
+        }
+
+        if ($cartChanged && Auth::check()) {
+            $cart->store(Auth::id());
         }
 
         return $next($request);

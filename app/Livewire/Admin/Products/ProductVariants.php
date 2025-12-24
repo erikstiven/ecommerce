@@ -114,6 +114,10 @@ class ProductVariants extends Component
     #[Computed()]
     public function options()
     {
+        if (! $this->product?->id) {
+            return collect();
+        }
+
         return Option::whereDoesntHave('products', function ($query) {
             $query->where('product_id', $this->product->id);
         })->get();
@@ -122,6 +126,10 @@ class ProductVariants extends Component
     #[Computed()]
     public function features()
     {
+        if (empty($this->variant['option_id'])) {
+            return collect();
+        }
+
         return Feature::where('option_id', $this->variant['option_id'])->get();
     }
 
@@ -162,15 +170,37 @@ class ProductVariants extends Component
 
     public function addNewFeature($option_id, $feature_id)
     {
-
         $this->validate([
             'new_features.' . $option_id => 'required',
         ]);
 
+        $option = $this->product->options->firstWhere('id', $option_id);
+        if (! $option) {
+            $this->dispatch('swal', [
+                'icon'  => 'error',
+                'title' => 'Opción no encontrada',
+                'text'  => 'La opción seleccionada ya no existe.',
+            ]);
+            return;
+        }
+
         $feature = Feature::find($this->new_features[$option_id]);
+        if (! $feature) {
+            $this->dispatch('swal', [
+                'icon'  => 'error',
+                'title' => 'Valor no encontrado',
+                'text'  => 'El valor seleccionado ya no existe.',
+            ]);
+            return;
+        }
+
+        $existingFeatures = data_get($option->pivot, 'features', []);
+        if (! is_array($existingFeatures)) {
+            $existingFeatures = [];
+        }
 
         $this->product->options()->updateExistingPivot($option_id, [
-            'features' => array_merge($this->product->options->find($option_id)->pivot->features, [
+            'features' => array_merge($existingFeatures, [
                 [
                     'id' => $feature->id,
                     'value' => $feature->value,
@@ -216,8 +246,23 @@ class ProductVariants extends Component
     //delete feature
     public function deleteFeature($option_id, $feature_id)
     {
+        $option = $this->product->options->firstWhere('id', $option_id);
+        if (! $option) {
+            $this->dispatch('swal', [
+                'icon'  => 'error',
+                'title' => 'Opción no encontrada',
+                'text'  => 'La opción ya no está disponible.',
+            ]);
+            return;
+        }
+
+        $existingFeatures = data_get($option->pivot, 'features', []);
+        if (! is_array($existingFeatures)) {
+            $existingFeatures = [];
+        }
+
         $this->product->options()->updateExistingPivot($option_id, [
-            'features' => array_filter($this->product->options->find($option_id)->pivot->features, function ($feature) use ($feature_id) {
+            'features' => array_filter($existingFeatures, function ($feature) use ($feature_id) {
                 return $feature['id'] != $feature_id;
             })
         ]);
@@ -236,6 +281,16 @@ class ProductVariants extends Component
     //deleteOption
     public function deleteOption($option_id)
     {
+        $option = $this->product->options->firstWhere('id', $option_id);
+        if (! $option) {
+            $this->dispatch('swal', [
+                'icon'  => 'error',
+                'title' => 'Opción no encontrada',
+                'text'  => 'La opción ya no está asociada al producto.',
+            ]);
+            return;
+        }
+
         $this->product->options()->detach($option_id);
         $this->product = $this->product->fresh();
 
@@ -294,17 +349,41 @@ class ProductVariants extends Component
             })
             ->all();
 
+        $option = Option::find($this->variant['option_id']);
+        if (! $option) {
+            $this->dispatch('swal', [
+                'icon'  => 'error',
+                'title' => 'Opción no encontrada',
+                'text'  => 'La opción seleccionada ya no existe.',
+            ]);
+            return;
+        }
+
         // Registrar la nueva opción asociada al producto (si no existía)
-        $this->product->options()->attach(
-            $this->variant['option_id'],
-            ['features' => $features]
-        );
+        if ($this->product->options->contains('id', $option->id)) {
+            $this->product->options()->updateExistingPivot(
+                $option->id,
+                ['features' => $features]
+            );
+        } else {
+            $this->product->options()->attach(
+                $option->id,
+                ['features' => $features]
+            );
+        }
 
         // Refrescar la relación para obtener features actualizadas
         $this->product = $this->product->fresh();
 
         // 1) Generar todas las combinaciones válidas de features actuales
-        $featuresPivot = $this->product->options->pluck('pivot.features');
+        $featuresPivot = $this->product->options
+            ->pluck('pivot.features')
+            ->filter()
+            ->values();
+        if ($featuresPivot->isEmpty()) {
+            $this->reset(['variant', 'openModal']);
+            return;
+        }
         $combinaciones = $this->generarCombinaciones($featuresPivot);
 
         // 2) Recorrer variantes actuales y eliminar solo las que ya no estén en combinaciones válidas
@@ -343,7 +422,14 @@ class ProductVariants extends Component
 
     public function generarVariantes()
     {
-        $features = $this->product->options->pluck('pivot.features');
+        $features = $this->product->options
+            ->pluck('pivot.features')
+            ->filter()
+            ->values();
+
+        if ($features->isEmpty()) {
+            return;
+        }
 
         $combinaciones = $this->generarCombinaciones($features);
 
@@ -373,6 +459,8 @@ class ProductVariants extends Component
 
     function generarCombinaciones($arrays, $indice = 0, $combinacion = [])
     {
+        $arrays = is_array($arrays) ? array_values($arrays) : array_values($arrays->all());
+
         if ($indice == count($arrays)) {
             return [$combinacion];
         }

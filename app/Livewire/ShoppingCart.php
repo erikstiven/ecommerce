@@ -30,27 +30,27 @@ class ShoppingCart extends Component
      */
     public function increase($rowId)
     {
-        Cart::instance('shopping');
+        $cart = Cart::instance('shopping');
 
-        if (!Cart::content()->has($rowId)) {
+        if (! $cart->content()->has($rowId)) {
             session()->flash('error', 'El producto ya no está en el carrito.');
             return;
         }
 
-        $item      = Cart::get($rowId);
-        $available = $item->options->stock ?? null;
+        $item      = $cart->get($rowId);
+        $available = data_get($item, 'options.stock');
         if ($available !== null && ($item->qty + 1) > $available) {
             session()->flash('error', 'No hay suficiente stock para agregar otra unidad.');
             return;
         }
 
-        Cart::update($rowId, $item->qty + 1);
+        $cart->update($rowId, $item->qty + 1);
 
         if (Auth::check()) {
-            Cart::store(Auth::id());
+            $cart->store(Auth::id());
         }
 
-        $this->dispatch('cartUpdated', Cart::count());
+        $this->dispatch('cartUpdated', $cart->count());
     }
 
     /**
@@ -59,8 +59,8 @@ class ShoppingCart extends Component
     #[Computed]
     public function subtotal()
     {
-        return Cart::content()->filter(function ($item) {
-            return $item->qty <= $item->options['stock'];
+        return Cart::instance('shopping')->content()->filter(function ($item) {
+            return $item->qty <= data_get($item, 'options.stock', 0);
         })
         ->sum(function ($item) {
             return $item->subtotal;
@@ -74,26 +74,26 @@ class ShoppingCart extends Component
      */
     public function decrease($rowId)
     {
-        Cart::instance('shopping');
+        $cart = Cart::instance('shopping');
 
-        if (!Cart::content()->has($rowId)) {
+        if (! $cart->content()->has($rowId)) {
             session()->flash('error', 'El producto ya no está en el carrito.');
             return;
         }
 
-        $item = Cart::get($rowId);
+        $item = $cart->get($rowId);
 
         if ($item->qty > 1) {
-            Cart::update($rowId, $item->qty - 1);
+            $cart->update($rowId, $item->qty - 1);
         } else {
-            Cart::remove($rowId);
+            $cart->remove($rowId);
         }
 
         if (Auth::check()) {
-            Cart::store(Auth::id());
+            $cart->store(Auth::id());
         }
 
-        $this->dispatch('cartUpdated', Cart::count());
+        $this->dispatch('cartUpdated', $cart->count());
     }
 
     /**
@@ -103,12 +103,12 @@ class ShoppingCart extends Component
      */
     public function remove($rowId)
     {
-        Cart::instance('shopping');
-        Cart::remove($rowId);
+        $cart = Cart::instance('shopping');
+        $cart->remove($rowId);
         if (Auth::check()) {
-            Cart::store(Auth::id());
+            $cart->store(Auth::id());
         }
-        $this->dispatch('cartUpdated', Cart::count());
+        $this->dispatch('cartUpdated', $cart->count());
     }
 
     /**
@@ -116,14 +116,14 @@ class ShoppingCart extends Component
      */
     public function destroy()
     {
-        Cart::instance('shopping')->destroy();
-        Cart::destroy();
+        $cart = Cart::instance('shopping');
+        $cart->destroy();
 
         if (Auth::check()) {
-            Cart::store(Auth::id());
+            $cart->store(Auth::id());
         }
 
-        $this->dispatch('cartUpdated', Cart::count());
+        $this->dispatch('cartUpdated', $cart->count());
     }
 
     /**

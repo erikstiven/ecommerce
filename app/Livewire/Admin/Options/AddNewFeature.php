@@ -16,6 +16,15 @@ class AddNewFeature extends Component
 
     public function addFeature()
     {
+        if (! $this->option || ! $this->option->exists) {
+            $this->dispatch('swal', [
+                'icon' => 'error',
+                'title' => 'Opción no disponible',
+                'text' => 'No se encontró la opción para agregar la característica.',
+            ]);
+            return;
+        }
+
         $this->validate([
 
             'newFeature.value' => 'required',
@@ -23,7 +32,7 @@ class AddNewFeature extends Component
 
         ]);
 
-        $this->option->features()->create( $this->newFeature);
+        $this->option->features()->create($this->newFeature);
 
         $this->dispatch('featureAdded');
 
