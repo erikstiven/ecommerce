@@ -12,12 +12,12 @@
             <p class="text-sm text-slate-500">Explora las métricas clave</p>
             <div class="flex items-center gap-2">
                 <button type="button"
-                    class="h-9 w-9 rounded-full border border-slate-200 text-slate-500 hover:bg-slate-50"
+                    class="h-9 w-9 rounded-full bg-blue-600 text-white shadow-sm hover:bg-blue-500 transition-colors"
                     @click="chartIndex = (chartIndex + 4) % 5">
                     ‹
                 </button>
                 <button type="button"
-                    class="h-9 w-9 rounded-full border border-slate-200 text-slate-500 hover:bg-slate-50"
+                    class="h-9 w-9 rounded-full bg-blue-600 text-white shadow-sm hover:bg-blue-500 transition-colors"
                     @click="chartIndex = (chartIndex + 1) % 5">
                     ›
                 </button>
@@ -28,41 +28,41 @@
             <div class="flex transition-transform duration-300 ease-in-out"
                 :style="`transform: translateX(-${chartIndex * 100}%)`">
                 <div class="w-full shrink-0 px-1">
-                    <div class="bg-slate-50 rounded-lg p-4 flex flex-col min-h-[320px]">
+                    <div class="bg-slate-50 rounded-lg p-4 flex flex-col min-h-[300px]">
                         <h3 class="text-lg font-semibold mb-2">Pedidos por estado</h3>
-                        <div class="relative flex-1 min-h-[220px] overflow-hidden">
+                        <div class="relative h-[260px] overflow-hidden">
                             <canvas id="ordersStatusChart" class="w-full h-full"></canvas>
                         </div>
                     </div>
                 </div>
                 <div class="w-full shrink-0 px-1">
-                    <div class="bg-slate-50 rounded-lg p-4 flex flex-col min-h-[320px]">
+                    <div class="bg-slate-50 rounded-lg p-4 flex flex-col min-h-[300px]">
                         <h3 class="text-lg font-semibold mb-2">Pedidos por mes ({{ date('Y') }})</h3>
-                        <div class="relative flex-1 min-h-[220px] overflow-hidden">
+                        <div class="relative h-[260px] overflow-hidden">
                             <canvas id="ordersMonthChart" class="w-full h-full"></canvas>
                         </div>
                     </div>
                 </div>
                 <div class="w-full shrink-0 px-1">
-                    <div class="bg-slate-50 rounded-lg p-4 flex flex-col min-h-[320px]">
+                    <div class="bg-slate-50 rounded-lg p-4 flex flex-col min-h-[300px]">
                         <h3 class="text-lg font-semibold mb-2">Productos más vendidos (Top 5)</h3>
-                        <div class="relative flex-1 min-h-[220px] overflow-hidden">
+                        <div class="relative h-[260px] overflow-hidden">
                             <canvas id="topProductsChart" class="w-full h-full"></canvas>
                         </div>
                     </div>
                 </div>
                 <div class="w-full shrink-0 px-1">
-                    <div class="bg-slate-50 rounded-lg p-4 flex flex-col min-h-[320px]">
+                    <div class="bg-slate-50 rounded-lg p-4 flex flex-col min-h-[300px]">
                         <h3 class="text-lg font-semibold mb-2">Pedidos por familia</h3>
-                        <div class="relative flex-1 min-h-[220px] overflow-hidden">
+                        <div class="relative h-[260px] overflow-hidden">
                             <canvas id="ordersFamilyChart" class="w-full h-full"></canvas>
                         </div>
                     </div>
                 </div>
                 <div class="w-full shrink-0 px-1">
-                    <div class="bg-slate-50 rounded-lg p-4 flex flex-col min-h-[320px]">
+                    <div class="bg-slate-50 rounded-lg p-4 flex flex-col min-h-[300px]">
                         <h3 class="text-lg font-semibold mb-2">Estado de envíos</h3>
-                        <div class="relative flex-1 min-h-[220px] overflow-hidden">
+                        <div class="relative h-[260px] overflow-hidden">
                             <canvas id="shipmentsStatusChart" class="w-full h-full"></canvas>
                         </div>
                     </div>
