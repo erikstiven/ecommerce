@@ -78,7 +78,7 @@
 
 @endphp
 <aside id="logo-sidebar"
-    class="relative h-screen bg-slate-900 border-r border-slate-800 transition-all duration-300 ease-in-out overflow-x-hidden flex flex-col"
+    class="relative h-screen bg-slate-950 border-r border-slate-800 transition-all duration-300 ease-in-out overflow-x-hidden flex flex-col"
     :class="sidebarCollapsed ? 'w-16' : 'w-64'"
     aria-label="Sidebar">
     {{-- Botón de colapsar --}}
@@ -117,7 +117,7 @@
                         </div>
                     @else
                         <a href="{{ $link['route'] }}"
-                            class="flex items-center rounded-lg px-3 py-2 text-slate-200 hover:bg-slate-800/80 transition-colors {{ $link['active'] ? 'bg-slate-800 ring-1 ring-slate-700' : '' }}"
+                            class="group relative flex items-center rounded-lg px-3 py-2 text-slate-200 hover:bg-slate-800/80 transition-colors {{ $link['active'] ? 'bg-indigo-500/20 ring-1 ring-indigo-400/40 text-white' : '' }}"
                             :class="sidebarCollapsed ? 'justify-center' : 'gap-3'"
                             title="{{ $link['name'] }}">
                             {{-- Icono siempre visible --}}
@@ -125,6 +125,10 @@
                                 <i data-lucide="{{ $link['icon'] }}" class="w-5 h-5"></i>
                             </span>
                             <span x-show="!sidebarCollapsed" x-cloak x-transition>
+                                {{ $link['name'] }}
+                            </span>
+                            <span x-show="sidebarCollapsed" x-cloak
+                                class="pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-md bg-slate-800 px-3 py-1 text-xs text-white shadow-lg">
                                 {{ $link['name'] }}
                             </span>
                         </a>
@@ -135,7 +139,7 @@
     </div>
 
     {{-- Zona inferior: perfil --}}
-    <div class="border-t border-slate-800 px-3 py-5"
+    <div class="border-t border-slate-800 px-3 py-5 bg-slate-900/40"
         :class="sidebarCollapsed ? 'px-2' : 'px-3'">
         <div class="flex flex-col items-center text-center"
             :class="sidebarCollapsed ? 'gap-0' : 'gap-2'">
@@ -149,7 +153,7 @@
         </div>
         <div class="mt-4 space-y-1" :class="sidebarCollapsed ? 'pt-2' : ''">
             <a href="{{ route('profile.show') }}"
-                class="flex items-center rounded-lg px-3 py-2 text-slate-200 hover:bg-slate-800/80 transition-colors"
+                class="group relative flex items-center rounded-lg px-3 py-2 text-slate-200 hover:bg-slate-800/80 transition-colors"
                 :class="sidebarCollapsed ? 'justify-center' : 'gap-3'"
                 title="{{ __('navigation.profile') }}">
                 <span class="inline-flex w-5 h-5 justify-center items-center">
@@ -158,16 +162,24 @@
                 <span x-show="!sidebarCollapsed" x-cloak x-transition>
                     {{ __('navigation.profile') }}
                 </span>
+                <span x-show="sidebarCollapsed" x-cloak
+                    class="pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-md bg-slate-800 px-3 py-1 text-xs text-white shadow-lg">
+                    {{ __('navigation.profile') }}
+                </span>
             </a>
             <form method="POST" action="{{ route('logout') }}" x-data>
                 @csrf
                 <button type="submit"
-                    class="w-full flex items-center rounded-lg px-3 py-2 text-slate-200 hover:bg-slate-800/80 transition-colors"
+                    class="group relative w-full flex items-center rounded-lg px-3 py-2 text-slate-200 hover:bg-slate-800/80 transition-colors"
                     :class="sidebarCollapsed ? 'justify-center' : 'gap-3'">
                     <span class="inline-flex w-5 h-5 justify-center items-center">
                         <i data-lucide="log-out" class="w-4 h-4"></i>
                     </span>
                     <span x-show="!sidebarCollapsed" x-cloak x-transition>
+                        {{ __('navigation.log_out') }}
+                    </span>
+                    <span x-show="sidebarCollapsed" x-cloak
+                        class="pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-md bg-slate-800 px-3 py-1 text-xs text-white shadow-lg">
                         {{ __('navigation.log_out') }}
                     </span>
                 </button>
