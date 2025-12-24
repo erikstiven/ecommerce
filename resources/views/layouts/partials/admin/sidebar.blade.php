@@ -105,7 +105,8 @@
     </div>
 
     {{-- Menú --}}
-    <nav class="flex-1 overflow-y-auto px-2 py-4">
+    <nav class="flex-1 px-2 py-4"
+        :class="sidebarCollapsed ? 'overflow-y-hidden' : 'overflow-y-auto'">
         <ul class="space-y-1">
             @foreach ($links as $link)
                 <li>

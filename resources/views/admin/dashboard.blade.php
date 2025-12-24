@@ -1,43 +1,7 @@
 <x-admin-layout :breadcrumbs="[['name' => __('Dashboard')]]">
 
-    {{-- KPIs --}}
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 auto-rows-fr">
-        <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col justify-between">
-            <p class="text-sm text-gray-500">Pedidos del mes</p>
-            <p class="text-3xl font-semibold text-gray-900">{{ $kpis['totalMonth'] }}</p>
-        </div>
-        <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col justify-between">
-            <p class="text-sm text-gray-500">Pedidos pendientes</p>
-            <p class="text-3xl font-semibold text-amber-600">{{ $kpis['pending'] }}</p>
-        </div>
-        <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col justify-between">
-            <p class="text-sm text-gray-500">Pedidos entregados</p>
-            <p class="text-3xl font-semibold text-emerald-600">{{ $kpis['delivered'] }}</p>
-        </div>
-        <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col justify-between">
-            <p class="text-sm text-gray-500">Pedidos cancelados</p>
-            <p class="text-3xl font-semibold text-rose-600">{{ $kpis['canceled'] }}</p>
-        </div>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-        {{-- Tarjeta de bienvenida --}}
-        <div class="bg-white rounded-lg shadow-lg p-6">
-            <h2 class="text-lg font-semibold mb-2">Bienvenido, {{ Auth::user()->name }}</h2>
-            <button onclick="window.location.href='{{ route('logout') }}'"
-                class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
-                Cerrar sesión
-            </button>
-        </div>
-
-        {{-- Tarjeta con nombre de empresa --}}
-        <div class="bg-white rounded-lg shadow-lg p-6 flex items-center justify-center">
-            <h2 class="text-lg font-semibold text-gray-700">HMB Sports</h2>
-        </div>
-    </div>
-
-    {{-- Sección de gráficas --}}
-    <div class="mt-6" x-data="{ chartTab: 'resumen' }">
+    {{-- Sección de vistas --}}
+    <div class="mt-2" x-data="{ chartTab: 'resumen' }">
         <div class="flex flex-wrap gap-2">
             <button type="button"
                 class="px-4 py-2 rounded-full text-sm font-semibold border transition"
@@ -63,7 +27,85 @@
         </div>
 
         <div class="mt-4 space-y-6" x-cloak>
-            <div x-show="chartTab === 'resumen'" class="grid grid-cols-1 md:grid-cols-2 gap-6 auto-rows-fr">
+            {{-- Resumen --}}
+            <div x-show="chartTab === 'resumen'" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 auto-rows-fr">
+                    <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col justify-between">
+                        <p class="text-sm text-gray-500">Pedidos del mes</p>
+                        <p class="text-3xl font-semibold text-gray-900">{{ $kpis['totalMonth'] }}</p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col justify-between">
+                        <p class="text-sm text-gray-500">Pedidos pendientes</p>
+                        <p class="text-3xl font-semibold text-amber-600">{{ $kpis['pending'] }}</p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col justify-between">
+                        <p class="text-sm text-gray-500">Pedidos entregados</p>
+                        <p class="text-3xl font-semibold text-emerald-600">{{ $kpis['delivered'] }}</p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col justify-between">
+                        <p class="text-sm text-gray-500">Pedidos cancelados</p>
+                        <p class="text-3xl font-semibold text-rose-600">{{ $kpis['canceled'] }}</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {{-- Tarjeta de bienvenida --}}
+                    <div class="bg-white rounded-lg shadow-lg p-6">
+                        <h2 class="text-lg font-semibold mb-2">Bienvenido, {{ Auth::user()->name }}</h2>
+                        <button onclick="window.location.href='{{ route('logout') }}'"
+                            class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
+                            Cerrar sesión
+                        </button>
+                    </div>
+
+                    {{-- Tarjeta con nombre de empresa --}}
+                    <div class="bg-white rounded-lg shadow-lg p-6 flex items-center justify-center">
+                        <h2 class="text-lg font-semibold text-gray-700">HMB Sports</h2>
+                    </div>
+                </div>
+
+                {{-- Últimos pedidos --}}
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h2 class="text-lg font-semibold mb-4">Últimos pedidos</h2>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-sm text-left text-gray-700">
+                            <thead class="text-xs uppercase text-gray-500 border-b">
+                                <tr>
+                                    <th class="px-4 py-2">ID</th>
+                                    <th class="px-4 py-2">Cliente</th>
+                                    <th class="px-4 py-2">Estado</th>
+                                    <th class="px-4 py-2">Fecha</th>
+                                    <th class="px-4 py-2">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y">
+                                @forelse ($latestOrders as $order)
+                                    <tr>
+                                        <td class="px-4 py-2 font-medium text-gray-900">#{{ $order->id }}</td>
+                                        <td class="px-4 py-2">{{ $order->user?->name ?? 'Invitado' }}</td>
+                                        <td class="px-4 py-2">{{ $order->status?->name ?? 'Sin estado' }}</td>
+                                        <td class="px-4 py-2">{{ $order->created_at?->format('d/m/Y') }}</td>
+                                        <td class="px-4 py-2">
+                                            <a href="{{ route('admin.orders.index') }}"
+                                                class="text-indigo-600 hover:text-indigo-800 font-semibold">
+                                                Ver pedidos
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="px-4 py-6 text-center text-gray-500">
+                                            No hay pedidos recientes.
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div x-show="chartTab === 'ventas'" class="grid grid-cols-1 lg:grid-cols-2 gap-6 auto-rows-fr">
                 {{-- Gráfico: Pedidos por estado --}}
                 <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col min-h-[320px] overflow-hidden">
                     <h2 class="text-lg font-semibold mb-0">Pedidos por estado</h2>
@@ -79,9 +121,7 @@
                         <canvas id="ordersMonthChart" class="w-full h-full"></canvas>
                     </div>
                 </div>
-            </div>
 
-            <div x-show="chartTab === 'ventas'" class="grid grid-cols-1 lg:grid-cols-2 gap-6 auto-rows-fr">
                 {{-- Gráfico: Productos más vendidos --}}
                 <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col min-h-[320px] overflow-hidden">
                     <h2 class="text-lg font-semibold mb-0">Productos más vendidos (Top 5)</h2>
@@ -108,46 +148,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-
-    {{-- Últimos pedidos --}}
-    <div class="bg-white rounded-lg shadow-lg p-6 mt-6">
-        <h2 class="text-lg font-semibold mb-4">Últimos pedidos</h2>
-        <div class="overflow-x-auto">
-            <table class="min-w-full text-sm text-left text-gray-700">
-                <thead class="text-xs uppercase text-gray-500 border-b">
-                    <tr>
-                        <th class="px-4 py-2">ID</th>
-                        <th class="px-4 py-2">Cliente</th>
-                        <th class="px-4 py-2">Estado</th>
-                        <th class="px-4 py-2">Fecha</th>
-                        <th class="px-4 py-2">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y">
-                    @forelse ($latestOrders as $order)
-                        <tr>
-                            <td class="px-4 py-2 font-medium text-gray-900">#{{ $order->id }}</td>
-                            <td class="px-4 py-2">{{ $order->user?->name ?? 'Invitado' }}</td>
-                            <td class="px-4 py-2">{{ $order->status?->name ?? 'Sin estado' }}</td>
-                            <td class="px-4 py-2">{{ $order->created_at?->format('d/m/Y') }}</td>
-                            <td class="px-4 py-2">
-                                <a href="{{ route('admin.orders.index') }}"
-                                    class="text-indigo-600 hover:text-indigo-800 font-semibold">
-                                    Ver pedidos
-                                </a>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="5" class="px-4 py-6 text-center text-gray-500">
-                                No hay pedidos recientes.
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
         </div>
     </div>
 
