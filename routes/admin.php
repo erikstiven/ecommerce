@@ -15,6 +15,8 @@ use Database\Seeders\OptionSeeder;
 
 Route::get('/', [DashboardController::class, 'index'])
     ->name('dashboard');
+Route::get('/estadisticas', [DashboardController::class, 'statistics'])
+    ->name('estadisticas');
 
 // =========================
 // Resto de recursos admin

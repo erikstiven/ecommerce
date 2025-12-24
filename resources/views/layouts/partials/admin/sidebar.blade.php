@@ -7,6 +7,12 @@
             'active' => request()->routeIs('admin.dashboard'),
         ],
         [
+            'icon' => 'bar-chart-2',
+            'name' => 'Estadísticas',
+            'route' => route('admin.estadisticas'),
+            'active' => request()->routeIs('admin.estadisticas'),
+        ],
+        [
             'header' => 'Administrar Pagina',
         ],
         [
