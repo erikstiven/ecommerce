@@ -1,7 +1,7 @@
 @props(['breadcrumbs' => []])
 
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full"> {{-- h-full para que el viewport sea base de alturas --}}
 
 <head>
     <meta charset="utf-8">
@@ -25,16 +25,16 @@
     @livewireStyles
 </head>
 
-<body class="font-sans antialiased"
+<body class="font-sans antialiased h-full" {{-- h-full para que el wrapper herede la altura correcta --}}
     x-data="{ sidebarOpen: false, sidebarCollapsed: true }">
 
-    <div class="min-h-screen bg-gray-50 flex"> {{-- min-h-screen evita forzar la altura del layout --}}
-        <div class="bg-slate-950 border-r border-slate-800 flex-shrink-0 h-screen"> {{-- h-screen para asegurar el alto del sidebar en pantallas medianas --}}
+    <div class="h-full bg-gray-50 flex"> {{-- h-full para usar la altura real del viewport --}}
+        <div class="bg-slate-950 border-r border-slate-800 flex-shrink-0 h-full"> {{-- h-full para que el sidebar herede altura real --}}
             {{-- Sidebar en flujo (no fixed/absolute) --}}
             @include('layouts.partials.admin.sidebar')
         </div>
 
-        <main class="flex-1 min-w-0 p-4 h-screen overflow-y-auto"> {{-- scroll del contenido principal sin afectar el sidebar --}}
+        <main class="flex-1 min-w-0 p-4 h-full overflow-y-auto"> {{-- main controla el scroll vertical --}}
             <div class="flex justify-between items-center">
                 @include('layouts.partials.admin.breadcrumb')
 

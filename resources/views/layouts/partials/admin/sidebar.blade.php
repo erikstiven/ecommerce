@@ -84,7 +84,7 @@
 
 @endphp
 <aside id="logo-sidebar"
-    class="sticky top-0 h-screen transition-all duration-300 ease-in-out overflow-y-auto overflow-x-hidden flex flex-col [&::-webkit-scrollbar]:hidden" {{-- sticky + h-screen para mantener el alto y scroll interno --}}
+    class="h-full transition-all duration-300 ease-in-out overflow-y-auto overflow-x-hidden flex flex-col [&::-webkit-scrollbar]:hidden" {{-- h-full para heredar altura del wrapper --}}
     :class="sidebarCollapsed ? 'w-16' : 'w-64'"
     @mouseenter="sidebarCollapsed = false"
     @mouseleave="sidebarCollapsed = true"
