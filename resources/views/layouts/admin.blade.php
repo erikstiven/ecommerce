@@ -1,7 +1,7 @@
 @props(['breadcrumbs' => []])
 
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full"> {{-- h-full para que el viewport sea base de alturas --}}
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"> {{-- sin altura fija para evitar conflicto con el viewport --}}
 
 <head>
     <meta charset="utf-8">
@@ -25,16 +25,16 @@
     @livewireStyles
 </head>
 
-<body class="font-sans antialiased h-full" {{-- h-full para que el wrapper herede la altura correcta --}}
+<body class="font-sans antialiased min-h-screen" {{-- min-h-screen para que el body crezca con el contenido --}}
     x-data="{ sidebarOpen: false, sidebarCollapsed: true }">
 
-    <div class="h-full bg-gray-50 flex"> {{-- h-full para usar la altura real del viewport --}}
-        <div class="bg-slate-950 border-r border-slate-800 flex-shrink-0 h-full"> {{-- h-full para que el sidebar herede altura real --}}
+    <div class="min-h-screen bg-gray-50 flex"> {{-- min-h-screen evita recortar el contenido --}}
+        <div class="bg-slate-950 border-r border-slate-800 flex-shrink-0"> {{-- sin altura fija para que el wrapper no limite --}}
             {{-- Sidebar en flujo (no fixed/absolute) --}}
             @include('layouts.partials.admin.sidebar')
         </div>
 
-        <main class="flex-1 min-w-0 p-4 h-full overflow-y-auto"> {{-- main controla el scroll vertical --}}
+        <main class="flex-1 min-w-0 p-4 overflow-visible"> {{-- scroll principal en body/document --}}
             <div class="flex justify-between items-center">
                 @include('layouts.partials.admin.breadcrumb')
 
