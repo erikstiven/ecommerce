@@ -137,7 +137,7 @@
     <div class="mt-auto border-t border-slate-800/80 px-3 py-4 bg-slate-900/60">
         <div class="flex flex-col items-center text-center"
             :class="sidebarCollapsed ? 'gap-0' : 'gap-2'">
-            <img class="h-10 w-10 rounded-full object-cover ring-2 ring-slate-700"
+            <img class="h-8 w-8 rounded-full object-cover ring-2 ring-slate-700"
                 src="{{ Auth::user()->profile_photo_url }}"
                 alt="{{ Auth::user()->name }}">
             <div x-show="!sidebarCollapsed" x-cloak>
