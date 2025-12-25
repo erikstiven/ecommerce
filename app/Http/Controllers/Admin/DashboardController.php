@@ -71,8 +71,6 @@ class DashboardController extends Controller
 
         $monthLabels = $months->map(fn(int $month) => Carbon::create()->month($month)->translatedFormat('M'));
 
-        $kpis = $this->buildKpis();
-
         $latestOrders = Order::query()
             ->with('user')
             ->latest()
@@ -111,7 +109,6 @@ class DashboardController extends Controller
             'statusColors' => $statusColors,
             'ordersByMonth' => $ordersByMonth,
             'monthLabels' => $monthLabels,
-            'kpis' => $kpis,
             'latestOrders' => $latestOrders,
             'topProducts' => $topProducts,
             'ordersByFamily' => $ordersByFamily,
@@ -137,7 +134,7 @@ class DashboardController extends Controller
             'delivered' => Order::query()
                 ->where('status', OrderStatus::Completado->value)
                 ->count(),
-            'cancelled' => Order::query()
+            'canceled' => Order::query()
                 ->where('status', OrderStatus::Cancelado->value)
                 ->count(),
         ];

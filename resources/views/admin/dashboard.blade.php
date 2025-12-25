@@ -4,19 +4,19 @@
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 auto-rows-fr">
         <div class="rounded-lg border border-slate-200/70 bg-slate-50 p-4">
             <p class="text-xs uppercase tracking-wide text-slate-500">Pedidos del mes</p>
-            <p class="text-2xl font-semibold text-slate-900">{{ $kpis['totalMonth'] }}</p>
+            <p class="text-2xl font-semibold text-slate-900">{{ $kpis['totalMonth'] ?? 0 }}</p>
         </div>
         <div class="rounded-lg border border-amber-200/60 bg-amber-50/70 p-4">
             <p class="text-xs uppercase tracking-wide text-amber-600">Pedidos pendientes</p>
-            <p class="text-2xl font-semibold text-amber-700">{{ $kpis['pending'] }}</p>
+            <p class="text-2xl font-semibold text-amber-700">{{ $kpis['pending'] ?? 0 }}</p>
         </div>
         <div class="rounded-lg border border-emerald-200/60 bg-emerald-50/70 p-4">
             <p class="text-xs uppercase tracking-wide text-emerald-600">Pedidos entregados</p>
-            <p class="text-2xl font-semibold text-emerald-700">{{ $kpis['delivered'] }}</p>
+            <p class="text-2xl font-semibold text-emerald-700">{{ $kpis['delivered'] ?? 0 }}</p>
         </div>
         <div class="rounded-lg border border-rose-200/60 bg-rose-50/70 p-4">
             <p class="text-xs uppercase tracking-wide text-rose-600">Pedidos cancelados</p>
-            <p class="text-2xl font-semibold text-rose-700">{{ $kpis['canceled'] }}</p>
+            <p class="text-2xl font-semibold text-rose-700">{{ $kpis['canceled'] ?? 0 }}</p>
         </div>
     </div>
 
