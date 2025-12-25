@@ -115,7 +115,7 @@
                         <a href="{{ $link['route'] }}"
                             class="group relative flex items-center rounded-lg px-3 py-2 text-slate-200 hover:bg-slate-800/80 transition-colors {{ $link['active'] ? 'bg-indigo-500/20 ring-1 ring-indigo-400/40 text-white' : '' }}"
                             :class="sidebarCollapsed ? 'justify-center' : 'gap-3'"
-                            title="{{ $link['name'] }}">
+                            aria-label="{{ $link['name'] }}">
                             <span class="inline-flex w-6 h-6 justify-center items-center">
                                 <i data-lucide="{{ $link['icon'] }}" class="w-5 h-5"></i>
                             </span>
@@ -149,7 +149,7 @@
             <a href="{{ route('profile.show') }}"
                 class="group relative flex items-center rounded-lg px-3 py-2 text-slate-200 hover:bg-slate-800/80 transition-colors"
                 :class="sidebarCollapsed ? 'justify-center' : 'gap-3'"
-                title="{{ __('navigation.profile') }}">
+                aria-label="{{ __('navigation.profile') }}">
                 <span class="inline-flex w-5 h-5 justify-center items-center">
                     <i data-lucide="user" class="w-4 h-4"></i>
                 </span>
