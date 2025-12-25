@@ -28,11 +28,13 @@
 <body class="font-sans antialiased"
     x-data="{ sidebarOpen: false, sidebarCollapsed: true }">
 
-    <div class="min-h-screen bg-gray-50 flex">
-        {{-- Sidebar en flujo (no fixed/absolute) --}}
-        @include('layouts.partials.admin.sidebar')
+    <div class="min-h-screen bg-gray-50 flex"> {{-- min-h-screen evita forzar la altura del layout --}}
+        <div class="bg-slate-950 border-r border-slate-800 flex-shrink-0 h-screen"> {{-- h-screen para asegurar el alto del sidebar en pantallas medianas --}}
+            {{-- Sidebar en flujo (no fixed/absolute) --}}
+            @include('layouts.partials.admin.sidebar')
+        </div>
 
-        <main class="flex-1 min-w-0 p-4 overflow-y-auto">
+        <main class="flex-1 min-w-0 p-4 h-screen overflow-y-auto"> {{-- scroll del contenido principal sin afectar el sidebar --}}
             <div class="flex justify-between items-center">
                 @include('layouts.partials.admin.breadcrumb')
 
