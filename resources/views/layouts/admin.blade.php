@@ -28,11 +28,11 @@
 <body class="font-sans antialiased"
     x-data="{ sidebarOpen: false, sidebarCollapsed: true }">
 
-    <div class="min-h-screen bg-gray-50 flex">
+    <div class="min-h-screen bg-gray-50 flex items-stretch"> {{-- min-h-screen permite que el layout crezca con el contenido --}}
         {{-- Sidebar en flujo (no fixed/absolute) --}}
         @include('layouts.partials.admin.sidebar')
 
-        <main class="flex-1 min-w-0 p-4 overflow-y-auto">
+        <main class="flex-1 min-w-0 p-4">
             <div class="flex justify-between items-center">
                 @include('layouts.partials.admin.breadcrumb')
 

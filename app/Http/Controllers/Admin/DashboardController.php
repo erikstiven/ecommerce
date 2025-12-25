@@ -20,7 +20,9 @@ class DashboardController extends Controller
 
     public function index()
     {
-        return view('admin.dashboard', $this->buildDashboardData());
+        $kpis = $this->buildKpis();
+
+        return view('admin.dashboard', array_merge($this->buildDashboardData(), compact('kpis')));
     }
 
     public function statistics()
@@ -69,20 +71,6 @@ class DashboardController extends Controller
 
         $monthLabels = $months->map(fn(int $month) => Carbon::create()->month($month)->translatedFormat('M'));
 
-        $pendingStatuses = [
-            OrderStatus::Pendiente->value,
-            OrderStatus::EsperandoAprobacion->value,
-        ];
-
-        $kpis = [
-            'totalMonth' => Order::whereYear('created_at', $year)
-                ->whereMonth('created_at', now()->month)
-                ->count(),
-            'pending' => Order::whereIn('status', $pendingStatuses)->count(),
-            'delivered' => Order::where('status', OrderStatus::Completado->value)->count(),
-            'canceled' => Order::where('status', OrderStatus::Cancelado->value)->count(),
-        ];
-
         $latestOrders = Order::query()
             ->with('user')
             ->latest()
@@ -121,11 +109,34 @@ class DashboardController extends Controller
             'statusColors' => $statusColors,
             'ordersByMonth' => $ordersByMonth,
             'monthLabels' => $monthLabels,
-            'kpis' => $kpis,
             'latestOrders' => $latestOrders,
             'topProducts' => $topProducts,
             'ordersByFamily' => $ordersByFamily,
             'shipmentsByStatus' => $shipmentsByStatus,
+        ];
+    }
+
+    private function buildKpis(): array
+    {
+        $pendingStatuses = [
+            OrderStatus::Pendiente->value,
+            OrderStatus::EsperandoAprobacion->value,
+        ];
+
+        return [
+            'totalMonth' => Order::query()
+                ->whereYear('created_at', now()->year)
+                ->whereMonth('created_at', now()->month)
+                ->count(),
+            'pending' => Order::query()
+                ->whereIn('status', $pendingStatuses)
+                ->count(),
+            'delivered' => Order::query()
+                ->where('status', OrderStatus::Completado->value)
+                ->count(),
+            'canceled' => Order::query()
+                ->where('status', OrderStatus::Cancelado->value)
+                ->count(),
         ];
     }
 }
