@@ -28,7 +28,7 @@
 <body class="font-sans antialiased"
     x-data="{ sidebarOpen: false, sidebarCollapsed: true }">
 
-    <div class="min-h-screen bg-gray-50 flex items-stretch"> {{-- min-h-screen permite que el layout crezca con el contenido --}}
+    <div class="min-h-screen bg-gray-50 flex"> {{-- min-h-screen permite que el layout crezca con el contenido --}}
         {{-- Sidebar en flujo (no fixed/absolute) --}}
         @include('layouts.partials.admin.sidebar')
 
