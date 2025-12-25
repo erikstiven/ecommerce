@@ -28,8 +28,8 @@
 <body class="font-sans antialiased min-h-screen" {{-- min-h-screen para que el body crezca con el contenido --}}
     x-data="{ sidebarOpen: false, sidebarCollapsed: true }">
 
-    <div class="min-h-screen bg-gray-50 flex"> {{-- min-h-screen evita recortar el contenido --}}
-        <div class="bg-slate-950 border-r border-slate-800 flex-shrink-0"> {{-- sin altura fija para que el wrapper no limite --}}
+    <div class="min-h-screen bg-gray-50 flex items-stretch"> {{-- items-stretch permite que el sidebar siga la altura del contenido --}}
+        <div class="bg-slate-950 border-r border-slate-800 flex-shrink-0 self-stretch"> {{-- self-stretch para igualar la altura del layout --}}
             {{-- Sidebar en flujo (no fixed/absolute) --}}
             @include('layouts.partials.admin.sidebar')
         </div>
