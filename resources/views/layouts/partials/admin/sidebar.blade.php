@@ -84,7 +84,7 @@
 
 @endphp
 <aside id="logo-sidebar"
-    class="relative h-full bg-slate-950 border-r border-slate-800 transition-all duration-300 ease-in-out flex flex-col"
+    class="relative h-screen bg-slate-950 border-r border-slate-800 transition-all duration-300 ease-in-out overflow-hidden flex flex-col"
     :class="sidebarCollapsed ? 'w-16' : 'w-64'"
     @mouseenter="sidebarCollapsed = false"
     @mouseleave="sidebarCollapsed = true"
@@ -115,7 +115,7 @@
                         <a href="{{ $link['route'] }}"
                             class="group relative flex items-center rounded-lg px-3 py-2 text-slate-200 hover:bg-slate-800/80 transition-colors {{ $link['active'] ? 'bg-indigo-500/20 ring-1 ring-indigo-400/40 text-white' : '' }}"
                             :class="sidebarCollapsed ? 'justify-center' : 'gap-3'"
-                            aria-label="{{ $link['name'] }}">
+                            title="{{ $link['name'] }}">
                             <span class="inline-flex w-6 h-6 justify-center items-center">
                                 <i data-lucide="{{ $link['icon'] }}" class="w-5 h-5"></i>
                             </span>
@@ -137,7 +137,7 @@
     <div class="mt-auto border-t border-slate-800/80 px-3 py-4 bg-slate-900/60">
         <div class="flex flex-col items-center text-center"
             :class="sidebarCollapsed ? 'gap-0' : 'gap-2'">
-            <img class="h-8 w-8 rounded-full object-cover ring-2 ring-slate-700"
+            <img class="h-10 w-10 rounded-full object-cover ring-2 ring-slate-700"
                 src="{{ Auth::user()->profile_photo_url }}"
                 alt="{{ Auth::user()->name }}">
             <div x-show="!sidebarCollapsed" x-cloak>
@@ -149,15 +149,11 @@
             <a href="{{ route('profile.show') }}"
                 class="group relative flex items-center rounded-lg px-3 py-2 text-slate-200 hover:bg-slate-800/80 transition-colors"
                 :class="sidebarCollapsed ? 'justify-center' : 'gap-3'"
-                aria-label="{{ __('navigation.profile') }}">
+                title="{{ __('navigation.profile') }}">
                 <span class="inline-flex w-5 h-5 justify-center items-center">
                     <i data-lucide="user" class="w-4 h-4"></i>
                 </span>
                 <span x-show="!sidebarCollapsed" x-cloak x-transition>
-                    {{ __('navigation.profile') }}
-                </span>
-                <span x-show="sidebarCollapsed" x-cloak
-                    class="pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-md bg-slate-800 px-3 py-1 text-xs text-white shadow-lg">
                     {{ __('navigation.profile') }}
                 </span>
             </a>
