@@ -1,7 +1,7 @@
 @props(['breadcrumbs' => []])
 
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full">
 
 <head>
     <meta charset="utf-8">
@@ -25,14 +25,16 @@
     @livewireStyles
 </head>
 
-<body class="font-sans antialiased"
+<body class="font-sans antialiased h-full overflow-hidden"
     x-data="{ sidebarOpen: false, sidebarCollapsed: true }">
 
-    <div class="min-h-screen bg-gray-50 flex">
-        {{-- Sidebar en flujo (no fixed/absolute) --}}
-        @include('layouts.partials.admin.sidebar')
+<div class="h-screen bg-gray-50 flex overflow-hidden">
+        <div class="bg-slate-950 border-r border-slate-800 flex-shrink-0"> {{-- fondo continuo del sidebar para evitar huecos --}}
+            {{-- Sidebar en flujo (no fixed/absolute) --}}
+            @include('layouts.partials.admin.sidebar')
+        </div>
 
-        <main class="flex-1 min-w-0 p-4 overflow-y-auto">
+<main class="flex-1 min-w-0 p-4 overflow-y-auto">
             <div class="flex justify-between items-center">
                 @include('layouts.partials.admin.breadcrumb')
 

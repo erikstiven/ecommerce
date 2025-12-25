@@ -84,11 +84,12 @@
 
 @endphp
 <aside id="logo-sidebar"
-    class="relative h-screen bg-slate-950 border-r border-slate-800 transition-all duration-300 ease-in-out overflow-hidden flex flex-col"
+    class="sticky top-0 h-screen transition-all duration-300 ease-in-out overflow-y-auto overflow-x-hidden flex flex-col [&::-webkit-scrollbar]:hidden" {{-- sticky + h-screen para mantener el alto y scroll interno --}}
     :class="sidebarCollapsed ? 'w-16' : 'w-64'"
     @mouseenter="sidebarCollapsed = false"
     @mouseleave="sidebarCollapsed = true"
-    aria-label="Sidebar">
+    aria-label="Sidebar"
+    style="scrollbar-width: none; -ms-overflow-style: none;">
 
     {{-- Header --}}
     <div class="border-b border-slate-800/80 px-4 py-4">
@@ -101,8 +102,7 @@
     </div>
 
     {{-- Menú --}}
-    <nav class="flex-1 px-2 py-4 overflow-y-auto [&::-webkit-scrollbar]:hidden"
-        style="scrollbar-width: none; -ms-overflow-style: none;">
+    <nav class="flex-1 px-2 py-4 overflow-x-hidden">
         <ul class="space-y-1">
             @foreach ($links as $link)
                 <li>
