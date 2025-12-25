@@ -1,7 +1,7 @@
 @props(['breadcrumbs' => []])
 
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"> {{-- sin altura fija para evitar conflicto con el viewport --}}
 
 <head>
     <meta charset="utf-8">
@@ -25,14 +25,16 @@
     @livewireStyles
 </head>
 
-<body class="font-sans antialiased"
+<body class="font-sans antialiased min-h-screen" {{-- min-h-screen para que el body crezca con el contenido --}}
     x-data="{ sidebarOpen: false, sidebarCollapsed: true }">
 
-    <div class="min-h-screen bg-gray-50 flex">
-        {{-- Sidebar en flujo (no fixed/absolute) --}}
-        @include('layouts.partials.admin.sidebar')
+    <div class="min-h-screen bg-gray-50 flex items-stretch"> {{-- items-stretch permite que el sidebar siga la altura del contenido --}}
+        <div class="bg-slate-950 border-r border-slate-800 flex-shrink-0 self-stretch"> {{-- self-stretch para igualar la altura del layout --}}
+            {{-- Sidebar en flujo (no fixed/absolute) --}}
+            @include('layouts.partials.admin.sidebar')
+        </div>
 
-        <main class="flex-1 min-w-0 p-4 overflow-y-auto">
+        <main class="flex-1 min-w-0 p-4 overflow-visible"> {{-- scroll principal en body/document --}}
             <div class="flex justify-between items-center">
                 @include('layouts.partials.admin.breadcrumb')
 
