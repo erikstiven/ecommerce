@@ -156,6 +156,10 @@
                 <span x-show="!sidebarCollapsed" x-cloak x-transition>
                     {{ __('navigation.profile') }}
                 </span>
+                {{-- <span x-show="sidebarCollapsed" x-cloak
+                    class="pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-md bg-slate-800 px-3 py-1 text-xs text-white shadow-lg">
+                    {{ __('navigation.profile') }}
+                </span> --}}
             </a>
             <form method="POST" action="{{ route('logout') }}" x-data>
                 @csrf
