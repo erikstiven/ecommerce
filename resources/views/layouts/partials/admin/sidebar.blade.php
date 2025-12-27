@@ -57,6 +57,12 @@
             'active' => request()->routeIs('admin.covers.*'),
         ],
         [
+            'icon' => 'settings',
+            'name' => 'Footer',
+            'route' => route('admin.settings.footer'),
+            'active' => request()->routeIs('admin.settings.footer'),
+        ],
+        [
             'header' => 'Ordenes y envíos',
         ],
         [

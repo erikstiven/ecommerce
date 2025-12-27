@@ -152,6 +152,10 @@ Route::get('/ubicacion', [LocationController::class, 'index'])->name('ubicacion'
 
 // Legal
 Route::get('/legal', [LegalController::class, 'index'])->name('legal');
+Route::view('/terminos-y-condiciones', 'legal.terms')->name('legal.terms');
+Route::view('/politica-de-privacidad', 'legal.privacy')->name('legal.privacy');
+Route::view('/politica-de-devoluciones', 'legal.returns')->name('legal.returns');
+Route::view('/preguntas-frecuentes', 'faq.index')->name('faq.index');
 
 // Envíos
 Route::get('shipping', [ShippingController::class, 'index'])
