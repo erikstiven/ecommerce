@@ -22,6 +22,11 @@ Route::get('/estadisticas', [DashboardController::class, 'statistics'])
 // Resto de recursos admin
 // =========================
 
+Route::view('settings/footer', 'admin.settings.footer')->name('settings.footer');
+Route::post('settings/footer', function () {
+    return back();
+})->name('settings.footer.update');
+
 Route::get('/options', [OptionController::class, 'index'])->name('options.index');
 
 Route::resource('families', FamilyController::class);
